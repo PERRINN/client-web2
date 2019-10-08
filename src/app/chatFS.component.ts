@@ -152,23 +152,14 @@ import * as firebase from 'firebase/app';
   <div style="height:125px;width:100%"></div>
   </div>
   <div class="sheet" style="position:fixed;bottom:0;width:100%;background-color:#f2f2f2">
-    <div *ngIf="!isCurrentUserLeader&&!isCurrentUserMember">
-      <div *ngIf="!isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="clear:both;margin-bottom:25px" (click)="followTeam(UI.currentTeam, UI.currentUser)">Follow</div>
-      <div *ngIf="isCurrentUserFollowing(UI.currentTeam)" class="buttonDiv" style="clear:both;margin-bottom:25px;color:green;cursor:default">Following</div>
-      <ul style="list-style:none;float:left;">
-        <li *ngFor="let user of draftMessageUsers | async">
-        <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.name}}...</div>
-        </li>
-      </ul>
-    </div>
-    <div *ngIf="isCurrentUserLeader||isCurrentUserMember">
+    <div>
       <ul style="list-style:none;float:left;">
         <li *ngFor="let user of draftMessageUsers | async">
         <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.name}}...</div>
         </li>
       </ul>
       <div style="clear:both;float:left;width:90%">
-        <textarea id="inputMessage" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" (keyup)="updateDraftMessageDB()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
+        <textarea id="inputMessage" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
       </div>
       <div style="float:right;width:10%">
         <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
@@ -209,22 +200,9 @@ export class ChatFSComponent {
   ) {
     this.UI.loading = true;
     this.route.params.subscribe(params => {
-      this.UI.currentTeam = params.id;
       this.isCurrentUserLeader = false;
       this.isCurrentUserMember = false;
       this.showDetails = {};
-      afs.doc<any>('PERRINNTeams/'+this.UI.currentTeam).valueChanges().subscribe(snapshot=>{
-        this.UI.currentTeamObj = snapshot;
-        this.UI.currentTeamObjKey = this.UI.currentTeam;
-        if (this.UI.currentUser) {
-          if (this.UI.currentTeamObj.leaders != undefined) {
-            this.isCurrentUserLeader = this.UI.currentTeamObj.leaders[UI.currentUser] ? true : false;
-          }
-          if (this.UI.currentTeamObj.members != undefined) {
-            this.isCurrentUserMember = this.UI.currentTeamObj.members[UI.currentUser] ? true : false;
-          }
-        }
-      });
       this.previousMessageTimestamp = 0;
       this.previousMessageUser = '';
       this.draftMessageDB = false;
@@ -232,11 +210,6 @@ export class ChatFSComponent {
       this.draftImageDownloadURL = '';
       this.draftMessage = '';
       this.messageNumberDisplay = 15;
-
-      afs.doc<any>('PERRINNTeams/'+this.UI.currentUser+'/viewTeams/'+this.UI.currentTeam).valueChanges().subscribe(userTeam => {
-        if (userTeam!=null&&userTeam.lastChatVisitTimestamp!=undefined) {this.lastChatVisitTimestamp = Number(userTeam.lastChatVisitTimestamp); }
-        else this.lastChatVisitTimestamp=0;
-      });
 
       this.recipientIndex=this.UI.recipientIndex();
 

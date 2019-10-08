@@ -33,4 +33,25 @@ module.exports = {
     });
   },
 
+  createMessageAFS:(user,text,image,imageDownloadURL,recipientIndex,recipientList,recipientNameList)=>{
+    const now = Date.now();
+    return admin.firestore().doc('PERRINNTeams/'+user).get().then(userData=>{
+      return admin.firestore().collection('PERRINNTeams').doc(user).collection('messages').add({
+        timestamp:now,
+        recipientIndex:recipientIndex,
+        recipientList:recipientList,
+        recipientNameList:recipientNameList,
+        user:user,
+        name:userData.data().name,
+        imageUrlThumbUser:userData.data().imageUrlThumb,
+        text:text,
+        image:image,
+        imageDownloadURL:imageDownloadURL
+      });
+    }).catch(error=>{
+      console.log(error);
+      return error;
+    });
+  },
+
 }

@@ -62,7 +62,6 @@ export class userInterfaceService {
     if (!this.recipientList.includes(user)){
       this.recipientList.push(user);
       return this.afs.doc('PERRINNTeams/'+user).ref.get().then(snapshot=>{
-        console.log(snapshot.data().name);
         this.recipientNameList.push(snapshot.data().name);
       });
     }

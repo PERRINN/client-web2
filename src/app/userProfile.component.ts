@@ -50,7 +50,7 @@ import { userInterfaceService } from './userInterface.service';
   </ul>
   <ul class="listLight">
     <li *ngFor="let message of lastMessages|async;let last=last"
-      (click)="UI.recipientList=message.payload.doc.data()?.recipientList;UI.recipientNameList=message.payload.doc.data()?.recipientNameList;router.navigate(['chatFS',UI.focusUser])">
+      (click)="UI.recipientList=message.payload.doc.data()?.recipientList;UI.recipientNameList=message.payload.doc.data()?.recipientNameList;router.navigate(['chatFS',message.payload.doc.data()?.recipientIndex])">
       <div style="float:left;height:50px;width:95px">
       </div>
       <div>
