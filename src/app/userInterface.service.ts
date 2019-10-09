@@ -111,6 +111,7 @@ export class userInterfaceService {
     let recipientIndex=this.recipientIndex();
     this.afs.collection('PERRINNTeams').doc(user).collection('messages').add({
       timestamp: now,
+      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
       recipientIndex:recipientIndex,
       recipientList: this.recipientList,
       recipientNameList: this.recipientNameList,

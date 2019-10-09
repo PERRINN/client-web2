@@ -19,7 +19,8 @@ service cloud.firestore {
       match /messages/{messageID} {
         allow create: if team == request.auth.uid
                         && request.resource.data.user==request.auth.uid
-                        && request.auth.uid in request.resource.data.recipientList;
+                        && request.resource.data.recipientIndex.matches(request.auth.uid)!=null
+                        && request.resource.data.text.size()<=500;
       }
     }
   }

@@ -38,6 +38,7 @@ module.exports = {
     return admin.firestore().doc('PERRINNTeams/'+user).get().then(userData=>{
       return admin.firestore().collection('PERRINNTeams').doc(user).collection('messages').add({
         timestamp:now,
+        serverTimestamp: admin.firestore.FieldValue.serverTimestamp(),
         recipientIndex:recipientIndex,
         recipientList:recipientList,
         recipientNameList:recipientNameList,

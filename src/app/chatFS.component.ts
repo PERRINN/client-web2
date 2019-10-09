@@ -215,7 +215,7 @@ export class ChatFSComponent {
 
       this.teamMessagesFS=afs.collectionGroup('messages',ref=>ref
         .where('recipientIndex','==',this.recipientIndex)
-        .orderBy('timestamp','desc')
+        .orderBy('serverTimestamp','desc')
         .limit(this.messageNumberDisplay)
       ).snapshotChanges().pipe(map(changes => {
         this.UI.loading = false;
