@@ -13,14 +13,15 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{team}').onCre
       return createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",{},teamObj,'none','none',{});
     }).then(()=>{
       let text="Welcome to PERRINN, we are happy to have you here with us! If you have any question please ask here. We will be happy to help.";
-      let recipientList=['-L7jqFf8OuGlZrfEK6dT','QYm5NATKa6MGD87UpNZCTl6IolX2',teamObj.key];
-      let recipientNameList=['Admin','Nicolas',teamObj.name];
+      let key='-L7jqFf8OuGlZrfEK6dT';
+      let recipients={[key]:{name:'Admin'},QYm5NATKa6MGD87UpNZCTl6IolX2:{name:'Nicolas'},[teamObj.key]:{name:teamObj.name}};
       let recipientIndex='';
+      let recipientList=['-L7jqFf8OuGlZrfEK6dT','QYm5NATKa6MGD87UpNZCTl6IolX2',teamObj.key];
       recipientList=recipientList.sort();
       recipientList.forEach(recipient=>{
         recipientIndex=recipientIndex+recipient;
       });
-      return createMessageUtils.createMessageAFS ('-L7jqFf8OuGlZrfEK6dT',text,"","",recipientIndex,recipientList,recipientNameList);
+      return createMessageUtils.createMessageAFS ('-L7jqFf8OuGlZrfEK6dT',text,"","",recipientIndex,recipients,recipientList);
     });
   });
 });

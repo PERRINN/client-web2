@@ -2,6 +2,7 @@ import { Injectable }    from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { map } from 'rxjs/operators';
 import * as firebase from 'firebase/app';
 
 @Injectable()
@@ -18,13 +19,15 @@ export class userInterfaceService {
   currentUserTeamsObj: any;
   services: any;
   process: any;
+  recipients: any;
   recipientList: any;
-  recipientNameList: any;
+  recipientIndex: string;
 
   constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase, public afs: AngularFirestore,) {
     this.process = {};
+    this.recipients={};
     this.recipientList=[];
-    this.recipientNameList=[];
+    this.recipientIndex='';
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser=auth.uid;
@@ -59,21 +62,39 @@ export class userInterfaceService {
   }
 
   addRecipient(user){
-    if (!this.recipientList.includes(user)){
-      this.recipientList.push(user);
-      return this.afs.doc('PERRINNTeams/'+user).ref.get().then(snapshot=>{
-        this.recipientNameList.push(snapshot.data().name);
-      });
-    }
+    return this.afs.doc('PERRINNTeams/'+user).ref.get().then(snapshot=>{
+      this.recipients[user]=
+      {
+        name:snapshot.data().name,
+        familyName:snapshot.data().familyName,
+        imageUrlThumb:snapshot.data().imageUrlThumb
+      }
+    });
   }
 
-  recipientIndex(){
-    let recipientIndex='';
-    this.recipientList=this.recipientList.sort();
-    this.recipientList.forEach(recipient=>{
-      recipientIndex=recipientIndex+recipient;
+  clearRecipient(){
+    this.recipients={};
+  }
+
+  refreshRecipientList(){
+    let recipientArray=[];
+    Object.keys(this.recipients).forEach(key=>{
+      recipientArray.push(key);
     });
-    return recipientIndex;
+    this.recipientList=recipientArray;
+  }
+
+  refreshRecipientIndex(){
+    let index='';
+    let recipientArray=[];
+    Object.keys(this.recipients).forEach(key=>{
+      recipientArray.push(key);
+    });
+    recipientArray.sort();
+    recipientArray.forEach(recipient=>{
+      index=index+recipient;
+    });
+    this.recipientIndex=index;
   }
 
   createMessage(text, image, imageDownloadURL, linkTeamObj, linkUserObj) {
@@ -108,13 +129,14 @@ export class userInterfaceService {
 
   createMessageAFS(user, text, image, imageDownloadURL){
     const now = Date.now();
-    let recipientIndex=this.recipientIndex();
+    this.refreshRecipientIndex();
+    this.refreshRecipientList();
     this.afs.collection('PERRINNTeams').doc(user).collection('messages').add({
       timestamp: now,
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      recipientIndex:recipientIndex,
+      recipientIndex:this.recipientIndex,
+      recipients: this.recipients,
       recipientList: this.recipientList,
-      recipientNameList: this.recipientNameList,
       user: this.currentUser,
       name: this.currentUserObj.name,
       imageUrlThumbUser: this.currentUserObj.imageUrlThumb,
@@ -151,6 +173,13 @@ export class userInterfaceService {
     },{merge:true});
     this.db.object('subscribeTeamUsers/' + this.currentTeam).update({
       [this.currentUser]: true,
+    });
+  }
+
+  objectToArray(obj) {
+    if (obj == null) { return null; }
+    return Object.keys(obj).map(function(key) {
+      return [key, obj[key]];
     });
   }
 

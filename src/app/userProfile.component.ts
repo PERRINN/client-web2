@@ -12,7 +12,6 @@ import { userInterfaceService } from './userInterface.service';
   <div id='main_container'>
   <div style="max-width:800px;margin:0 auto">
     <img class='editButton' style="float:right;width:25px" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="this.router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
-    <div style="float:right;width:70px;height:24px;text-align:center;line-height:20px;font-size:20px;margin:5px;color:white;background-color:#267cb5;border-radius:5px;cursor:pointer">+</div>
   </div>
   <div class='sheet'>
   <div class="spinner" *ngIf="UI.loading">
@@ -50,12 +49,12 @@ import { userInterfaceService } from './userInterface.service';
   </ul>
   <ul class="listLight">
     <li *ngFor="let message of lastMessages|async;let last=last"
-      (click)="UI.recipientList=message.payload.doc.data()?.recipientList;UI.recipientNameList=message.payload.doc.data()?.recipientNameList;router.navigate(['chatFS',message.payload.doc.data()?.recipientIndex])">
+      (click)="UI.recipients=message.payload.doc.data()?.recipients;UI.recipientIndex=message.payload.doc.data()?.recipientIndex;router.navigate(['chatFS',message.payload.doc.data()?.recipientIndex])">
       <div style="float:left;height:50px;width:95px">
       </div>
       <div>
         <div style="float:left;margin-top:5px">
-          <span style="color:#222;font-size:16px" *ngFor="let recipient of message.payload.doc.data()?.recipientNameList;let last=last">{{recipient}}{{last?"":", "}}</span>
+          <span style="color:#222;font-size:16px" *ngFor="let recipient of objectToArray(message.payload.doc.data()?.recipients);let last=last">{{recipient[0]==UI.currentUser?'':recipient[1].name}}{{recipient[0]==UI.currentUser?'':last?"":", "}}</span>
         </div>
         <div *ngIf="(now-message.payload.doc.data()?.timestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{message.payload.doc.data()?.timestamp|date:'d MMM yyyy'}}</div>
         <div *ngIf="(now-message.payload.doc.data()?.timestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px">{{message.payload.doc.data()?.timestamp|date:'HH:mm'}}</div>

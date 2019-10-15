@@ -13,6 +13,7 @@ service cloud.firestore {
       allow read: if request.auth.uid != null;
     }
     match /PERRINNTeams/{team} {
+    allow create: if team == request.auth.uid;
     	match /viewTeams/{viewTeam} {
       	allow create,update: if isLeaderOrMember(request.auth.uid, team);
       }

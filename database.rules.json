@@ -24,7 +24,7 @@
     },
     "teamActivities": {
       "$teamid": {
-        ".write": "newData.exists() && auth.uid === $teamid"
+        ".write": "newData.exists()"
       }
     },
     "teamMessages": {
@@ -32,13 +32,13 @@
         ".indexOn": ["timestamp"],
         "$messageid": {
           "payload":{
-            ".write": "!data.exists() && auth.uid === $teamid",
+            ".write": "!data.exists()",
             "user": {
               ".validate": "newData.val()==auth.uid"
             }
           },
           "process":{
-            ".write":"!data.exists() && auth.uid === $teamid",
+            ".write":"!data.exists() && $teamid==auth.uid",
             "user":{
               ".validate": "newData.val()==auth.uid"
             }
@@ -49,19 +49,19 @@
     "teamPayments": {
       "$teamid": {
         "$chargeid": {
-          ".write": "!data.exists() && newData.exists() && auth.uid === $teamid"
+          ".write": "!data.exists() && newData.exists() && $teamid==auth.uid"
         }
       }
     },
     "teamReads": {
       "$teamid": {
-        ".write": "newData.exists() && auth.uid === $teamid"
+        ".write": "newData.exists()"
       }
     },
     "teams": {
       "$teamid": {
         "$entry": {
-          ".write": "!data.exists() && auth.uid === $teamid",
+          ".write": "!data.exists() && $teamid==auth.uid",
           "user": {
             ".validate": "newData.val()==auth.uid"
           }
