@@ -11,8 +11,8 @@ exports=module.exports=functions.firestore.document('/PERRINNTeams/{team}').onWr
   keys.forEach(key=>{
     if(teamUtils.isNewDataValid(key,beforeData,afterData))updateKeys.push(key);
   });
+  if(updateKeys==[])return null;
   return admin.database().ref('/subscribeTeamUsers/'+context.params.team).once('value').then(users=>{
-    let updateObj={};
     var batch = admin.firestore().batch();
     updateKeys.forEach(updateKey=>{
       var updateValue;
@@ -21,18 +21,13 @@ exports=module.exports=functions.firestore.document('/PERRINNTeams/{team}').onWr
       users.forEach(user=>{
         batch.update(admin.firestore().doc('PERRINNTeams/'+user.key+'/viewTeams/'+context.params.team),{[updateKey]:updateValue},{create:true});
       });
-      if(updateKey=='name') updateObj['PERRINNSearch/teams/'+context.params.team+'/name']=updateValue;
-      if(updateKey=='familyName') updateObj['PERRINNSearch/teams/'+context.params.team+'/familyName']=updateValue;
-      if(updateKey=='imageUrlThumb') updateObj['PERRINNSearch/teams/'+context.params.team+'/imageUrlThumb']=updateValue;
       if(updateKey=='name'||updateKey=='familyName') {
         var nameLowerCase="";
         if(afterData['name']!=undefined) nameLowerCase=afterData['name'].toLowerCase();
         if(afterData['familyName']!=undefined) nameLowerCase=nameLowerCase+' '+afterData['familyName'].toLowerCase();
-        updateObj['PERRINNSearch/teams/'+context.params.team+'/nameLowerCase']=nameLowerCase;
+        batch.update(admin.firestore().doc('PERRINNTeams/'+context.params.team),{searchName:nameLowerCase},{create:true});
       }
     });
-    return admin.database().ref().update(updateObj).then(()=>{
-      return batch.commit();
-    });
+    return batch.commit();
   });
 });

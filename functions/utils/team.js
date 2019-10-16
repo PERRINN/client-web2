@@ -19,6 +19,7 @@ module.exports = {
         batch.update(admin.firestore().doc('PERRINNTeams/'+parent),{children:{[team]:{name:name}}},{create:true});
         batch.update(admin.firestore().doc('PERRINNTeams/'+parent),{childrenCount:1},{create:true});
       }
+      if(team==user)batch.update(admin.firestore().doc('PERRINNTeams/'+team),{isUser:true},{create:true});
       batch.update(admin.firestore().doc('PERRINNTeams/'+user+'/viewTeams/'+team),{lastChatVisitTimestamp:now},{create:true});
       batch.update(admin.firestore().doc('PERRINNTeams/'+user+'/viewTeams/'+team),{name:name},{create:true});
       return batch.commit().then(()=>{

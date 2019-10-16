@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 
 @Component({
   selector: 'search',
@@ -20,7 +21,7 @@ import { userInterfaceService } from './userInterface.service';
       <span>{{team.values?.name}}</span>
       <span style="font-size:10px"> {{team.values?.familyName}}</span>
       </div>
-      <div class="buttonDiv" style="float:left;font-size:11px;color:#267cb5" (click)="chatWithUser(team.key)">Chat</div>
+      <div class="buttonDiv" style="float:left;font-size:11px;color:#267cb5" (click)="chatWithUser(team.key)">New chat</div>
       <div class="buttonDiv" style="float:left;font-size:11px;background-color:#267cb5;color:white" (click)="addUserToChat(team.key)">Add to chat</div>
     </li>
   </ul>
@@ -36,7 +37,12 @@ export class SearchComponent  {
   teams: Observable<any[]>;
   searchFilter: string;
 
-  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+  constructor(
+    public db: AngularFireDatabase,
+    public afs: AngularFirestore,
+    public router: Router,
+    public UI: userInterfaceService
+  ) {
   }
 
   ngOnInit() {
@@ -47,15 +53,16 @@ export class SearchComponent  {
   refreshSearchLists() {
     if (this.searchFilter) {
       if (this.searchFilter.length > 1) {
-        this.teams = this.db.list('PERRINNSearch/teams', ref => ref
-        .orderByChild('nameLowerCase')
-        .startAt(this.searchFilter.toLowerCase())
-        .endAt(this.searchFilter.toLowerCase() + '\uf8ff')
-        .limitToFirst(10))
+        this.teams = this.afs.collection('PERRINNTeams', ref => ref
+        .where('isUser','==',true)
+        .where('searchName','>=',this.searchFilter.toLowerCase())
+        .where('searchName','<=',this.searchFilter.toLowerCase()+'\uf8ff')
+        .orderBy('searchName')
+        .limit(10))
         .snapshotChanges().pipe(map(changes => {
           return changes.map(c => ({
-            key: c.payload.key,
-            values: c.payload.val(),
+            key: c.payload.doc.id,
+            values: c.payload.doc.data(),
           }));
         }));
       }
