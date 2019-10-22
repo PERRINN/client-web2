@@ -17,6 +17,9 @@ service cloud.firestore {
     	match /viewTeams/{viewTeam} {
       	allow create,update: if isLeaderOrMember(request.auth.uid, team);
       }
+      match /lastVisits/{recipientIndex} {
+      	allow write: if team == request.auth.uid;
+      }
       match /messages/{messageID} {
         allow create: if team == request.auth.uid
                         && request.resource.data.user==request.auth.uid

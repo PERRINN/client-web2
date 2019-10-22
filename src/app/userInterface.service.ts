@@ -17,13 +17,18 @@ export class userInterfaceService {
   currentUser: string;
   currentUserObj: any;
   currentUserTeamsObj: any;
-  services: any;
   process: any;
   recipients: any;
   recipientList: any;
   recipientIndex: string;
+  lastVisitsArray: any[];
 
-  constructor(private afAuth: AngularFireAuth, public db: AngularFireDatabase, public afs: AngularFirestore,) {
+  constructor(
+    private afAuth: AngularFireAuth,
+    public db: AngularFireDatabase,
+    public afs: AngularFirestore
+  ) {
+    this.lastVisitsArray=[];
     this.process = {};
     this.recipients={};
     this.recipientList=[];
@@ -33,6 +38,11 @@ export class userInterfaceService {
         this.currentUser=auth.uid;
         afs.doc<any>('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserObj = snapshot;
+        });
+        afs.collection<any>('PERRINNTeams/'+this.currentUser+'/lastVisits/',ref=>ref.limit(30)).valueChanges({idField:'id'}).subscribe(snapshot=>{
+          snapshot.forEach(visit=>{
+            this.lastVisitsArray[visit.id]=visit;
+          });
         });
         this.addRecipient(this.currentUser);
         afs.collection<any>('PERRINNTeams/'+this.currentUser+'/viewTeams/').valueChanges().subscribe(snapshot=>{
@@ -50,9 +60,6 @@ export class userInterfaceService {
           });
         });
         if (this.focusUser == null) { this.focusUser = auth.uid; }
-        this.db.database.ref('appSettings/PERRINNServices/').once('value').then(services => {
-          this.services = services;
-        });
       } else {
         this.currentUser=null;
         this.focusUser=null;
@@ -164,15 +171,10 @@ export class userInterfaceService {
   }
 
   timestampChatVisit() {
-    if (this.currentTeamObjKey != this.currentTeam) {return; }
     const now = Date.now();
-    this.afs.doc<any>('PERRINNTeams/'+this.currentUser+/viewTeams/+this.currentTeam).set({
-      lastChatVisitTimestamp: now,
-      name: this.currentTeamObj.name,
-      imageUrlThumb: this.currentTeamObj.imageUrlThumb ? this.currentTeamObj.imageUrlThumb : '',
-    },{merge:true});
-    this.db.object('subscribeTeamUsers/' + this.currentTeam).update({
-      [this.currentUser]: true,
+    this.afs.doc<any>('PERRINNTeams/'+this.currentUser+/lastVisits/+this.recipientIndex).set({
+      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      timestamp:now
     });
   }
 

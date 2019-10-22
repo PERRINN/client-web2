@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -38,7 +37,6 @@ export class SearchComponent  {
   searchFilter: string;
 
   constructor(
-    public db: AngularFireDatabase,
     public afs: AngularFirestore,
     public router: Router,
     public UI: userInterfaceService

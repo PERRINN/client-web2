@@ -23,7 +23,7 @@ import * as firebase from 'firebase/app';
   </div>
   <div>
   <ul style="list-style:none;">
-    <li *ngFor="let message of teamMessagesFS|async;let first=first;let last=last;let i=index">
+    <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
       <div *ngIf="i<messageNumberDisplay" style="cursor:pointer" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''" (click)="UI.timestampChatVisit()">
       <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:50px 15px 15px 15px">
         <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:7px">{{message.payload?.timestamp|date:'fullDate'}}</div>
@@ -190,7 +190,7 @@ export class ChatFSComponent {
   isCurrentUserLeader: boolean;
   isCurrentUserMember: boolean;
   showDetails: {};
-  teamMessagesFS: Observable<any[]>;
+  messages: Observable<any[]>;
 
   constructor(
     public db: AngularFireDatabase,
@@ -214,7 +214,7 @@ export class ChatFSComponent {
       this.messageNumberDisplay = 15;
 
       this.UI.refreshRecipientIndex();
-      this.teamMessagesFS=afs.collectionGroup('messages',ref=>ref
+      this.messages=afs.collectionGroup('messages',ref=>ref
         .where('recipientIndex','==',this.UI.recipientIndex)
         .orderBy('serverTimestamp','desc')
         .limit(this.messageNumberDisplay)
@@ -229,7 +229,7 @@ export class ChatFSComponent {
     if (e === 'top') {
       this.UI.loading = true;
       this.messageNumberDisplay += 15;
-      return this.teamMessagesFS=this.afs.collectionGroup('messages',ref=>ref
+      return this.messages=this.afs.collectionGroup('messages',ref=>ref
         .where('recipientIndex','==',this.UI.recipientIndex)
         .orderBy('timestamp','desc')
         .limit(this.messageNumberDisplay)
