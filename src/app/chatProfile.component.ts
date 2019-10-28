@@ -28,7 +28,14 @@ import * as firebase from 'firebase/app';
 })
 export class ChatProfileComponent  {
 
-  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService, private route: ActivatedRoute,private storage: AngularFireStorage, public afs: AngularFirestore) {
+  constructor(
+    public db: AngularFireDatabase,
+    public router: Router,
+    public UI: userInterfaceService,
+    private route: ActivatedRoute,
+    private storage: AngularFireStorage,
+    public afs: AngularFirestore
+  ) {
     this.route.params.subscribe(params => {
       this.UI.currentTeam = params.id;
     });

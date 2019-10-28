@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
+import { AngularFireStorage } from '@angular/fire/storage';
 
 @Component({
   selector: 'userSettings',
@@ -29,7 +30,11 @@ import { userInterfaceService } from './userInterface.service';
 })
 export class UserSettingsComponent {
 
-  constructor(public afAuth: AngularFireAuth, public router: Router, public UI: userInterfaceService) {
+  constructor(public afAuth: AngularFireAuth,
+    public router: Router,
+    private storage: AngularFireStorage,
+    public UI: userInterfaceService
+  ) {
   }
 
   logout() {

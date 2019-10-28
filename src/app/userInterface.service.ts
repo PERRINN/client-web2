@@ -21,6 +21,7 @@ export class userInterfaceService {
   recipients: any;
   recipientList: any;
   recipientIndex: string;
+  chatSubject: string;
   lastVisitsArray: any[];
 
   constructor(
