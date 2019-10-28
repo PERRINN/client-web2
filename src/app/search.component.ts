@@ -73,14 +73,14 @@ export class SearchComponent  {
     this.UI.clearRecipient();
     return this.UI.addRecipient(this.UI.currentUser).then(()=>{
       return this.UI.addRecipient(user).then(()=>{
-        this.router.navigate(['chatFS',this.UI.currentUser]);
+        this.router.navigate(['chat',this.UI.currentUser]);
       });
     });
   }
 
   addUserToChat(user){
       return this.UI.addRecipient(user).then(()=>{
-        this.router.navigate(['chatFS',this.UI.currentUser]);
+        this.router.navigate(['chat',this.UI.currentUser]);
       });
   }
 

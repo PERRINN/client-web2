@@ -14,9 +14,6 @@ service cloud.firestore {
     }
     match /PERRINNTeams/{team} {
     allow create: if team == request.auth.uid;
-    	match /viewTeams/{viewTeam} {
-      	allow create,update: if isLeaderOrMember(request.auth.uid, team);
-      }
       match /lastVisits/{recipientIndex} {
       	allow write: if team == request.auth.uid;
       }

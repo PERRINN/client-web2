@@ -45,20 +45,6 @@ export class userInterfaceService {
           });
         });
         this.addRecipient(this.currentUser);
-        afs.collection<any>('PERRINNTeams/'+this.currentUser+'/viewTeams/').valueChanges().subscribe(snapshot=>{
-          this.currentUserTeamsObj = snapshot;
-          this.globalChatActivity = false;
-          snapshot.forEach(userTeam => {
-            let chatActivity:boolean=false;
-            if(userTeam.lastChatVisitTimestamp!=undefined)chatActivity=(userTeam.lastMessageTimestamp>userTeam.lastChatVisitTimestamp);
-            else if(userTeam.lastMessageTimestamp!=undefined)chatActivity=true;
-            else chatActivity=false;
-            if (chatActivity) {
-              this.globalChatActivity = true;
-            }
-            document.title = this.globalChatActivity ? '(!) PERRINN' : 'PERRINN';
-          });
-        });
         if (this.focusUser == null) { this.focusUser = auth.uid; }
       } else {
         this.currentUser=null;

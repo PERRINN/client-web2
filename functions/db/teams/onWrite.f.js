@@ -12,22 +12,17 @@ exports=module.exports=functions.firestore.document('/PERRINNTeams/{team}').onWr
     if(teamUtils.isNewDataValid(key,beforeData,afterData))updateKeys.push(key);
   });
   if(updateKeys==[])return null;
-  return admin.database().ref('/subscribeTeamUsers/'+context.params.team).once('value').then(users=>{
-    var batch = admin.firestore().batch();
-    updateKeys.forEach(updateKey=>{
-      var updateValue;
-      if (afterData[updateKey]==undefined) updateValue=null;
-      else updateValue=afterData[updateKey];
-      users.forEach(user=>{
-        batch.update(admin.firestore().doc('PERRINNTeams/'+user.key+'/viewTeams/'+context.params.team),{[updateKey]:updateValue},{create:true});
-      });
-      if(updateKey=='name'||updateKey=='familyName') {
-        var nameLowerCase="";
-        if(afterData['name']!=undefined) nameLowerCase=afterData['name'].toLowerCase();
-        if(afterData['familyName']!=undefined) nameLowerCase=nameLowerCase+' '+afterData['familyName'].toLowerCase();
-        batch.update(admin.firestore().doc('PERRINNTeams/'+context.params.team),{searchName:nameLowerCase},{create:true});
-      }
-    });
-    return batch.commit();
+  var batch = admin.firestore().batch();
+  updateKeys.forEach(updateKey=>{
+    var updateValue;
+    if (afterData[updateKey]==undefined) updateValue=null;
+    else updateValue=afterData[updateKey];
+    if(updateKey=='name'||updateKey=='familyName') {
+      var nameLowerCase="";
+      if(afterData['name']!=undefined) nameLowerCase=afterData['name'].toLowerCase();
+      if(afterData['familyName']!=undefined) nameLowerCase=nameLowerCase+' '+afterData['familyName'].toLowerCase();
+      batch.update(admin.firestore().doc('PERRINNTeams/'+context.params.team),{searchName:nameLowerCase},{create:true});
+    }
   });
+  return batch.commit();
 });
