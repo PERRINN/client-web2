@@ -14,6 +14,7 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{team}').onCre
     }).then(()=>{
       let text="Welcome to PERRINN, we are happy to have you here with us! If you have any question please ask here. We will be happy to help.";
       let key='-L7jqFf8OuGlZrfEK6dT';
+      let chatSubject='Welcome to PERRINN';
       let recipients={[key]:{name:'Admin'},QYm5NATKa6MGD87UpNZCTl6IolX2:{name:'Nicolas'},[teamObj.key]:{name:teamObj.name}};
       let recipientIndex='';
       let recipientList=['-L7jqFf8OuGlZrfEK6dT','QYm5NATKa6MGD87UpNZCTl6IolX2',teamObj.key];
@@ -21,7 +22,7 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{team}').onCre
       recipientList.forEach(recipient=>{
         recipientIndex=recipientIndex+recipient;
       });
-      return createMessageUtils.createMessageAFS ('-L7jqFf8OuGlZrfEK6dT',text,"","",recipientIndex,recipients,recipientList);
+      return createMessageUtils.createMessageAFS ('-L7jqFf8OuGlZrfEK6dT',text,"","",chatSubject,recipientIndex,recipients,recipientList);
     });
   });
 });

@@ -33,12 +33,13 @@ module.exports = {
     });
   },
 
-  createMessageAFS:(user,text,image,imageDownloadURL,recipientIndex,recipients, recipientList)=>{
+  createMessageAFS:(user,text,image,imageDownloadURL,chatSubject,recipientIndex,recipients, recipientList)=>{
     const now = Date.now();
     return admin.firestore().doc('PERRINNTeams/'+user).get().then(userData=>{
       return admin.firestore().collection('PERRINNTeams').doc(user).collection('messages').add({
         timestamp:now,
         serverTimestamp: admin.firestore.FieldValue.serverTimestamp(),
+        chatSubject:chatSubject,
         recipientIndex:recipientIndex,
         recipients:recipients,
         recipientList:recipientList,

@@ -20,7 +20,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
       <span>{{team.values?.name}}</span>
       <span style="font-size:10px"> {{team.values?.familyName}}</span>
       </div>
-      <div class="buttonDiv" style="float:left;font-size:11px;color:#267cb5" (click)="chatWithUser(team.key)">New chat</div>
+      <div class="buttonDiv" style="float:left;font-size:11px;color:#267cb5" (click)="newChatWithUser(team.key)">New chat</div>
       <div class="buttonDiv" style="float:left;font-size:11px;background-color:#267cb5;color:white" (click)="addUserToChat(team.key)">Add to chat</div>
     </li>
   </ul>
@@ -69,8 +69,9 @@ export class SearchComponent  {
     }
   }
 
-  chatWithUser(user){
+  newChatWithUser(user){
     this.UI.clearRecipient();
+    this.UI.chatSubject='';
     return this.UI.addRecipient(this.UI.currentUser).then(()=>{
       return this.UI.addRecipient(user).then(()=>{
         this.router.navigate(['chat',this.UI.currentUser]);

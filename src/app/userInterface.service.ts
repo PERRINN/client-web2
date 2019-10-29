@@ -29,6 +29,7 @@ export class userInterfaceService {
     public db: AngularFireDatabase,
     public afs: AngularFirestore
   ) {
+    this.chatSubject='';
     this.lastVisitsArray=[];
     this.process = {};
     this.recipients={};
@@ -80,6 +81,8 @@ export class userInterfaceService {
 
   refreshRecipientIndex(){
     let index='';
+    let chatSubject='';
+    if(this.chatSubject!=undefined)chatSubject=this.chatSubject.replace(/\s+/g,'');
     let recipientArray=[];
     Object.keys(this.recipients).forEach(key=>{
       recipientArray.push(key);
@@ -88,7 +91,7 @@ export class userInterfaceService {
     recipientArray.forEach(recipient=>{
       index=index+recipient;
     });
-    this.recipientIndex=index;
+    this.recipientIndex=chatSubject+index;
   }
 
   createMessage(text, image, imageDownloadURL, linkTeamObj, linkUserObj) {
@@ -122,12 +125,19 @@ export class userInterfaceService {
   }
 
   createMessageAFS(user, text, image, imageDownloadURL){
+    text = text.replace(/(\r\n|\n|\r)/gm, '');
     const now = Date.now();
     this.refreshRecipientIndex();
     this.refreshRecipientList();
+    this.recipients[this.currentUser]={
+      name:this.currentUserObj.name,
+      familyName:this.currentUserObj.familyName,
+      imageUrlThumb:this.currentUserObj.imageUrlThumb
+    };
     this.afs.collection('PERRINNTeams').doc(user).collection('messages').add({
       timestamp: now,
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      chatSubject:this.chatSubject,
       recipientIndex:this.recipientIndex,
       recipients: this.recipients,
       recipientList: this.recipientList,

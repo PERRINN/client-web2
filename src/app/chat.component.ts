@@ -13,7 +13,8 @@ import * as firebase from 'firebase/app';
   template: `
   <div id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
   <div class="sheet" style="background-color:#eaeaea;cursor:pointer">
-  <div style="position:fixed;background:#f2f2f2;width:800px;height:35px;color:#444;font-size:12px;padding:10px" (click)="router.navigate(['chatProfile',''])">
+  <div style="position:fixed;background:#f2f2f2;width:800px;color:#444;font-size:12px;padding:5px 10px 5px 10px" (click)="router.navigate(['chatProfile',''])">
+    <div style="font-weight:bold">{{UI.chatSubject}}</div>
     <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1].name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
   </div>
   <div class="spinner" *ngIf="UI.loading">
@@ -25,7 +26,7 @@ import * as firebase from 'firebase/app';
   <ul style="list-style:none;">
     <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
       <div *ngIf="i<messageNumberDisplay" style="cursor:pointer" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''" (click)="UI.timestampChatVisit()">
-      <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:50px 15px 15px 15px">
+      <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:70px 15px 15px 15px">
         <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:7px">{{message.payload?.timestamp|date:'fullDate'}}</div>
       </div>
       <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
