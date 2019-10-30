@@ -81,7 +81,12 @@ export class BuyCoinsComponent {
   enteringCardDetails: boolean;
   processingPayment: boolean;
 
-  constructor(public db: AngularFireDatabase, public router: Router, private _zone: NgZone, public UI: userInterfaceService) {
+  constructor(
+    public db: AngularFireDatabase,
+    public router: Router,
+    private _zone: NgZone,
+    public UI: userInterfaceService
+  ) {
     this.enteringAmount = true;
     this.enteringCardDetails = false;
     this.processingPayment = false;

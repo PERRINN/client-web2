@@ -74,6 +74,7 @@ export class SearchComponent  {
     this.UI.chatSubject='';
     return this.UI.addRecipient(this.UI.currentUser).then(()=>{
       return this.UI.addRecipient(user).then(()=>{
+        this.UI.refreshRecipientIndex();
         this.router.navigate(['chat',this.UI.currentUser]);
       });
     });
@@ -81,6 +82,7 @@ export class SearchComponent  {
 
   addUserToChat(user){
       return this.UI.addRecipient(user).then(()=>{
+        this.UI.refreshRecipientIndex();
         this.router.navigate(['chat',this.UI.currentUser]);
       });
   }

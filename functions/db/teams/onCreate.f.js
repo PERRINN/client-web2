@@ -18,10 +18,12 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{team}').onCre
       let recipients={[key]:{name:'Admin'},QYm5NATKa6MGD87UpNZCTl6IolX2:{name:'Nicolas'},[teamObj.key]:{name:teamObj.name}};
       let recipientIndex='';
       let recipientList=['-L7jqFf8OuGlZrfEK6dT','QYm5NATKa6MGD87UpNZCTl6IolX2',teamObj.key];
+      let chatSubjectIndex=chatSubject.replace(/\s+/g,'');
       recipientList=recipientList.sort();
       recipientList.forEach(recipient=>{
         recipientIndex=recipientIndex+recipient;
       });
+      recipientIndex=chatSubjectIndex+recipientIndex;
       return createMessageUtils.createMessageAFS ('-L7jqFf8OuGlZrfEK6dT',text,"","",chatSubject,recipientIndex,recipients,recipientList);
     });
   });

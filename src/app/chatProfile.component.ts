@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -35,7 +34,6 @@ export class ChatProfileComponent  {
   editing: boolean;
 
   constructor(
-    public db: AngularFireDatabase,
     public router: Router,
     public UI: userInterfaceService,
     private route: ActivatedRoute,

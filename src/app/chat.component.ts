@@ -214,7 +214,6 @@ export class ChatComponent {
       this.draftMessage = '';
       this.messageNumberDisplay = 15;
 
-      this.UI.refreshRecipientIndex();
       this.messages=afs.collectionGroup('messages',ref=>ref
         .where('recipientIndex','==',this.UI.recipientIndex)
         .orderBy('serverTimestamp','desc')

@@ -38,17 +38,15 @@ import { userInterfaceService } from './userInterface.service';
       <div style="float:left;height:50px;width:95px">
       </div>
       <div>
-        <div style="float:left;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}}</div>
+        <div style="float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
         <div *ngIf="(now-message.payload.doc.data()?.timestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{message.payload.doc.data()?.timestamp|date:'d MMM yyyy'}}</div>
         <div *ngIf="(now-message.payload.doc.data()?.timestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{message.payload.doc.data()?.timestamp|date:'HH:mm'}}</div>
         <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="isActivity(message.payload.doc.data()?.timestamp,UI.lastVisitsArray[message.payload.doc.data()?.recipientIndex]?.serverTimestamp)"></div>
-        <div style="clear:left;float:left">
-          <span style="color:#222;font-size:14px" *ngFor="let recipient of objectToArray(message.payload.doc.data()?.recipients);let last=last">{{recipient[0]==UI.currentUser?'':recipient[1].name}}{{recipient[0]==UI.currentUser?'':last?"":", "}}</span>
+        <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
+        <div style="float:left">
+          <span style="color:#666;font-size:12px" *ngFor="let recipient of objectToArray(message.payload.doc.data()?.recipients);let last=last">{{recipient[0]==UI.currentUser?'':recipient[1].name}}{{recipient[0]==UI.currentUser?'':last?"":", "}}</span>
         </div>
-        <div style="clear:both">
-          <span style="color:#999" *ngFor="let member of objectToArray(message.payload.doc.data()?.members);let last=last">{{member[1]?.name}}{{last?"":", "}}</span>
-        </div>
-        <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.name}}: {{message.payload.doc.data()?.text}}</div>
+        <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}</div>
       </div>
       <div class="seperator" style="margin-left:100px"></div>
       {{last?scrollToTop(message.key):''}}
