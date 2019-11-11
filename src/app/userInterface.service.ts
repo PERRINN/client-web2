@@ -23,12 +23,14 @@ export class userInterfaceService {
   recipientIndex: string;
   chatSubject: string;
   lastVisitsArray: any[];
+  showChatDetails: boolean;
 
   constructor(
     private afAuth: AngularFireAuth,
     public db: AngularFireDatabase,
     public afs: AngularFirestore
   ) {
+    this.showChatDetails=false;
     this.chatSubject='';
     this.lastVisitsArray=[];
     this.process = {};
@@ -41,7 +43,7 @@ export class userInterfaceService {
         afs.doc<any>('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserObj = snapshot;
         });
-        afs.collection<any>('PERRINNTeams/'+this.currentUser+'/lastVisits/',ref=>ref.limit(30)).valueChanges({idField:'id'}).subscribe(snapshot=>{
+        afs.collection<any>('PERRINNTeams/'+this.currentUser+'/lastVisits/',ref=>ref.limit(200)).valueChanges({idField:'id'}).subscribe(snapshot=>{
           snapshot.forEach(visit=>{
             this.lastVisitsArray[visit.id]=visit;
           });
@@ -64,6 +66,8 @@ export class userInterfaceService {
         familyName:snapshot.data().familyName,
         imageUrlThumb:snapshot.data().imageUrlThumb
       }
+      this.refreshRecipientList();
+      this.refreshRecipientIndex();
     });
   }
 

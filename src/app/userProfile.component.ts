@@ -9,11 +9,10 @@ import { userInterfaceService } from './userInterface.service';
   selector: 'user',
   template: `
   <div id='main_container'>
-  <div style="max-width:800px;margin:0 auto">
-    <img class='editButton' style="float:right;width:25px" [hidden]='!(UI.currentUser==UI.focusUser)' (click)="this.router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
-  </div>
   <div class='sheet'>
-  <div style="background-color:#f4f7fc">
+  <img class='editButton' *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:25px;margin:10px" (click)="router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
+  <div *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:100px;height:24px;text-align:center;line-height:24px;font-size:12px;margin:10px;color:white;background-color:#267cb5;border-radius:5px;cursor:pointer" (click)="this.UI.clearRecipient();this.UI.chatSubject='';UI.addRecipient(this.UI.currentUser);UI.showChatDetails=true;router.navigate(['chat',''])">New message</div>
+  <div style="clear:both;background-color:#f4f7fc">
     <div style="float:left">
       <img [src]="UI.focusUserObj?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:75px;width:75px;border-radius:50px">
     </div>
@@ -34,8 +33,9 @@ import { userInterfaceService } from './userInterface.service';
   </div>
   <ul class="listLight">
     <li *ngFor="let message of lastMessages|async;let last=last"
-      (click)="UI.chatSubject=message.payload.doc.data()?.chatSubject;UI.recipients=message.payload.doc.data()?.recipients;UI.recipientIndex=message.payload.doc.data()?.recipientIndex;router.navigate(['chat',message.payload.doc.data()?.recipientIndex])">
-      <div style="float:left;height:50px;width:95px">
+      (click)="UI.chatSubject=message.payload.doc.data()?.chatSubject;UI.recipients=message.payload.doc.data()?.recipients;UI.recipientIndex=message.payload.doc.data()?.recipientIndex;UI.showChatDetails=false;router.navigate(['chat',message.payload.doc.data()?.recipientIndex])">
+      <div style="float:left">
+        <img [src]="message.payload.doc.data()?.imageUrlThumbUser" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:40px;border-radius:20px">
       </div>
       <div>
         <div style="float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
@@ -48,7 +48,7 @@ import { userInterfaceService } from './userInterface.service';
         </div>
         <div style="clear:both;white-space:nowrap;width:60%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}</div>
       </div>
-      <div class="seperator" style="margin-left:100px"></div>
+      <div class="seperator" style="margin-left:60px"></div>
       {{last?scrollToTop(message.key):''}}
     </li>
   </ul>

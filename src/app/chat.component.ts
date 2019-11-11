@@ -11,9 +11,40 @@ import * as firebase from 'firebase/app';
 @Component({
   selector: 'chat',
   template: `
-  <div id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
-  <div class="sheet" style="background-color:#eaeaea;cursor:pointer">
-  <div style="position:fixed;background:#f2f2f2;width:800px;color:#444;font-size:12px;padding:5px 10px 5px 10px" (click)="router.navigate(['chatProfile',''])">
+
+  <div *ngIf="UI.showChatDetails" id='main_container'>
+  <div class="sheet" style="background:#eee">
+    <div (click)="refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">messages</div>
+    <div *ngIf="!editing" style="font-size:18px;line-height:30px;margin:10px;font-family:sans-serif;">{{UI.chatSubject?UI.chatSubject:'no subject'}}</div>
+    <input *ngIf="editing" [(ngModel)]="chatSubject">
+    <div *ngIf="!editing" (click)="editing=!editing" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:white;background-color:#4287f5;border-radius:3px;cursor:pointer">Edit subject</div>
+    <div *ngIf="editing" (click)="UI.chatSubject=chatSubject;UI.refreshRecipientIndex();editing=!editing" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply</div>
+    <ul style="color:#333;border-style:solid;border-width:1px;background-color:white;margin:10px;border-radius:10px">
+      <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['user',recipient[0]])" style="cursor:pointer;float:left">
+        <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:20px;width:20px;border-radius:3px;margin:3px 3px 3px 10px">
+        <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
+      </li>
+      <input id="searchInput" style="border:none" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="add recipient">
+    </ul>
+    <ul class="listLight">
+      <li *ngFor="let team of teams | async" >
+        <div *ngIf="!UI.recipients[team.key]" style="padding:5px">
+          <div style="float:left;width:175px">
+            <img [src]="team?.values.imageUrlThumb" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+            <span>{{team.values?.name}}</span>
+            <span style="font-size:10px"> {{team.values?.familyName}}</span>
+          </div>
+          <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white" (click)="UI.addRecipient(team.key)">Add</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+  </div>
+
+
+  <div *ngIf="!UI.showChatDetails" id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
+  <div class="sheet" style="background-color:#eaeaea">
+  <div class="sheet" style="position:fixed;background:#fcfcfc;width:100%;color:#444;font-size:12px;padding:5px 10px 5px 10px;cursor:pointer" (click)="UI.showChatDetails=true">
     <div style="font-weight:bold">{{UI.chatSubject}}</div>
     <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1].name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
   </div>
@@ -155,6 +186,7 @@ import * as firebase from 'firebase/app';
   </ul>
   <div style="height:125px;width:100%"></div>
   </div>
+
   <div class="sheet" style="position:fixed;bottom:0;width:100%;background-color:#f2f2f2">
     <div>
       <ul style="list-style:none;float:left;">
@@ -165,7 +197,10 @@ import * as firebase from 'firebase/app';
       <div style="clear:both;float:left;width:90%">
         <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
       </div>
-      <div style="float:right;width:10%">
+      <div *ngIf="draftMessage" style="float:right;width:10%">
+        <img src="./../assets/App icons/send.png" style="width:25px;margin:20px 5px 5px 5px" (click)="addMessage()">
+      </div>
+      <div *ngIf="!draftMessage" style="float:right;width:10%">
         <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
         <label class="buttonUploadImage" for="chatImage" id="buttonFile">
         <img src="./../assets/App icons/camera.png" style="width:25px;margin:20px 5px 5px 5px">
@@ -175,7 +210,7 @@ import * as firebase from 'firebase/app';
   </div>
   </div>
   </div>
-    `,
+    `
 })
 export class ChatComponent {
   draftMessage: string;
@@ -192,6 +227,10 @@ export class ChatComponent {
   isCurrentUserMember: boolean;
   showDetails: {};
   messages: Observable<any[]>;
+  chatSubject: string;
+  editing: boolean;
+  teams: Observable<any[]>;
+  searchFilter: string;
 
   constructor(
     public db: AngularFireDatabase,
@@ -202,6 +241,8 @@ export class ChatComponent {
     private storage: AngularFireStorage,
   ) {
     this.UI.loading = true;
+    this.chatSubject=this.UI.chatSubject;
+    this.editing=false;
     this.route.params.subscribe(params => {
       this.isCurrentUserLeader = false;
       this.isCurrentUserMember = false;
@@ -214,15 +255,13 @@ export class ChatComponent {
       this.draftMessage = '';
       this.messageNumberDisplay = 15;
 
-      this.messages=afs.collectionGroup('messages',ref=>ref
-        .where('recipientIndex','==',this.UI.recipientIndex)
-        .orderBy('serverTimestamp','desc')
-        .limit(this.messageNumberDisplay)
-      ).snapshotChanges().pipe(map(changes => {
-        this.UI.loading = false;
-        return changes.reverse().map(c => ({payload: c.payload.doc.data()}));
-      }));
+      this.refreshMessages();
+
     });
+  }
+
+  ngOnInit() {
+    this.refreshSearchLists();
   }
 
   scrollHandler(e: string) {
@@ -238,6 +277,17 @@ export class ChatComponent {
         return changes.reverse().map(c => ({payload: c.payload.doc.data()}));
       }));
     }
+  }
+
+  refreshMessages() {
+    this.messages=this.afs.collectionGroup('messages',ref=>ref
+      .where('recipientIndex','==',this.UI.recipientIndex)
+      .orderBy('serverTimestamp','desc')
+      .limit(this.messageNumberDisplay)
+    ).snapshotChanges().pipe(map(changes => {
+      this.UI.loading = false;
+      return changes.reverse().map(c => ({payload: c.payload.doc.data()}));
+    }));
   }
 
   switchShowDetails(message) {
@@ -287,6 +337,7 @@ export class ChatComponent {
     this.UI.createMessageAFS(this.UI.currentUser, this.draftMessage, this.draftImage, this.draftImageDownloadURL);
     this.draftMessage = '';
     this.draftImage = '';
+    this.UI.showChatDetails=false;
   }
 
   updateDraftMessageDB() {
@@ -338,5 +389,27 @@ export class ChatComponent {
       return [key, obj[key]];
     });
   }
+
+  refreshSearchLists() {
+    if (this.searchFilter) {
+      if (this.searchFilter.length > 1) {
+        this.teams = this.afs.collection('PERRINNTeams', ref => ref
+        .where('isUser','==',true)
+        .where('searchName','>=',this.searchFilter.toLowerCase())
+        .where('searchName','<=',this.searchFilter.toLowerCase()+'\uf8ff')
+        .orderBy('searchName')
+        .limit(10))
+        .snapshotChanges().pipe(map(changes => {
+          return changes.map(c => ({
+            key: c.payload.doc.id,
+            values: c.payload.doc.data(),
+          }));
+        }));
+      }
+    } else {
+      this.teams = null;
+    }
+  }
+
 
 }
