@@ -10,6 +10,7 @@ import { userInterfaceService } from './userInterface.service';
   template: `
   <div id='main_container'>
   <div class='sheet'>
+  <div style="float:left;width:100px;height:24px;text-align:center;line-height:24px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:5px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/home', '_blank');">Discover PERRINN</div>
   <img class='editButton' *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:25px;margin:10px" (click)="router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
   <div *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:100px;height:24px;text-align:center;line-height:24px;font-size:12px;margin:10px;color:white;background-color:#267cb5;border-radius:5px;cursor:pointer" (click)="this.UI.clearRecipient();this.UI.chatSubject='';UI.addRecipient(this.UI.currentUser);UI.showChatDetails=true;router.navigate(['chat',''])">New message</div>
   <div style="clear:both;background-color:#f4f7fc">
@@ -24,6 +25,8 @@ import { userInterfaceService } from './userInterface.service';
       <div style="clear:both;float:left;font-size:10px;color:#999">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Messages</div>
       <div style="clear:both;float:left;font-size:15px;color:#999">C{{UI.focusUserObj?.lastMessageBalance?UI.focusUserObj?.lastMessageBalance:0|number:'1.2-2'}}</div>
     </div>
+    <img src="./../assets/App icons/driveLogo.png" style="float:left;width:25px;margin:10px;cursor:pointer">
+    <img src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px;cursor:pointer">
     <div class="seperator" style="margin-left:100px"></div>
   </div>
   <div class="spinner" *ngIf="UI.loading">
@@ -54,6 +57,7 @@ import { userInterfaceService } from './userInterface.service';
   </ul>
   </div>
   </div>
+
   `,
 })
 export class UserProfileComponent {
@@ -104,7 +108,7 @@ export class UserProfileComponent {
   isActivity(lastMessageTimestamp,lastChatVisitTimestamp){
     if(lastMessageTimestamp==undefined)return false;
     else if(lastChatVisitTimestamp==undefined)return true;
-    else return lastMessageTimestamp>lastChatVisitTimestamp;
+    else return lastMessageTimestamp>(lastChatVisitTimestamp.seconds*1000+lastChatVisitTimestamp.nanoseconds/1000000);
   }
 
   objectToArray(obj) {

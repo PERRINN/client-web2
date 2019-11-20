@@ -15,7 +15,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
   <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
     <li *ngFor="let team of teams | async" style="padding:5px">
-      <div style="float:left;width:175px" (click)="router.navigate(['chat',team.key])">
+      <div style="float:left;width:175px" (click)="router.navigate(['user',team.key])">
       <img [src]="team?.values.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <span>{{team.values?.name}}</span>
       <span style="font-size:10px"> {{team.values?.familyName}}</span>

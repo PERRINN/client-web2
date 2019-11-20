@@ -20,9 +20,9 @@ import { AngularFireStorage } from '@angular/fire/storage';
     <div>Upload new profile image</div>
     </label>
   </div>
-  <div style="color:blue;;cursor:pointer;margin:20px">Edit name</div>
-  <div style="color:blue;;cursor:pointer;margin:20px" (click)="joinPERRINNOnshapeTeam();router.navigate(['chat',this.UI.currentTeam])">Join PERRINN Onshape team</div>
-  <div style="color:blue;;cursor:pointer;margin:20px" (click)="joinPERRINNGoogleGroup();router.navigate(['chat',this.UI.currentTeam])">Join PERRINN Google group</div>
+  <div style="color:blue;cursor:pointer;margin:20px">Edit name</div>
+  <div style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNOnshapeTeam();router.navigate(['chat',this.UI.currentTeam])">Join PERRINN Onshape team</div>
+  <div style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNGoogleGroup();router.navigate(['chat',this.UI.currentTeam])">Join PERRINN Google group</div>
   </div>
   <div class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
   </div>
