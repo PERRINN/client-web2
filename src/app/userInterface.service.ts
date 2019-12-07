@@ -20,9 +20,8 @@ export class userInterfaceService {
   process: any;
   recipients: any;
   recipientList: any;
-  recipientIndex: string;
+  chain: string;
   chatSubject: string;
-  lastVisitsArray: any[];
   showChatDetails: boolean;
 
   constructor(
@@ -32,21 +31,15 @@ export class userInterfaceService {
   ) {
     this.showChatDetails=false;
     this.chatSubject='';
-    this.lastVisitsArray=[];
     this.process = {};
     this.recipients={};
     this.recipientList=[];
-    this.recipientIndex='';
+    this.chain='';
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser=auth.uid;
         afs.doc<any>('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserObj = snapshot;
-        });
-        afs.collection<any>('PERRINNTeams/'+this.currentUser+'/lastVisits/',ref=>ref.limit(200)).valueChanges({idField:'id'}).subscribe(snapshot=>{
-          snapshot.forEach(visit=>{
-            this.lastVisitsArray[visit.id]=visit;
-          });
         });
         this.addRecipient(this.currentUser);
         if (this.focusUser == null) { this.focusUser = auth.uid; }
@@ -67,7 +60,6 @@ export class userInterfaceService {
         imageUrlThumb:snapshot.data().imageUrlThumb
       }
       this.refreshRecipientList();
-      this.refreshRecipientIndex();
     });
   }
 
@@ -81,21 +73,6 @@ export class userInterfaceService {
       recipientArray.push(key);
     });
     this.recipientList=recipientArray;
-  }
-
-  refreshRecipientIndex(){
-    let index='';
-    let chatSubject='';
-    if(this.chatSubject!=undefined)chatSubject=this.chatSubject.replace(/\s+/g,'');
-    let recipientArray=[];
-    Object.keys(this.recipients).forEach(key=>{
-      recipientArray.push(key);
-    });
-    recipientArray.sort();
-    recipientArray.forEach(recipient=>{
-      index=index+recipient;
-    });
-    this.recipientIndex=chatSubject+index;
   }
 
   createMessage(text, image, imageDownloadURL, linkTeamObj, linkUserObj) {
@@ -124,27 +101,27 @@ export class userInterfaceService {
       updateObj['teamMessages/' + this.currentTeam + '/' + messageID + '/process'] = this.process[this.currentTeam];
     }
     this.db.database.ref().update(updateObj);
-    this.timestampChatVisit();
     this.clearProcessData();
   }
 
   createMessageAFS(user, text, image, imageDownloadURL){
     text = text.replace(/(\r\n|\n|\r)/gm, '');
     const now = Date.now();
-    this.refreshRecipientIndex();
+    if(!this.recipientList.includes(this.currentUser))this.addRecipient(this.currentUser);
     this.refreshRecipientList();
     this.recipients[this.currentUser]={
       name:this.currentUserObj.name,
       familyName:this.currentUserObj.familyName,
       imageUrlThumb:this.currentUserObj.imageUrlThumb
     };
-    this.afs.collection('PERRINNTeams').doc(user).collection('messages').add({
+    this.afs.collection('PERRINNMessages').add({
       timestamp: now,
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
       chatSubject:this.chatSubject,
-      recipientIndex:this.recipientIndex,
+      chain:this.chain,
       recipients: this.recipients,
       recipientList: this.recipientList,
+      lastMessage: true,
       user: this.currentUser,
       name: this.currentUserObj.name,
       imageUrlThumbUser: this.currentUserObj.imageUrlThumb,
@@ -152,7 +129,6 @@ export class userInterfaceService {
       image:image,
       imageDownloadURL:imageDownloadURL
     }).then(()=>{
-      this.timestampChatVisit();
       this.clearProcessData();
       return null;
     });
@@ -169,14 +145,6 @@ export class userInterfaceService {
 
   clearProcessData() {
     this.process[this.currentTeam] = {};
-  }
-
-  timestampChatVisit() {
-    const now = Date.now();
-    this.afs.doc<any>('PERRINNTeams/'+this.currentUser+/lastVisits/+this.recipientIndex).set({
-      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      timestamp:now
-    });
   }
 
   objectToArray(obj) {

@@ -16,9 +16,9 @@ import * as firebase from 'firebase/app';
   <div class="sheet" style="background:#eee">
     <div (click)="refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">messages</div>
     <div *ngIf="!editing" style="font-size:18px;line-height:30px;margin:10px;font-family:sans-serif;">{{UI.chatSubject?UI.chatSubject:'no subject'}}</div>
-    <input *ngIf="editing" [(ngModel)]="chatSubject">
+    <input *ngIf="editing" [(ngModel)]="UI.chatSubject">
     <div *ngIf="!editing" (click)="editing=!editing" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:white;background-color:#4287f5;border-radius:3px;cursor:pointer">Edit subject</div>
-    <div *ngIf="editing" (click)="UI.chatSubject=chatSubject;UI.refreshRecipientIndex();editing=!editing" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply</div>
+    <div *ngIf="editing" (click)="draftMessage='I have changed the subject of this chat';addMessage();editing=!editing;refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply</div>
     <ul style="color:#333;border-style:solid;border-width:1px;background-color:white;margin:10px;border-radius:10px">
       <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['user',recipient[0]])" style="cursor:pointer;float:left">
         <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:20px;width:20px;border-radius:3px;margin:3px 3px 3px 10px">
@@ -56,7 +56,7 @@ import * as firebase from 'firebase/app';
   <div>
   <ul style="list-style:none;">
     <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
-      <div *ngIf="i<messageNumberDisplay" style="cursor:pointer" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''" (click)="UI.timestampChatVisit()">
+      <div *ngIf="i<messageNumberDisplay" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''">
       <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:70px 15px 15px 15px">
         <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:7px">{{message.payload?.timestamp|date:'fullDate'}}</div>
       </div>
@@ -227,10 +227,10 @@ export class ChatComponent {
   isCurrentUserMember: boolean;
   showDetails: {};
   messages: Observable<any[]>;
-  chatSubject: string;
   editing: boolean;
   teams: Observable<any[]>;
   searchFilter: string;
+  reads: any[];
 
   constructor(
     public db: AngularFireDatabase,
@@ -241,7 +241,7 @@ export class ChatComponent {
     private storage: AngularFireStorage,
   ) {
     this.UI.loading = true;
-    this.chatSubject=this.UI.chatSubject;
+    this.reads=[];
     this.editing=false;
     this.route.params.subscribe(params => {
       this.isCurrentUserLeader = false;
@@ -268,24 +268,27 @@ export class ChatComponent {
     if (e === 'top') {
       this.UI.loading = true;
       this.messageNumberDisplay += 15;
-      return this.messages=this.afs.collectionGroup('messages',ref=>ref
-        .where('recipientIndex','==',this.UI.recipientIndex)
-        .orderBy('timestamp','desc')
-        .limit(this.messageNumberDisplay)
-      ).snapshotChanges().pipe(map(changes => {
-        this.UI.loading = false;
-        return changes.reverse().map(c => ({payload: c.payload.doc.data()}));
-      }));
+      this.refreshMessages();
     }
   }
 
   refreshMessages() {
-    this.messages=this.afs.collectionGroup('messages',ref=>ref
-      .where('recipientIndex','==',this.UI.recipientIndex)
+    this.messages=this.afs.collection('PERRINNMessages',ref=>ref
+      .where('chain','==',this.UI.chain)
       .orderBy('serverTimestamp','desc')
       .limit(this.messageNumberDisplay)
     ).snapshotChanges().pipe(map(changes => {
       this.UI.loading = false;
+      var batch = this.afs.firestore.batch();
+      changes.forEach(c => {
+        if(!this.reads.includes(c.payload.doc.id))batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(c.payload.doc.id),{timestamp:firebase.firestore.FieldValue.arrayUnion(Date.now())},{merge:true});
+        this.reads.push(c.payload.doc.id);
+        if(c.payload.doc.data()['lastMessage']){
+          this.UI.chatSubject=c.payload.doc.data()['chatSubject'];
+          this.UI.recipients=c.payload.doc.data()['recipients'];
+        }
+      });
+      batch.commit();
       return changes.reverse().map(c => ({payload: c.payload.doc.data()}));
     }));
   }

@@ -1,28 +1,20 @@
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isLeader(user,team){
-      return get(/databases/$(database)/documents/PERRINNTeams/$(team)).data.leaders[user] == true
-    }
-    function isMember(user,team){
-      return get(/databases/$(database)/documents/PERRINNTeams/$(team)).data.members[user] == true
-    }
-    function isLeaderOrMember(user,team){
-      return isLeader(user,team)||isMember(user,team)
-    }
     match /{document=**} {
       allow read: if request.auth.uid != null;
     }
+    match /IDs/{id} {
+      allow create: if request.auth.uid != null;
+    }
     match /PERRINNTeams/{team} {
     allow create: if team == request.auth.uid;
-      match /lastVisits/{recipientIndex} {
+      match /reads/{message} {
       	allow write: if team == request.auth.uid;
       }
-      match /messages/{messageID} {
-        allow create: if team == request.auth.uid
-                        && request.resource.data.user==request.auth.uid
-                        && request.resource.data.recipientIndex.matches(request.auth.uid)!=null
-                        && request.resource.data.text.size()<=500;
-      }
+    }
+    match /PERRINNMessages/{message} {
+      allow create: if request.resource.data.user==request.auth.uid
+                    && request.resource.data.text.size()<=500;
     }
   }
 }
