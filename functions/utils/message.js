@@ -5,93 +5,78 @@ const createMessageUtils = require('./createMessage')
 
 module.exports = {
 
-  writeMessageChainData:(team,message)=>{
-    return admin.database().ref('PERRINNTeamMessageChain/'+team).child('lock').transaction(function(lock){
-      if(lock===null)return true;
-      else return;
-    }).then(result=>{
-      if (result.committed){
-        return admin.database().ref('PERRINNTeamMessageChain/'+team).once('value').then(messageChain=>{
-          let updateObj={};
-          let previousMessage='none';
-          let index=1;
-          if (messageChain.val()!=undefined&&messageChain.val()!=null){
-            previousMessage=messageChain.val().previousMessage?messageChain.val().previousMessage:'none';
-            index=messageChain.val().previousIndex?Number(messageChain.val().previousIndex)+1:1;
-          }
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/previousMessage']=previousMessage;
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/nextMessage']='none';
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/index']=index;
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/chain/timestamp']=admin.database.ServerValue.TIMESTAMP;
-          return admin.database().ref().update(updateObj).then(()=>{
-            return 'done';
-          });
-        });
-      }
+  updateLastMessageFlag:(chain,excludeMessage)=>{
+    return admin.firestore().collection('PERRINNMessages').where('chain','==',chain).where('lastMessage','==',true).get().then(messages=>{
+      var batch = admin.firestore().batch();
+      messages.forEach(message=>{
+        if(message.id!=excludeMessage)batch.update(admin.firestore().collection('PERRINNMessages').doc(message.id),{lastMessage:false});
+      });
+      return batch.commit();
     }).catch(error=>{
       console.log(error);
     });
   },
 
-  writeMessagingCostData:(user,team,message)=>{
-    let updateObj={};
+  writeMessageChainData:(user,message)=>{
+    return admin.firestore().runTransaction(function(transaction) {
+      return transaction.get(admin.firestore().doc('PERRINNChain/'+user)).then(function(chain) {
+        if (chain.exists) {
+          if(chain.data().lock)return Promise.reject();
+        }
+        transaction.update(admin.firestore().doc('PERRINNChain/'+user),{lock:true},{create:true});
+      });
+    }).then(()=>{
+      return admin.firestore().doc('PERRINNChain/'+user).get().then(chainObj=>{
+        var batch = admin.firestore().batch();
+        let previousMessage='none';
+        let index=1;
+        if (chainObj.data()!=undefined&&chainObj.data()!=null){
+          previousMessage=chainObj.data().previousMessage?chainObj.data().previousMessage:'none';
+          index=chainObj.data().previousIndex?Number(chainObj.data().previousIndex)+1:1;
+        }
+        batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.currentMessage":message},{create:true});
+        batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.previousMessage":previousMessage},{create:true});
+        batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.nextMessage":'none'},{create:true});
+        batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.index":index},{create:true});
+        batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
+        return batch.commit().then(()=>{
+          return 'done';
+        });
+      });
+    }).catch(error=>{
+      console.log(error);
+    });
+  },
+
+  writeMessagingCostData:(user,message)=>{
+    var batch = admin.firestore().batch();
     let amount=0;
     let amountRead=0;
     let amountWrite=0;
     let receiver='none';
     let reference='none';
-    return admin.database().ref('PERRINNTeamMessageReads/'+team).once('value').then(PERRINNTeamMessageReads=>{
-      return admin.database().ref('appSettings/messageTemplate/messagingCost').once('value').then(messagingCost=>{
-        if(user!='PERRINN'){
-          amountWrite=messagingCost.val().amount;
-          receiver=messagingCost.val().receiver;
-          reference=messagingCost.val().reference;
-        }
-        if(PERRINNTeamMessageReads!=undefined&&PERRINNTeamMessageReads!=null){
-          if(PERRINNTeamMessageReads.val().amountOutstanding!=undefined)amountRead=PERRINNTeamMessageReads.val().amountOutstanding;
-        }
-        amount=Math.round((Number(amountRead)+Number(amountWrite))*100000)/100000;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/amount']=amount;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/amountRead']=amountRead;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/amountWrite']=amountWrite;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/receiver']=receiver;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/reference']=reference;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/timestamp']=admin.database.ServerValue.TIMESTAMP;
-        return admin.database().ref().update(updateObj).then(()=>{
-          return admin.database().ref('PERRINNTeamMessageReads/'+team).child('amountOutstanding').transaction(function(amountOutstanding){
-            if(amountOutstanding===null)return 0;
-            else return Math.round((Number(amountOutstanding)-Number(amountRead))*100000)/100000;
-          }).then(()=>{
-            return 'done';
-          });
-        });
-      });
-    }).catch(error=>{
-      console.log(error);
-    });
-  },
-
-  writeMessageTeamData:(team,message)=>{
-    return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
-      return admin.firestore().doc('PERRINNTeams/'+team).update({
-        lastMessageTimestamp:messageObj.val().payload.timestamp,
-        lastMessageName:messageObj.val().payload.name,
-        lastMessageText:messageObj.val().payload.text,
-        lastMessageBalance:messageObj.val().PERRINN.wallet.balance,
-      }).then(()=>{
+    return admin.firestore().doc('appSettings/costs').get().then(costs=>{
+      if(user!='PERRINN'){
+        amountWrite=costs.data().messageWrite;
+      }
+      amount=Math.round(Number(amountWrite)*100000)/100000;
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.amount":amount},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.amountWrite":amountWrite},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.receiver":receiver},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.reference":reference},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
+      return batch.commit().then(()=>{
         return 'done';
+      }).catch(error=>{
+        console.log(error);
       });
-    }).catch(error=>{
-      console.log(error);
     });
   },
 
   incrementUserMessageCounter:(user)=>{
     var transactionDoc=admin.firestore().doc('PERRINNTeams/'+user);
-    return admin.firestore().runTransaction(transaction=>{
-      return transaction.get(transactionDoc).then(doc=>{
-        transaction.update(transactionDoc,{messageCount:doc.data().messageCount+1});
-      });
+    return admin.firestore().doc('PERRINNTeams/'+user).update({
+      messageCount:admin.firestore.FieldValue.increment(1)
     }).then(()=>{
       return 'done';
     }).catch(error=>{
@@ -99,47 +84,45 @@ module.exports = {
     });
   },
 
-  writeMessageProcessData:(team,message)=>{
-    return admin.database().ref('teamMessages/'+team+'/'+message+'/process').once('value').then(process=>{
-      let updateObj={};
-      let user='';
-      let functionObj={none:'none'};
-      let inputs={none:'none'};
-      let inputsComplete=false;
-      if(process.val()!=undefined&&process.val()!=null){
-        if(process.val().inputsComplete){
-          user=process.val().user;
-          functionObj=process.val().function;
-          if(process.val().inputs!=undefined) inputs=process.val().inputs;
-          inputsComplete=process.val().inputsComplete;
-        }
+  writeMessageProcessData:(user,message,process)=>{
+    var batch = admin.firestore().batch();
+    let functionObj={none:'none'};
+    let inputs={none:'none'};
+    let inputsComplete=false;
+    if(process!=undefined&&process!=null){
+      if(process.inputsComplete){
+        functionObj=process.function;
+        if(process.inputs!=undefined) inputs=process.inputs;
+        inputsComplete=process.inputsComplete;
       }
-      return processUtils.executeProcess(user,team,functionObj,inputs).then(result=>{
-        if (result==undefined) result='undefined';
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/function']=functionObj;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/inputs']=inputs;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/inputsComplete']=inputsComplete;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/result']=result;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/process/timestamp']=admin.database.ServerValue.TIMESTAMP;
-        return admin.database().ref().update(updateObj).then(()=>{
-          return 'done';
-        });
+    }
+    return processUtils.executeProcess(user,functionObj,inputs).then(result=>{
+      if (result==undefined) result='undefined';
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.function":functionObj},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.inputs":inputs},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.inputsComplete":inputsComplete},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.result":result},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
+      return batch.commit().then(()=>{
+        return 'done';
       });
     }).catch(error=>{
       console.log('writeMessageProcessData: '+error);
     });
   },
 
-  writeMessageTransactionOutData:(team,message,process)=>{
-    let updateObj={};
+  writeMessageTransactionOutData:(user,message,process)=>{
+    var batch = admin.firestore().batch();
     let amount=0;
     let receiver='none';
+    let receiverName='';
+    let receiverImageUrlThumb='';
     let receiverMessage='none';
     let reference='none';
     let inputCheck=false;
     if(process!=undefined&&process!=null){
       if(process.service=='transactionStart'){
-        if(checkTransactionInputs(team,process.inputs)) {
+        if(checkTransactionInputs(user,process.inputs)) {
           amount=process.inputs.amount;
           receiver=process.inputs.receiver;
           reference=process.inputs.reference;
@@ -147,101 +130,94 @@ module.exports = {
         }
       }
     }
-    return teamUtils.getTeamName(receiver).then(receiverName=>{
-      return teamUtils.getTeamImageUrlThumb(receiver).then(receiverImageUrlThumb=>{
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/amount']=amount;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiver']=receiver;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiverName']=receiverName;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiverImageUrlThumb']=receiverImageUrlThumb;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/receiverMessage']=receiverMessage;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/reference']=reference;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/timestamp']=admin.database.ServerValue.TIMESTAMP;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/inputCheck']=inputCheck;
-        return admin.database().ref().update(updateObj).then(()=>{
-          return 'done';
-        });
-      });
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.amount":amount},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiver":receiver},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiverName":receiverName},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiverImageUrlThumb":receiverImageUrlThumb},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiverMessage":receiverMessage},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.reference":reference},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.inputCheck":inputCheck},{create:true});
+    return batch.commit().then(()=>{
+      return 'done';
     }).catch(error=>{
       console.log(error);
     });
   },
 
-  writeMessageTransactionInData:(team,message)=>{
-    return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/transactionIn').once('value').then(transactionInObj=>{
-      let donor='none';
-      let donorMessage='none';
-      if(transactionInObj.val()!=undefined&&transactionInObj.val()!=null){
-        if(transactionInObj.val().donor!=undefined&&transactionInObj.val().donor!=null){
-          if(transactionInObj.val().donorMessage!=undefined&&transactionInObj.val().donorMessage!=null){
-            donor=transactionInObj.val().donor;
-            donorMessage=transactionInObj.val().donorMessage;
+  writeMessageTransactionInData:(user,message,messageData)=>{
+    var batch = admin.firestore().batch();
+    let amount=0;
+    let reference='none';
+    let donorCheck=false;
+    let donor='none';
+    let donorName='';
+    let donorImageUrlThumb='';
+    let donorMessage='none';
+    if(messageData.PERRINN!=undefined){
+      let transactionInObj=messageData.PERRINN.transactionIn;
+      if(transactionInObj!=undefined&&transactionInObj!=null){
+        if(transactionInObj.donor!=undefined&&transactionInObj.donor!=null){
+          if(transactionInObj.donorMessage!=undefined&&transactionInObj.donorMessage!=null){
+            donor=transactionInObj.donor;
+            donorName=transactionInObj.donorName;
+            donorImageUrlThumb=transactionInObj.donorImageUrlThumb;
+            donorMessage=transactionInObj.donorMessage;
+            amount=donorTransactionInObj.amount;
+            reference=donorTransactionInObj.reference;
+            donorCheck=true;
           }
         }
       }
-      return admin.database().ref('teamMessages/'+donor+'/'+donorMessage+'/PERRINN/transactionOut').once('value').then(donorTransactionOutObj=>{
-        let updateObj={};
-        let amount=0;
-        let reference='none';
-        let donorCheck=false;
-        if(donorTransactionOutObj.val()!=undefined&&donorTransactionOutObj.val()!=null) {
-          amount=donorTransactionOutObj.val().amount;
-          reference=donorTransactionOutObj.val().reference;
-          donorCheck=true;
-        }
-        return teamUtils.getTeamName(donor).then(donorName=>{
-          return teamUtils.getTeamImageUrlThumb(donor).then(donorImageUrlThumb=>{
-            updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/amount']=amount;
-            updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donor']=donor;
-            updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorName']=donorName;
-            updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorImageUrlThumb']=donorImageUrlThumb;
-            updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorMessage']=donorMessage;
-            updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/reference']=reference;
-            updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/timestamp']=admin.database.ServerValue.TIMESTAMP;
-            updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/donorCheck']=donorCheck;
-            return admin.database().ref().update(updateObj).then(()=>{
-              return 'done';
-            });
-          });
-        });
-      });
+    }
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.amount":amount},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donor":donor},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorName":donorName},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorImageUrlThumb":donorImageUrlThumb},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorMessage":donorMessage},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.reference":reference},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorCheck":donorCheck},{create:true});
+    return batch.commit().then(()=>{
+      return 'done';
     }).catch(error=>{
       console.log(error);
     });
   },
 
-  writeMessageWalletData:(team,message)=>{
-    return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
-      return admin.database().ref('teamMessages/'+team+'/'+messageObj.val().PERRINN.chain.previousMessage).once('value').then(previousMessageObj=>{
-        let updateObj={};
+  writeMessageWalletData:(user,message)=>{
+    return admin.firestore().doc('PERRINNMessages/'+message).get().then(messageObj=>{
+      return admin.firestore().doc('PERRINNMessages/'+messageObj.data().PERRINN.chain.previousMessage).get().then(previousMessageObj=>{
+        var batch=admin.firestore().batch();
         var previousBalance=0;
-        if(previousMessageObj.val()!=undefined&&previousMessageObj.val()!=null){
-          if(previousMessageObj.val().PERRINN!=undefined&&previousMessageObj.val().PERRINN!=null){
-            if(previousMessageObj.val().PERRINN.wallet!=undefined&&previousMessageObj.val().PERRINN.wallet!=null){
-              previousBalance=previousMessageObj.val().PERRINN.wallet.balance;
+        if(previousMessageObj.data()!=undefined&&previousMessageObj.data()!=null){
+          if(previousMessageObj.data().PERRINN!=undefined&&previousMessageObj.data().PERRINN!=null){
+            if(previousMessageObj.data().PERRINN.wallet!=undefined&&previousMessageObj.data().PERRINN.wallet!=null){
+              previousBalance=previousMessageObj.data().PERRINN.wallet.balance;
             }
           }
         }
         var balance=previousBalance;
-        if(messageObj.val().PERRINN.messagingCost.amount>0){
-          balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.messagingCost.amount))*100000)/100000;
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='complete';
+        if(messageObj.data().PERRINN.messagingCost.amount>0){
+          balance=Math.round((Number(balance)-Number(messageObj.data().PERRINN.messagingCost.amount))*100000)/100000;
+          batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.status":'complete'},{create:true});
         } else {
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/status']='none';
+          batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.status":'none'},{create:true});
         }
-        if(messageObj.val().PERRINN.transactionOut.inputCheck){
-          balance=Math.round((Number(balance)-Number(messageObj.val().PERRINN.transactionOut.amount))*100000)/100000;
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='complete';
+        if(messageObj.data().PERRINN.transactionOut.inputCheck){
+          balance=Math.round((Number(balance)-Number(messageObj.data().PERRINN.transactionOut.amount))*100000)/100000;
+          batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.status":'complete'},{create:true});
         } else {
-          updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/status']='none';
+          batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.status":'none'},{create:true});
         }
-        if(messageObj.val().PERRINN.transactionIn.donorCheck){
-          balance=Math.round((Number(balance)+Number(messageObj.val().PERRINN.transactionIn.amount))*100000)/100000;
+        if(messageObj.data().PERRINN.transactionIn.donorCheck){
+          balance=Math.round((Number(balance)+Number(messageObj.data().PERRINN.transactionIn.amount))*100000)/100000;
         }
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/previousBalance']=previousBalance;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/amount']=Math.round((balance-previousBalance)*100000)/100000;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/balance']=balance;
-        updateObj['teamMessages/'+team+'/'+message+'/PERRINN/wallet/timestamp']=admin.database.ServerValue.TIMESTAMP;
-        return admin.database().ref().update(updateObj).then(()=>{
+        batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.wallet.previousBalance":previousBalance},{create:true});
+        batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.wallet.amount":Math.round((balance-previousBalance)*100000)/100000},{create:true});
+        batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.wallet.balance":balance},{create:true});
+        batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.wallet.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
+        return batch.commit().then(()=>{
           return 'done';
         });
       });
@@ -250,24 +226,26 @@ module.exports = {
     });
   },
 
-  writeMessageAtomicData:(team,message)=>{
-    return admin.database().ref('teamMessages/'+team+'/'+message).once('value').then(messageObj=>{
-      let updateObj={};
-      let previousMessage=messageObj.val().PERRINN.chain.previousMessage;
-      let index=messageObj.val().PERRINN.chain.index;
-      let messagingCostProcessed=messageObj.val().PERRINN.messagingCost.status=='complete'?true:false;
-      let transactionOutProcessed=messageObj.val().PERRINN.transactionOut.status=='complete'?true:false;
-      let transactionInProcessed=messageObj.val().PERRINN.transactionIn.donorCheck?true:false;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/dataWrite']='complete';
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/timestampEnd']=admin.database.ServerValue.TIMESTAMP;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/messagingCost/processed']=messagingCostProcessed;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionOut/processed']=transactionOutProcessed;
-      updateObj['teamMessages/'+team+'/'+message+'/PERRINN/transactionIn/processed']=transactionInProcessed;
-      if(previousMessage!='none')updateObj['teamMessages/'+team+'/'+previousMessage+'/PERRINN/chain/nextMessage']=message;
-      if(transactionInProcessed)updateObj['teamMessages/'+messageObj.val().PERRINN.transactionIn.donor+'/'+messageObj.val().PERRINN.transactionIn.donorMessage+'/PERRINN/transactionOut/receiverMessage']=message;
-      updateObj['PERRINNTeamMessageChain/'+team+'/previousMessage']=message;
-      updateObj['PERRINNTeamMessageChain/'+team+'/previousIndex']=index;
-      return admin.database().ref().update(updateObj).then(()=>{
+  writeMessageAtomicData:(user,message)=>{
+    return admin.firestore().doc('PERRINNMessages/'+message).get().then(messageObj=>{
+      var batch=admin.firestore().batch();
+      let previousMessage=messageObj.data().PERRINN.chain.previousMessage;
+      let index=messageObj.data().PERRINN.chain.index;
+      let balance=messageObj.data().PERRINN.wallet.balance;
+      let messagingCostProcessed=messageObj.data().PERRINN.messagingCost.status=='complete'?true:false;
+      let transactionOutProcessed=messageObj.data().PERRINN.transactionOut.status=='complete'?true:false;
+      let transactionInProcessed=messageObj.data().PERRINN.transactionIn.donorCheck?true:false;
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.dataWrite":'complete'},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.timestampEnd":admin.firestore.FieldValue.serverTimestamp()},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.processed":messagingCostProcessed},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.processed":transactionOutProcessed},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.processed":transactionInProcessed},{create:true});
+      if(previousMessage!='none')batch.update(admin.firestore().doc('PERRINNMessages/'+previousMessage),{"PERRINN.chain.nextMessage":message},{create:true});
+      if(transactionInProcessed)batch.update(admin.firestore().doc('PERRINNMessages/'+messageObj.data().PERRINN.transactionIn.donorMessage),{"PERRINN.transactionOut.receiverMessage":message},{create:true});
+      batch.update(admin.firestore().doc('PERRINNChain/'+user),{previousMessage:message},{create:true});
+      batch.update(admin.firestore().doc('PERRINNChain/'+user),{previousIndex:index},{create:true});
+      batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lastMessageBalance:balance},{create:true});
+      return batch.commit().then(()=>{
         return 'done';
       });
     }).catch(error=>{
@@ -275,10 +253,10 @@ module.exports = {
     });
   },
 
-  writeMessageTransactionReceiverData:(team,message)=>{
-    return admin.database().ref('teamMessages/'+team+'/'+message+'/PERRINN/transactionOut').once('value').then(transactionOutObj=>{
-      if(transactionOutObj.val().processed){
-        return createMessageUtils.createMessage(transactionOutObj.val().receiver,"PERRINN","","","",{},{},team,message,{}).then(()=>{
+  writeMessageTransactionReceiverData:(user,message)=>{
+    return admin.firestore().doc('PERRINNMessages/'+message).get().then(messageObj=>{
+      if(messageObj.data().PERRINN.transactionOut.processed){
+        return createMessageUtils.createMessage(messageObj.data().PERRINN.transactionOut.receiver,"PERRINN","","","",{},{},user,message,{}).then(()=>{
           return 'done';
         });
       }
@@ -289,9 +267,9 @@ module.exports = {
 
 }
 
-function checkTransactionInputs (team,inputs) {
+function checkTransactionInputs (user,inputs) {
   if(inputs.amount>0&&inputs.amount<=100000){
-    if(inputs.receiver!=team){
+    if(inputs.receiver!=user){
       if(inputs.reference!=''){
         return true;
       }

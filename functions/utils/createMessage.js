@@ -43,6 +43,7 @@ module.exports = {
         chain:chain,
         recipients:recipients,
         recipientList:recipientList,
+        emailNotifications:recipientList,
         lastMessage: true,
         user:user,
         name:userData.data().name,

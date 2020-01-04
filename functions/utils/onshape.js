@@ -29,32 +29,28 @@ module.exports = {
           .digest('base64');
       var signature = 'On ' + accessKey + ':HmacSHA256:' + hmac;
       //require('request').debug = true;
-      return request({
-        uri: url,
-        method:method,
-        headers: {
-          'Method':method,
-          'Content-type':contentType,
-          'Accept':'application/vnd.onshape.v1+json',
-          'Authorization':signature,
-          'Date':authDate,
-          'On-Nonce':nonce
-        },
-        json: true,
-        body: body
-      }).then(result=>{
-        return admin.firestore().doc('PERRINNTeams/'+user).get().then(userObjSnapshot=>{
-          let userObj=userObjSnapshot.data();
-          userObj.key=user;
-          createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Onshape:","","",{},userObj,'none','none',{});
+      return admin.firestore().doc('PERRINNTeams/'+user).update({
+        "apps.Onshape.enabled":true,
+        "apps.Onshape.timestamp":admin.firestore.FieldValue.serverTimestamp()
+      }).then(()=>{
+        return request({
+          uri: url,
+          method:method,
+          headers: {
+            'Method':method,
+            'Content-type':contentType,
+            'Accept':'application/vnd.onshape.v1+json',
+            'Authorization':signature,
+            'Date':authDate,
+            'On-Nonce':nonce
+          },
+          json: true,
+          body: body
         }).then(()=>{
-          return 'done';
+            return 'done';
         }).catch(error=>{
-          console.log(error);
-          return error;
+          return error.error.message;
         });
-      }).catch(error=>{
-        return error.error.message;
       });
     }).catch(error=>{
       console.log(error);

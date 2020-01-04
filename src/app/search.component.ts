@@ -11,14 +11,16 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
   <div id='main_container'>
   <div class="sheet">
   <input id="searchInput" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Search">
+  <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshSearchByCOINLists()">COIN holders' list</div>
   </div>
   <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
     <li *ngFor="let team of teams | async" style="padding:5px">
-      <div style="float:left;width:175px" (click)="router.navigate(['user',team.key])">
+      <div style="float:left;width:200px" (click)="router.navigate(['user',team.key])">
       <img [src]="team?.values.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
       <span>{{team.values?.name}}</span>
       <span style="font-size:10px"> {{team.values?.familyName}}</span>
+      <div style="font-size:15px;color:#999">C{{(team.values?.lastMessageBalance?team.values?.lastMessageBalance:0)|number:'1.2-2'}}</div>
       </div>
       <div class="buttonDiv" style="float:left;font-size:11px;color:#267cb5" (click)="newChatWithUser(team.key)">New chat</div>
       <div class="buttonDiv" style="float:left;font-size:11px;background-color:#267cb5;color:white" (click)="addUserToChat(team.key)">Add to chat</div>
@@ -41,6 +43,7 @@ export class SearchComponent  {
     public router: Router,
     public UI: userInterfaceService
   ) {
+    this.searchFilter='';
   }
 
   ngOnInit() {
@@ -67,6 +70,19 @@ export class SearchComponent  {
     } else {
       this.teams = null;
     }
+  }
+
+  refreshSearchByCOINLists() {
+    this.teams = this.afs.collection('PERRINNTeams', ref => ref
+    .where('isUser','==',true)
+    .orderBy('lastMessageBalance',"desc")
+    .limit(20))
+    .snapshotChanges().pipe(map(changes => {
+      return changes.map(c => ({
+        key: c.payload.doc.id,
+        values: c.payload.doc.data(),
+      }));
+    }));
   }
 
   newChatWithUser(user){

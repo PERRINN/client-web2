@@ -31,6 +31,7 @@
     "firebase-functions": "^3.2.0",
     "googleapis": "^42.0.0",
     "ng2-img-max": "^2.1.5",
+    "nodemailer": "^6.4.1",
     "request": "^2.88.0",
     "rxjs": "^6.4.0",
     "rxjs-compat": "^6.4.0",

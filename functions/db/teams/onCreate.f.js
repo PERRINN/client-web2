@@ -10,8 +10,6 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{team}').onCre
     return admin.database().ref('subscribeImageTeams/'+image.val()).update({
       [context.params.team]:true,
     }).then(()=>{
-      return createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","New team:","","",{},teamObj,'none','none',{});
-    }).then(()=>{
       let text="Welcome to PERRINN, we are happy to have you here with us! If you have any question please ask here. We will be happy to help.";
       let key='-L7jqFf8OuGlZrfEK6dT';
       let chatSubject='Welcome to PERRINN';

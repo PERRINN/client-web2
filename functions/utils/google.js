@@ -20,27 +20,23 @@ module.exports = {
         version: 'directory_v1',
         jwt,
       });
-      return jwt.authorize().then(() => {
-        return googleAdmin.members.insert({
-          auth: jwt,
-          groupKey: "perrinn-google-group@perrinn.com",
-          requestBody:{
-            email:email,
-            role:'MEMBER'
-          }
-        }).then(result=>{
-          return admin.firestore().doc('PERRINNTeams/'+user).get().then(userObjSnapshot=>{
-            let userObj=userObjSnapshot.data();
-            userObj.key=user;
-            createMessageUtils.createMessage ('-L7jqFf8OuGlZrfEK6dT',"PERRINN","Joined Google:","","",{},userObj,'none','none',{});
+      return admin.firestore().doc('PERRINNTeams/'+user).update({
+        "apps.Google.enabled":true,
+        "apps.Google.timestamp":admin.firestore.FieldValue.serverTimestamp()
+      }).then(()=>{
+        return jwt.authorize().then(() => {
+          return googleAdmin.members.insert({
+            auth: jwt,
+            groupKey: "perrinn-google-group@perrinn.com",
+            requestBody:{
+              email:email,
+              role:'MEMBER'
+            }
           }).then(()=>{
-            return 'done';
+              return 'done';
           }).catch(error=>{
-            console.log(error);
-            return error;
+            return error.message;
           });
-        }).catch(error=>{
-          return error.message;
         });
       });
     }).catch(error=>{

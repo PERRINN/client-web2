@@ -1,0 +1,13 @@
+{
+  "email": {
+    "password": "Ameliem@e8"
+  },
+  "onshape": {
+    "accesskey": "5kFwBrXJqLiBRSHxZZSP9t0D",
+    "secretkey": "8NVq1Pkqmjob1heCol39HBqZEmUiHj7RGRHzANgZnNnlQ5aB"
+  },
+  "stripe": {
+    "token": "sk_live_wzWC1SgNm3cwmqkZv5c7U3Ka",
+    "currency": "GBP"
+  }
+}

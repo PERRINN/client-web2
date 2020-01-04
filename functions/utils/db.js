@@ -66,23 +66,6 @@ module.exports = {
     });
   },
 
-  subscribeList:(user,team,ref,list)=>{
-    if (ref=="subscribeImageTeams/"){
-      key=team;
-    }
-    if (!ref||!list) {
-      return "not enough information";
-    }
-    return admin.database().ref(ref).child(list).update({
-      [key]:true,
-    }).then(()=>{
-      return "done";
-    }).catch(error=>{
-      console.log(error);
-      return error;
-    });
-  },
-
   removeListKey:(user,team,ref,list,key)=>{
     return admin.database().ref('PERRINNTeams/'+team).once('value').then((PERRINNTeam)=>{
       if (ref=="PERRINNTeams/"){

@@ -31,7 +31,7 @@ export class userInterfaceService {
   ) {
     this.showChatDetails=false;
     this.chatSubject='';
-    this.process = {};
+    this.process={};
     this.recipients={};
     this.recipientList=[];
     this.chain='';
@@ -75,45 +75,16 @@ export class userInterfaceService {
     this.recipientList=recipientArray;
   }
 
-  createMessage(text, image, imageDownloadURL, linkTeamObj, linkUserObj) {
-    text = text.replace(/(\r\n|\n|\r)/gm, '');
-    if (text == '' && image == '' && !this.IsProcessInputsComplete()) return null;
-    const now = Date.now();
-    const messageID = this.db.list('ids/').push(true).key;
-    const updateObj = {};
-    updateObj['teamMessages/' + this.currentTeam + '/' + messageID + '/payload'] = {
-      timestamp: now,
-      text,
-      user: this.currentUser,
-      name: this.currentUserObj.name,
-      imageUrlThumbUser: this.currentUserObj.imageUrlThumb,
-      image,
-      imageDownloadURL,
-      linkTeam: linkTeamObj.key ? linkTeamObj.key : null,
-      linkTeamName: linkTeamObj.name ? linkTeamObj.name : null,
-      linkTeamImageUrlThumb: linkTeamObj.imageUrlThumb ? linkTeamObj.imageUrlThumb : null,
-      linkUser: linkUserObj.key ? linkUserObj.key : null,
-      linkUserName: linkUserObj.name ? linkUserObj.name : null,
-      linkuserFamilyName: linkUserObj.familyName ? linkUserObj.familyName : null,
-      linkUserImageUrlThumb: linkUserObj.imageUrlThumb ? linkUserObj.imageUrlThumb : null,
-    };
-    if (this.IsProcessInputsComplete()) {
-      updateObj['teamMessages/' + this.currentTeam + '/' + messageID + '/process'] = this.process[this.currentTeam];
-    }
-    this.db.database.ref().update(updateObj);
-    this.clearProcessData();
-  }
-
   createMessageAFS(user, text, image, imageDownloadURL){
     text = text.replace(/(\r\n|\n|\r)/gm, '');
+    if (text==''&&image=='') return null;
     const now = Date.now();
-    if(!this.recipientList.includes(this.currentUser))this.addRecipient(this.currentUser);
-    this.refreshRecipientList();
     this.recipients[this.currentUser]={
       name:this.currentUserObj.name,
       familyName:this.currentUserObj.familyName,
       imageUrlThumb:this.currentUserObj.imageUrlThumb
     };
+    this.refreshRecipientList();
     this.afs.collection('PERRINNMessages').add({
       timestamp: now,
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -121,30 +92,19 @@ export class userInterfaceService {
       chain:this.chain,
       recipients: this.recipients,
       recipientList: this.recipientList,
+      emailNotifications: this.recipientList,
       lastMessage: true,
       user: this.currentUser,
       name: this.currentUserObj.name,
       imageUrlThumbUser: this.currentUserObj.imageUrlThumb,
       text:text,
       image:image,
-      imageDownloadURL:imageDownloadURL
+      imageDownloadURL:imageDownloadURL,
+      process:this.process
     }).then(()=>{
-      this.clearProcessData();
+      this.process={};
       return null;
     });
-  }
-
-  IsProcessInputsComplete() {
-    if (this.process[this.currentTeam] == undefined) {return false; }
-    if (this.process[this.currentTeam] == null) {return false; }
-    if (this.process[this.currentTeam].inputsComplete == undefined) {return false; }
-    if (this.process[this.currentTeam].inputsComplete == null) {return false; }
-    if (this.process[this.currentTeam].inputsComplete) {return true; }
-    return false;
-  }
-
-  clearProcessData() {
-    this.process[this.currentTeam] = {};
   }
 
   objectToArray(obj) {

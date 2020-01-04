@@ -21,15 +21,17 @@ import * as firebase from 'firebase/app';
       <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
         <span >{{UI.focusUserObj?.name}}</span>
         <span style="font-size:10px"> {{UI.focusUserObj?.familyName}}</span>
+        <span *ngIf='UI.focusUserObj?.lastMessageBalance>0' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
       </div>
       <div style="clear:both;float:left;font-size:10px;color:#999">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.messageCount?UI.focusUserObj?.messageCount:0}} Messages</div>
-      <div style="clear:both;float:left;font-size:15px;color:#999">C{{UI.focusUserObj?.lastMessageBalance?UI.focusUserObj?.lastMessageBalance:0|number:'1.2-2'}}</div>
+      <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(UI.focusUserObj?.lastMessageBalance?UI.focusUserObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
+      <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
+      <img [style.opacity]="UI.focusUserObj?.apps?.Google?.enabled?1:0.25" [style.cursor]="UI.focusUserObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.focusUserObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="clear:both;float:left;width:25px;margin:10px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
+      <img [style.opacity]="UI.focusUserObj?.apps?.Onshape?.enabled?1:0.25" [style.cursor]="UI.focusUserObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.focusUserObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
     </div>
-    <img src="./../assets/App icons/driveLogo.png" style="float:left;width:25px;margin:10px;cursor:pointer">
-    <img src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px;cursor:pointer">
     <div style="clear:both">
-      <div [style.color]="view=='inbox'?'white':'#267cb5'" [style.background-color]="view=='inbox'?'#267cb5':'white'" style="float:left;width:100px;height:24px;text-align:center;line-height:24px;font-size:12px;margin:10px;border-style:solid;border-width:1px;border-radius:5px;cursor:pointer" (click)="clickInbox()">Inbox</div>
-      <div [style.color]="view=='global'?'white':'#267cb5'" [style.background-color]="view=='global'?'#267cb5':'white'" style="float:left;width:100px;height:24px;text-align:center;line-height:24px;font-size:12px;margin:10px;border-style:solid;border-width:1px;border-radius:5px;cursor:pointer" (click)="clickGlobal()">Global</div>
+      <div [style.color]="view=='inbox'?'#267cb5':'#777'" [style.border-style]="view=='inbox'?'solid':'none'" style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;border-width:0 0 3px 0;cursor:pointer" (click)="clickInbox()">Inbox</div>
+      <div [style.color]="view=='team'?'#267cb5':'#777'" [style.border-style]="view=='team'?'solid':'none'" style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;border-width:0 0 3px 0;cursor:pointer" (click)="clickTeam()">Team</div>
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
@@ -52,7 +54,9 @@ import * as firebase from 'firebase/app';
         <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
         <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}</div>
         <img src="./../assets/App icons/people.jpg" style="display:inline;margin-top:2px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(30);filter:brightness(30)">
-        <div style="float:left;color:#777;font-size:10px">{{message.payload.doc.data()?.recipientList.length}}</div>
+        <div style="float:left;color:#777;font-size:10px;width:40px;">{{message.payload.doc.data()?.recipientList.length}}</div>
+        <img src="./../assets/App icons/eye.png" style="display:inline;margin-top:2px;margin-right:3px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(80);filter:brightness(80)">
+        <div style="float:left;color:#777;font-size:10px">{{objectToArray(message.payload.doc.data()?.reads)?.length}}</div>
       </div>
       <div class="seperator" style="margin-left:60px"></div>
       {{last?scrollToTop(message.key):''}}
@@ -96,17 +100,17 @@ export class UserProfileComponent {
       .where('recipientList','array-contains',this.UI.focusUser)
       .where('lastMessage','==',true)
       .orderBy('timestamp','desc')
-      .limit(20)
+      .limit(30)
     ).snapshotChanges();
   }
 
-  clickGlobal(){
-    if (this.view=='global')return;
-    this.view='global';
+  clickTeam(){
+    if (this.view=='team')return;
+    this.view='team';
     this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
       .where('lastMessage','==',true)
       .orderBy('timestamp','desc')
-      .limit(20)
+      .limit(30)
     ).snapshotChanges();
   }
 
