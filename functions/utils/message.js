@@ -56,9 +56,7 @@ module.exports = {
     let receiver='none';
     let reference='none';
     return admin.firestore().doc('appSettings/costs').get().then(costs=>{
-      if(user!='PERRINN'){
-        amountWrite=costs.data().messageWrite;
-      }
+      amountWrite=costs.data().messageWrite;
       amount=Math.round(Number(amountWrite)*100000)/100000;
       batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.amount":amount},{create:true});
       batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.amountWrite":amountWrite},{create:true});
@@ -70,17 +68,6 @@ module.exports = {
       }).catch(error=>{
         console.log(error);
       });
-    });
-  },
-
-  incrementUserMessageCounter:(user)=>{
-    var transactionDoc=admin.firestore().doc('PERRINNTeams/'+user);
-    return admin.firestore().doc('PERRINNTeams/'+user).update({
-      messageCount:admin.firestore.FieldValue.increment(1)
-    }).then(()=>{
-      return 'done';
-    }).catch(error=>{
-      console.log(error);
     });
   },
 
@@ -121,12 +108,14 @@ module.exports = {
     let reference='none';
     let inputCheck=false;
     if(process!=undefined&&process!=null){
-      if(process.service=='transactionStart'){
-        if(checkTransactionInputs(user,process.inputs)) {
-          amount=process.inputs.amount;
-          receiver=process.inputs.receiver;
-          reference=process.inputs.reference;
-          inputCheck=true;
+      if(process.function!=undefined&&process.function!=null){
+        if(process.function.name=='transactionOut'){
+          if(checkTransactionInputs(user,process.inputs)) {
+            amount=process.inputs.amount;
+            receiver=process.inputs.receiver;
+            reference=process.inputs.reference;
+            inputCheck=true;
+          }
         }
       }
     }
@@ -153,20 +142,16 @@ module.exports = {
     let donor='none';
     let donorName='';
     let donorImageUrlThumb='';
-    let donorMessage='none';
     if(messageData.PERRINN!=undefined){
       let transactionInObj=messageData.PERRINN.transactionIn;
       if(transactionInObj!=undefined&&transactionInObj!=null){
         if(transactionInObj.donor!=undefined&&transactionInObj.donor!=null){
-          if(transactionInObj.donorMessage!=undefined&&transactionInObj.donorMessage!=null){
-            donor=transactionInObj.donor;
-            donorName=transactionInObj.donorName;
-            donorImageUrlThumb=transactionInObj.donorImageUrlThumb;
-            donorMessage=transactionInObj.donorMessage;
-            amount=donorTransactionInObj.amount;
-            reference=donorTransactionInObj.reference;
-            donorCheck=true;
-          }
+          donor=transactionInObj.donor;
+          donorName=transactionInObj.donorName;
+          donorImageUrlThumb=transactionInObj.donorImageUrlThumb;
+          amount=transactionInObj.amount;
+          reference=transactionInObj.reference;
+          donorCheck=true;
         }
       }
     }
@@ -174,7 +159,6 @@ module.exports = {
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donor":donor},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorName":donorName},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorImageUrlThumb":donorImageUrlThumb},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorMessage":donorMessage},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.reference":reference},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorCheck":donorCheck},{create:true});
@@ -241,10 +225,11 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.processed":transactionOutProcessed},{create:true});
       batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.processed":transactionInProcessed},{create:true});
       if(previousMessage!='none')batch.update(admin.firestore().doc('PERRINNMessages/'+previousMessage),{"PERRINN.chain.nextMessage":message},{create:true});
-      if(transactionInProcessed)batch.update(admin.firestore().doc('PERRINNMessages/'+messageObj.data().PERRINN.transactionIn.donorMessage),{"PERRINN.transactionOut.receiverMessage":message},{create:true});
       batch.update(admin.firestore().doc('PERRINNChain/'+user),{previousMessage:message},{create:true});
       batch.update(admin.firestore().doc('PERRINNChain/'+user),{previousIndex:index},{create:true});
+      batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousMessage:message},{create:true});
       batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lastMessageBalance:balance},{create:true});
+      batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousIndex:index},{create:true});
       return batch.commit().then(()=>{
         return 'done';
       });
@@ -256,7 +241,24 @@ module.exports = {
   writeMessageTransactionReceiverData:(user,message)=>{
     return admin.firestore().doc('PERRINNMessages/'+message).get().then(messageObj=>{
       if(messageObj.data().PERRINN.transactionOut.processed){
-        return createMessageUtils.createMessage(messageObj.data().PERRINN.transactionOut.receiver,"PERRINN","","","",{},{},user,message,{}).then(()=>{
+        let sender='-L7jqFf8OuGlZrfEK6dT';
+        let receiverMessageObj={
+          user:messageObj.data().PERRINN.transactionOut.receiver,
+          text:messageObj.data().PERRINN.transactionOut.amount+" COINS received, reference: "+messageObj.data().PERRINN.transactionOut.reference,
+          chain:messageObj.data().chain,
+          chatSubject:messageObj.data().chatSubject,
+          recipientList:messageObj.data().recipientList,
+          PERRINN:{
+            transactionIn:{
+              donor:user,
+              donorName:messageObj.data().name,
+              donorImageUrlThumb:messageObj.data().imageUrlThumbUser,
+              amount:messageObj.data().PERRINN.transactionOut.amount,
+              reference:messageObj.data().PERRINN.transactionOut.reference
+            }
+          }
+        };
+        return createMessageUtils.createMessageAFS(receiverMessageObj).then(()=>{
           return 'done';
         });
       }
@@ -269,10 +271,8 @@ module.exports = {
 
 function checkTransactionInputs (user,inputs) {
   if(inputs.amount>0&&inputs.amount<=100000){
-    if(inputs.receiver!=user){
-      if(inputs.reference!=''){
-        return true;
-      }
+    if(inputs.reference!=''){
+      return true;
     }
   }
   return false;

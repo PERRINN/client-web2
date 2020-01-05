@@ -10,6 +10,7 @@ import { LoginComponent }  from './login.component';
 import { UserProfileComponent }  from './userProfile.component';
 import { UserSettingsComponent }  from './userSettings.component';
 import { SearchComponent }  from './search.component';
+import { SendCoinsComponent }  from './sendCoins.component';
 import { BuyCoinsComponent }  from './buyCoins.component';
 import { LinkyModule } from 'angular-linky';
 
@@ -42,6 +43,7 @@ export const firebaseConfig = {
     UserProfileComponent,
     UserSettingsComponent,
     SearchComponent,
+    SendCoinsComponent,
     BuyCoinsComponent,
     ScrollableDirective,
   ],

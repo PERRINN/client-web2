@@ -1,48 +1,51 @@
 import { Component, NgZone } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 
 @Component({
   selector: 'buyCoins',
   template: `
   <div id='main_container'>
-  <div [hidden]='!enteringAmount'>
+  <div style="width:300px;color:white;background-color:green;border-radius:5px;margin:10px auto;padding:10px;text-align:center">
+    <span style="font-size:12px">Buy</span>
+    <br/>
+    <span style="font-size:18px">{{amountCOINSPurchased}}</span>
+    <span style="font-size:14px"> COINS</span>
+  </div>
+  <div style="margin:10px auto;font-size:10px;color:#999;line-height:14px;width:50px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/coin-credit','_blank')">Info</div>
+  <div [hidden]='!selectingCurrency'>
     <div class="sheet">
-      <div class='title' style='float:left'>How many COINS would you like to buy?</div>
-      <input maxlength="50" type="number" onkeypress="return event.charCode>=48" (keyup)="refreshAmountCharge()" style='width:100px;' [(ngModel)]="amountCOINSPurchased">
-      <div class="title">What currency would you like to pay in?</div>
-      <ul class="listLight" style='margin-top:20px'>
-        <li *ngFor="let currency of currencyList | async"
-          [class.selected]="currency.key === currentCurrencyID"
-          (click)="currentCurrencyID = currency.key;refreshAmountCharge();">
-          <div style="width:200px;height:20px;float:left;">{{currency.values.designation}}</div>
-          <div style="width:200px;height:20px;float:left;">1 COIN costs {{1/currency.values.toCOIN|number:'1.2-2'}} {{currency.values.code}}</div>
+      <div class="title">Select your currency</div>
+      <ul class="listLight">
+        <li *ngFor="let currency of objectToArray(currencyList)"
+          [class.selected]="currency[0] === currentCurrencyID"
+          (click)="currentCurrencyID = currency[0];refreshAmountCharge()"
+          style="padding:15px">
+          <div style="width:250px;height:20px;float:left;font-size:15px">{{currency[1].designation}}</div>
+          <div style="height:20px;float:left">1 COIN costs {{1/currency[1].toCOIN|number:'1.2-2'}} {{currency[1].code}}</div>
         </li>
       </ul>
       <div class="content" style="text-align:center; padding-top:20px">{{amountCharge/100 | number:'1.2-2'}} {{currentCurrencyID | uppercase}} to be paid.</div>
       <div style="text-align:center">
-        <button [hidden]='!UI.currentTeamObj?.leaders[UI.currentUser]' type="button" (click)="enteringAmount=false;enteringCardDetails=true">Proceed to payment</button>
-        <div class='content' [hidden]='UI.currentTeamObj?.leaders[UI.currentUser]' style='font-weight:bold'>You need to be leader to buy COINS for this team.</div>
+        <button type="button" (click)="selectingCurrency=false;enteringCardDetails=true">Proceed to payment</button>
       </div>
     </div>
   </div>
   <div [hidden]='!enteringCardDetails'>
   <div class="module form-module">
   <div class="top">
-  <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="enteringAmount=true;enteringCardDetails=false">back</div>
-  <img src="./../assets/App icons/icon_share_03.svg" style="width:50px">
-  <div style="color:black">{{UI.currentTeamObj?.name}}</div>
-  <div style="color:black;padding-bottom:15px">{{amountCOINSPurchased | number:'1.2-2'}} COINS</div>
+    <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="selectingCurrency=true;enteringCardDetails=false">back</div>
   </div>
   <div class="form">
   <form>
-  <div style="text-align:left;padding:0 0 20px 10px;float:left">Safe transfer</div>
-  <img src="./../assets/App icons/Payment Method Icons/Light Color/22.png" style="width:40px;float:right;margin-right:10px">
-  <img src="./../assets/App icons/Payment Method Icons/Light Color/2.png" style="width:40px;float:right">
-  <img src="./../assets/App icons/Payment Method Icons/Light Color/1.png" style="width:40px;float:right">
+  <div style="margin:10px">
+    <img src="./../assets/App icons/Payment Method Icons/Light Color/22.png" style="width:40px">
+    <img src="./../assets/App icons/Payment Method Icons/Light Color/2.png" style="width:40px">
+    <img src="./../assets/App icons/Payment Method Icons/Light Color/1.png" style="width:40px">
+  </div>
   <input [(ngModel)]="cardNumber" name="card-number" type="text" placeholder="Card number *" (keyup)='messagePayment=""'>
   <div>
   <input [(ngModel)]="expiryMonth" style="width:30%;float:left" name="expiry-month" type="text" placeholder="MM *" (keyup)='messagePayment=""'>
@@ -75,30 +78,30 @@ export class BuyCoinsComponent {
   currentCurrencyID: string;
   messagePayment: string;
   messagePERRINNTransaction: string;
-  currencyList: Observable<any[]>;
+  currencyList: any;
   newPaymentID: string;
-  enteringAmount: boolean;
+  selectingCurrency: boolean;
   enteringCardDetails: boolean;
   processingPayment: boolean;
 
   constructor(
-    public db: AngularFireDatabase,
+    public afs: AngularFirestore,
     public router: Router,
     private _zone: NgZone,
     public UI: userInterfaceService
   ) {
-    this.enteringAmount = true;
+    this.selectingCurrency = true;
     this.enteringCardDetails = false;
     this.processingPayment = false;
     this.newPaymentID = '';
     this.messagePayment = '';
     this.messagePERRINNTransaction = '';
-    this.amountCOINSPurchased = 100;
+    this.amountCOINSPurchased = 50;
     this.currentCurrencyID = 'gbp';
-    this.currencyList = db.list('appSettings/currencyList').snapshotChanges().pipe(map(changes => {
-      return changes.map(c => ({key: c.payload.key, values: c.payload.val()}));
-    }));
-    this.refreshAmountCharge();
+    afs.doc<any>('appSettings/payment').valueChanges().subscribe(snapshot=>{
+      this.currencyList=snapshot.currencyList;
+      this.refreshAmountCharge();
+    });
   }
 
   processPayment() {
@@ -142,8 +145,13 @@ export class BuyCoinsComponent {
   }
 
   refreshAmountCharge() {
-    this.db.database.ref('appSettings/currencyList/' + this.currentCurrencyID).once('value').then(currency => {
-      this.amountCharge = Number((this.amountCOINSPurchased / currency.val().toCOIN * 100).toFixed(0));
+    this.amountCharge = Number((this.amountCOINSPurchased/this.currencyList[this.currentCurrencyID].toCOIN*100).toFixed(0));
+  }
+
+  objectToArray(obj) {
+    if (obj == null) { return null; }
+    return Object.keys(obj).map(function(key) {
+      return [key, obj[key]];
     });
   }
 

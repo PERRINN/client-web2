@@ -10,12 +10,6 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
   let lockedUserChain=false;
   return messageUtils.updateLastMessageFlag(messageData.chain,context.params.message)
   .then(()=>{
-    return messageUtils.incrementUserMessageCounter(messageData.user);
-  }).then(result=>{
-    if(result!='done'){
-      if(!writeError)writeError='did not increment count';
-      return null;
-    }
     return messageUtils.writeMessagingCostData(messageData.user,context.params.message);
   }).then(result=>{
     if(result!='done'){

@@ -34,7 +34,7 @@ import * as firebase from 'firebase/app';
             <span>{{team.values?.name}}</span>
             <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
-          <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white" (click)="UI.addRecipient(team.key)">Add</div>
+          <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white;border-style:none" (click)="UI.addRecipient(team.key)">Add</div>
         </div>
       </li>
     </ul>
@@ -94,7 +94,7 @@ import * as firebase from 'firebase/app';
               <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.2-20'}}</span>
               <span style="font-size:11px">have been sent to</span>
               <span style="font-size:11px">{{message.payload?.PERRINN?.transactionOut?.receiverName}}</span>
-              <span style="font-size:11px">reference:{{message.payload?.PERRINN?.transactionOut?.reference}}</span>
+              <span style="font-size:11px">reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</span>
             </div>
             <img [src]="message.payload?.PERRINN?.transactionOut?.receiverImageUrlThumb" style="object-fit:cover;height:30px;width:50px" (click)="router.navigate(['chat',message.payload?.PERRINN?.transactionOut?.receiver])">
           </div>
@@ -104,7 +104,7 @@ import * as firebase from 'firebase/app';
               <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.2-20'}}</span>
               <span style="font-size:11px">have been received from</span>
               <span style="font-size:11px">{{message.payload?.PERRINN?.transactionIn?.donorName}}</span>
-              <span style="font-size:11px">reference:{{message.payload?.PERRINN?.transactionIn?.reference}}</span>
+              <span style="font-size:11px">reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</span>
             </div>
             <img [src]="message.payload?.PERRINN?.transactionIn?.donorImageUrlThumb" style="object-fit:cover;height:30px;width:50px" (click)="router.navigate(['chat',message.payload?.PERRINN?.transactionIn?.donor])">
           </div>
@@ -114,61 +114,67 @@ import * as firebase from 'firebase/app';
           <div *ngIf="showDetails[message.key]">
             <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MEMBERSHIP COST</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Count: {{message.payload?.PERRINN?.membershipCost?.counter}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.membershipCost?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.membershipCost?.timestamp}}</div>
+            </div>
+            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
+              <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE COST</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount:C{{message.payload?.PERRINN?.messagingCost?.amount|number:'1.2-20'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Read:C{{message.payload?.PERRINN?.messagingCost?.amountRead|number:'1.2-20'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Write:C{{message.payload?.PERRINN?.messagingCost?.amountWrite|number:'1.2-20'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver:{{message.payload?.PERRINN?.messagingCost?.receiver}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.status=='rejected balance low'?'#fcebb8':''">Status:{{message.payload?.PERRINN?.messagingCost?.status}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.processed?'#c7edcd':''">Processed:{{message.payload?.PERRINN?.messagingCost?.processed}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp:{{message.payload?.PERRINN?.messagingCost?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.messagingCost?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Read: C{{message.payload?.PERRINN?.messagingCost?.amountRead|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Write: C{{message.payload?.PERRINN?.messagingCost?.amountWrite|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message.payload?.PERRINN?.messagingCost?.receiver}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.status=='rejected balance low'?'#fcebb8':''">Status: {{message.payload?.PERRINN?.messagingCost?.status}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.messagingCost?.processed}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.messagingCost?.timestamp}}</div>
             </div>
             <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/repeat.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">PROCESS</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Function:{{message.payload?.PERRINN?.process?.function|json}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs complete:{{message.payload?.PERRINN?.process?.inputsComplete}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs:{{message.payload?.PERRINN?.process?.inputs|json}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="(message.payload?.PERRINN?.process?.result!='none')?'#c7edcd':''">Result:{{message.payload?.PERRINN?.process?.result}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp:{{message.payload?.PERRINN?.process?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Function: {{message.payload?.PERRINN?.process?.function|json}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs complete: {{message.payload?.PERRINN?.process?.inputsComplete}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs: {{message.payload?.PERRINN?.process?.inputs|json}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="(message.payload?.PERRINN?.process?.result!='none')?'#c7edcd':''">Result: {{message.payload?.PERRINN?.process?.result}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.process?.timestamp}}</div>
             </div>
             <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/out.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION OUT</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount:C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.2-20'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver:{{message.payload?.PERRINN?.transactionOut?.receiver}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Message:{{message.payload?.PERRINN?.transactionOut?.receiverMessage}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference:{{message.payload?.PERRINN?.transactionOut?.reference}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.status=='rejected balance low'?'#fcebb8':''">Status:{{message.payload?.PERRINN?.transactionOut?.status}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.processed?'#c7edcd':''">Processed:{{message.payload?.PERRINN?.transactionOut?.processed}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp:{{message.payload?.PERRINN?.transactionOut?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message.payload?.PERRINN?.transactionOut?.receiver}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Message: {{message.payload?.PERRINN?.transactionOut?.receiverMessage}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.status=='rejected balance low'?'#fcebb8':''">Status: {{message.payload?.PERRINN?.transactionOut?.status}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.transactionOut?.processed}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionOut?.timestamp}}</div>
             </div>
             <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/in.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION IN</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount:C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.2-20'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Donor:{{message.payload?.PERRINN?.transactionIn?.donor}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Message:{{message.payload?.PERRINN?.transactionIn?.donorMessage}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference:{{message.payload?.PERRINN?.transactionIn?.reference}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionIn?.processed?'#c7edcd':''">Processed:{{message.payload?.PERRINN?.transactionIn?.processed}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp:{{message.payload?.PERRINN?.transactionIn?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Donor: {{message.payload?.PERRINN?.transactionIn?.donor}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionIn?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.transactionIn?.processed}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionIn?.timestamp}}</div>
             </div>
             <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/chain.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE CHAIN</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Index:#{{message.payload?.PERRINN?.chain?.index}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.chain?.previousMessage!=undefined?'#c7edcd':''">Previous:{{message.payload?.PERRINN?.chain?.previousMessage}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Current:{{message.payload?.PERRINN?.chain?.currentMessage}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Next:{{message.payload?.PERRINN?.chain?.nextMessage}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp:{{message.payload?.PERRINN?.chain?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.chain?.previousMessage!=undefined?'#c7edcd':''">Previous: {{message.payload?.PERRINN?.chain?.previousMessage}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Current: {{message.payload?.PERRINN?.chain?.currentMessage}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Next: {{message.payload?.PERRINN?.chain?.nextMessage}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.chain?.timestamp}}</div>
             </div>
             <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
               <img src="./../assets/App icons/wallet.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">WALLET</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Previous balance:C{{message.payload?.PERRINN?.wallet?.previousBalance|number:'1.2-20'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount:C{{message.payload?.PERRINN?.wallet?.amount|number:'1.2-20'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.wallet?.balance!=undefined?'#c7edcd':''">Balance:C{{message.payload?.PERRINN?.wallet?.balance|number:'1.2-20'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp:{{message.payload?.PERRINN?.wallet?.timestamp}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Previous balance: C{{message.payload?.PERRINN?.wallet?.previousBalance|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.wallet?.amount|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.wallet?.balance!=undefined?'#c7edcd':''">Balance: C{{message.payload?.PERRINN?.wallet?.balance|number:'1.2-20'}}</div>
+              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.wallet?.timestamp}}</div>
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { ChatComponent } from './chat.component';
 import { UserProfileComponent } from './userProfile.component';
 import { UserSettingsComponent } from './userSettings.component';
 import { SearchComponent } from './search.component';
+import { SendCoinsComponent } from './sendCoins.component';
 import { BuyCoinsComponent } from './buyCoins.component';
 
 const appRoutes: Routes = [
@@ -13,6 +14,7 @@ const appRoutes: Routes = [
   { path: 'userSettings/:id', component: UserSettingsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'search', component: SearchComponent },
+  { path: 'sendCoins', component: SendCoinsComponent },
   { path: 'buyCoins', component: BuyCoinsComponent },
   { path: '',   redirectTo: '/login', pathMatch: 'full' },
   { path: '**', component: LoginComponent }
