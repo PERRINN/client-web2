@@ -11,6 +11,9 @@ service cloud.firestore {
       match /reads/{message} {
       	allow write: if team == request.auth.uid;
       }
+      match /payments/{payment} {
+      	allow create,read: if team == request.auth.uid;
+      }
     }
     match /PERRINNMessages/{message} {
       allow create: if request.resource.data.user==request.auth.uid

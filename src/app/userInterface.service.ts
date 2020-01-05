@@ -87,7 +87,7 @@ export class userInterfaceService {
     this.refreshRecipientList();
     this.afs.collection('PERRINNMessages').add({
       timestamp: now,
-      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      serverTimestamp:firebase.firestore.FieldValue.serverTimestamp(),
       chatSubject:this.chatSubject,
       chain:this.chain,
       recipients: this.recipients,

@@ -12,6 +12,7 @@ import * as firebase from 'firebase/app';
   <div id='main_container'>
   <div class='sheet'>
   <img class='editButton' *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:25px;margin:10px" (click)="router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
+  <div *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:100px;height:24px;text-align:center;line-height:24px;font-size:12px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:5px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
   <div *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:100px;height:24px;text-align:center;line-height:24px;font-size:12px;margin:10px;color:white;background-color:#267cb5;border-radius:5px;cursor:pointer" (click)="newMessage()">New message</div>
   <div style="clear:both;background-color:#f4f7fc">
     <div style="float:left">
@@ -27,7 +28,6 @@ import * as firebase from 'firebase/app';
       <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(UI.focusUserObj?.lastMessageBalance?UI.focusUserObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
       <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
       <div *ngIf='(UI.currentUser==UI.focusUser)' style="float:left;margin-left:10px;margin-top:3px;font-size:10px;color:green;line-height:14px;width:50px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['buyCoins'])">Top Up</div>
-      <div *ngIf='(UI.currentUser==UI.focusUser)' style="float:left;margin-left:10px;margin-top:3px;font-size:10px;color:green;line-height:14px;width:50px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send</div>
       <img [style.opacity]="UI.focusUserObj?.apps?.Google?.enabled?1:0.25" [style.cursor]="UI.focusUserObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.focusUserObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="clear:both;float:left;width:25px;margin:10px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
       <img [style.opacity]="UI.focusUserObj?.apps?.Onshape?.enabled?1:0.25" [style.cursor]="UI.focusUserObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.focusUserObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
     </div>

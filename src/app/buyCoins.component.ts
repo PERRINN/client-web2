@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'buyCoins',
@@ -79,7 +80,6 @@ export class BuyCoinsComponent {
   messagePayment: string;
   messagePERRINNTransaction: string;
   currencyList: any;
-  newPaymentID: string;
   selectingCurrency: boolean;
   enteringCardDetails: boolean;
   processingPayment: boolean;
@@ -93,7 +93,6 @@ export class BuyCoinsComponent {
     this.selectingCurrency = true;
     this.enteringCardDetails = false;
     this.processingPayment = false;
-    this.newPaymentID = '';
     this.messagePayment = '';
     this.messagePERRINNTransaction = '';
     this.amountCOINSPurchased = 50;
@@ -118,25 +117,19 @@ export class BuyCoinsComponent {
           this.enteringCardDetails = false;
           this.processingPayment = true;
           this.messagePayment = `Processing card...`;
-          this.newPaymentID = this.db.database.ref(`/teamPayments/${this.UI.currentTeam}`).push().key;
-          this.db.database.ref(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}`)
-          .update({
-            source: response.id,
-            amountCOINSPurchased: this.amountCOINSPurchased,
-            amountCharge: this.amountCharge,
-            currency: this.currentCurrencyID,
-            team: this.UI.currentTeam,
-          })
-          .then(() => {
-            this.db.object<any>(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/response/outcome`).snapshotChanges().subscribe(paymentSnapshot => {
-              if (paymentSnapshot.payload.val().seller_message != null) { this.messagePayment = paymentSnapshot.payload.val().seller_message; }
-              if (this.messagePayment == 'Payment complete.') { this.messagePERRINNTransaction = 'We are now sending COINS to your team...'; }
-            });
-            this.db.object<any>(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/error`).snapshotChanges().subscribe(paymentSnapshot => {
-              if (paymentSnapshot.payload.val().message != null) { this.messagePayment = paymentSnapshot.payload.val().message; }
-            });
-            this.db.object<any>(`/teamPayments/${this.UI.currentTeam}/${this.newPaymentID}/PERRINNTransaction`).snapshotChanges().subscribe(transactionSnapshot => {
-              if (transactionSnapshot.payload.val().message != null) { this.messagePERRINNTransaction = transactionSnapshot.payload.val().message; }
+          this.afs.collection('PERRINNTeams/'+this.UI.currentUser+'/payments').add({
+            source:response.id,
+            amountCOINSPurchased:this.amountCOINSPurchased,
+            amountCharge:this.amountCharge,
+            currency:this.currentCurrencyID,
+            user:this.UI.currentUser,
+            serverTimestamp:firebase.firestore.FieldValue.serverTimestamp()
+          }).then(paymentID=>{
+            this.afs.doc<any>('PERRINNTeams/'+this.UI.currentUser+'/payments/'+paymentID.id).valueChanges().subscribe(payment=>{
+              if(payment.reponse!=undefined)this.messagePayment=payment.reponse.outcome.seller_message;
+              if(this.messagePayment=='Payment complete.')this.messagePERRINNTransaction='We are now sending COINS to you...';
+              if(payment.error!=undefined)this.messagePayment=payment.error.message;
+              if(payment.PERRINNTransaction!=undefined)this.messagePERRINNTransaction=payment.PERRINNTransaction.message;
             });
           });
         }
