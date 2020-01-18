@@ -52,7 +52,7 @@ export const firebaseConfig = {
     FormsModule,
     HttpClientModule,
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFirestoreModule.enablePersistence({experimentalTabSynchronization:true}),
+    AngularFirestoreModule.enablePersistence({synchronizeTabs:true}),
     AngularFireStorageModule,
     AngularFireDatabaseModule,
     AngularFireAuthModule,

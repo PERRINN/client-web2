@@ -103,6 +103,7 @@ module.exports = {
     let amount=0;
     let receiver='none';
     let receiverName='';
+    let receiverFamilyName='';
     let receiverImageUrlThumb='';
     let receiverMessage='none';
     let reference='none';
@@ -113,6 +114,8 @@ module.exports = {
           if(checkTransactionInputs(user,process.inputs)) {
             amount=process.inputs.amount;
             receiver=process.inputs.receiver;
+            receiverName=process.inputs.receiverName;
+            receiverFamilyName=process.inputs.receiverFamilyName;
             reference=process.inputs.reference;
             inputCheck=true;
           }
@@ -122,11 +125,13 @@ module.exports = {
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.amount":amount},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiver":receiver},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiverName":receiverName},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiverFamilyName":receiverFamilyName},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiverImageUrlThumb":receiverImageUrlThumb},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiverMessage":receiverMessage},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.reference":reference},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.inputCheck":inputCheck},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.result":'done'},{create:true});
     return batch.commit().then(()=>{
       return 'done';
     }).catch(error=>{
@@ -141,6 +146,7 @@ module.exports = {
     let donorCheck=false;
     let donor='none';
     let donorName='';
+    let donorFamilyName='';
     let donorImageUrlThumb='';
     if(messageData.PERRINN!=undefined){
       let transactionInObj=messageData.PERRINN.transactionIn;
@@ -148,6 +154,7 @@ module.exports = {
         if(transactionInObj.donor!=undefined&&transactionInObj.donor!=null){
           donor=transactionInObj.donor;
           donorName=transactionInObj.donorName;
+          donorFamilyName=transactionInObj.donorFamilyName;
           donorImageUrlThumb=transactionInObj.donorImageUrlThumb;
           amount=transactionInObj.amount;
           reference=transactionInObj.reference;
@@ -158,6 +165,7 @@ module.exports = {
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.amount":amount},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donor":donor},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorName":donorName},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorFamilyName":donorFamilyName},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorImageUrlThumb":donorImageUrlThumb},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.reference":reference},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
@@ -252,6 +260,7 @@ module.exports = {
             transactionIn:{
               donor:user,
               donorName:messageObj.data().name,
+              donorFamilyName:messageObj.data().familyName,
               donorImageUrlThumb:messageObj.data().imageUrlThumbUser,
               amount:messageObj.data().PERRINN.transactionOut.amount,
               reference:messageObj.data().PERRINN.transactionOut.reference

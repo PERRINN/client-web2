@@ -22,6 +22,9 @@
     "resources": {
       "files": [
         "/assets/**"
+      ],
+      "url":[
+        "https://firebasestorage.googleapis.com/v0/b/*"
       ]
     }
   }]

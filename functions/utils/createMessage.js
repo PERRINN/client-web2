@@ -65,6 +65,7 @@ module.exports = {
           messageObj.emailNotifications=messageObj.recipientList;
           messageObj.lastMessage=true;
           messageObj.name=userData.data().name;
+          messageObj.familyName=userData.data().familyName;
           messageObj.imageUrlThumbUser=userData.data().imageUrlThumb;
           return admin.firestore().collection('PERRINNMessages').add(messageObj);
         });

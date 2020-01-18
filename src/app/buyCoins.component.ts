@@ -10,15 +10,17 @@ import * as firebase from 'firebase/app';
   selector: 'buyCoins',
   template: `
   <div id='main_container'>
-  <div style="width:300px;color:white;background-color:green;border-radius:5px;margin:10px auto;padding:10px;text-align:center">
+  <div style="width:320px;color:white;background-color:green;border-radius:5px;margin:25px auto;padding:25px;text-align:center">
     <span style="font-size:12px">Buy</span>
     <br/>
-    <span style="font-size:18px">{{amountCOINSPurchased}}</span>
+    <span style="font-size:20px">{{amountCOINSPurchased}}</span>
     <span style="font-size:14px"> COINS</span>
+    <div class="seperator" style="width:100%;margin:10px 0px 10px 0px"></div>
+    <span style="font-size:12px">Gives you membership, read and write access to the team.</span>
+    <div style="margin:5px auto;font-size:10px;color:white;line-height:14px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/coin-credit','_blank')">More info</div>
   </div>
-  <div style="margin:10px auto;font-size:10px;color:#999;line-height:14px;width:50px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/coin-credit','_blank')">Info</div>
   <div [hidden]='!selectingCurrency'>
-    <div class="sheet">
+    <div class="sheet" style="max-width:320px">
       <div class="title">Select your currency</div>
       <ul class="listLight">
         <li *ngFor="let currency of objectToArray(currencyList)"
@@ -50,7 +52,7 @@ import * as firebase from 'firebase/app';
   <input [(ngModel)]="cardNumber" name="card-number" type="text" placeholder="Card number *" (keyup)='messagePayment=""'>
   <div>
   <input [(ngModel)]="expiryMonth" style="width:30%;float:left" name="expiry-month" type="text" placeholder="MM *" (keyup)='messagePayment=""'>
-  <div style="font-size:30px;float:left">/</div>
+  <div style="font-size:30px;line-height:40px;float:left">/</div>
   <input [(ngModel)]="expiryYear" style="width:30%;float:left" name="expiry-year" type="text" placeholder="YY *" (keyup)='messagePayment=""'>
   </div>
   <input [(ngModel)]="cvc" name="cvc" type="text"  placeholder="CVC *" (keyup)='messagePayment=""'>
@@ -61,7 +63,7 @@ import * as firebase from 'firebase/app';
   </div>
   </div>
   <div [hidden]='!processingPayment'>
-    <div class='sheet'>
+    <div class='sheet' style="max-width:320px">
       <div class='content' style="text-align:center">{{messagePayment}}</div>
       <div class='content' style="padding-top:30px; text-align:center">{{messagePERRINNTransaction}}</div>
     </div>
@@ -126,10 +128,9 @@ export class BuyCoinsComponent {
             serverTimestamp:firebase.firestore.FieldValue.serverTimestamp()
           }).then(paymentID=>{
             this.afs.doc<any>('PERRINNTeams/'+this.UI.currentUser+'/payments/'+paymentID.id).valueChanges().subscribe(payment=>{
-              if(payment.reponse!=undefined)this.messagePayment=payment.reponse.outcome.seller_message;
-              if(this.messagePayment=='Payment complete.')this.messagePERRINNTransaction='We are now sending COINS to you...';
-              if(payment.error!=undefined)this.messagePayment=payment.error.message;
-              if(payment.PERRINNTransaction!=undefined)this.messagePERRINNTransaction=payment.PERRINNTransaction.message;
+              if(payment.outcome!=undefined)this.messagePayment=payment.outcome.seller_message;
+              if(this.messagePayment=='Payment complete.')this.messagePERRINNTransaction='COINS have been sent to you. Enjoy experiencing the PERRINN Team!';
+              if(payment.errorMessage!=undefined)this.messagePayment=payment.errorMessage;
             });
           });
         }

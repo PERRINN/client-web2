@@ -96,6 +96,7 @@ export class userInterfaceService {
       lastMessage: true,
       user: this.currentUser,
       name: this.currentUserObj.name,
+      familyName: this.currentUserObj.familyName,
       imageUrlThumbUser: this.currentUserObj.imageUrlThumb,
       text:text,
       image:image,

@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'search',
@@ -16,14 +17,13 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
   <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
     <li *ngFor="let team of teams | async" style="padding:5px">
-      <div style="float:left;width:200px" (click)="router.navigate(['user',team.key])">
-      <img [src]="team?.values.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:30px; width:30px">
-      <span>{{team.values?.name}}</span>
-      <span style="font-size:10px"> {{team.values?.familyName}}</span>
-      <div style="font-size:15px;color:#999">C{{(team.values?.lastMessageBalance?team.values?.lastMessageBalance:0)|number:'1.2-2'}}</div>
+      <div style="float:left;width:250px" (click)="router.navigate(['user',team.key])">
+        <img [src]="team?.values.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
+        <span>{{team.values?.name}}</span>
+        <span style="font-size:10px"> {{team.values?.familyName}}</span>
+        <div style="font-size:12px;color:#999">C{{(team.values?.lastMessageBalance?team.values?.lastMessageBalance:0)|number:'1.2-2'}}</div>
       </div>
-      <div class="buttonDiv" style="float:left;font-size:11px;color:#267cb5" (click)="newChatWithUser(team.key)">New chat</div>
-      <div class="buttonDiv" style="float:left;font-size:11px;background-color:#267cb5;color:white" (click)="addUserToChat(team.key)">Add to chat</div>
+      <div class="buttonDiv" style="float:left;font-size:11px;color:#267cb5" (click)="newChatWithUser(team.key)">New message</div>
     </li>
   </ul>
   </div>
@@ -86,19 +86,18 @@ export class SearchComponent  {
   }
 
   newChatWithUser(user){
-    this.UI.clearRecipient();
-    this.UI.chatSubject='';
-    return this.UI.addRecipient(this.UI.currentUser).then(()=>{
-      return this.UI.addRecipient(user).then(()=>{
-        this.router.navigate(['chat',this.UI.currentUser]);
-      });
+    return this.afs.collection('IDs').add({
+      user:this.UI.currentUser,
+      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(ref=>{
+      this.UI.clearRecipient();
+      this.UI.chatSubject='';
+      this.UI.chain=ref.id;
+      this.UI.addRecipient(this.UI.currentUser);
+      this.UI.addRecipient(user);
+      this.UI.showChatDetails=false;
+      this.router.navigate(['chat','']);
     });
-  }
-
-  addUserToChat(user){
-      return this.UI.addRecipient(user).then(()=>{
-        this.router.navigate(['chat',this.UI.currentUser]);
-      });
   }
 
 }

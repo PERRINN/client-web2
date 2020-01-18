@@ -112,6 +112,8 @@ export class SendCoinsComponent  {
         inputs:{
           amount:this.amount,
           receiver:this.receiver,
+          receiverName:this.receiverName,
+          receiverFamilyName:this.receiverFamilyName,
           reference:this.reference
         },
         function:{

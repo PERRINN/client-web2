@@ -21,10 +21,10 @@ import * as firebase from 'firebase/app';
     <div *ngIf="editing" (click)="draftMessage='I have changed the subject of this chat';addMessage();editing=!editing;refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply</div>
     <ul style="color:#333;border-style:solid;border-width:1px;background-color:white;margin:10px;border-radius:10px">
       <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['user',recipient[0]])" style="cursor:pointer;float:left">
-        <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:20px;width:20px;border-radius:3px;margin:3px 3px 3px 10px">
+        <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
         <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
       </li>
-      <input id="searchInput" style="border:none" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="add recipient">
+      <input id="searchInput" style="border:none" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="add people">
     </ul>
     <ul class="listLight">
       <li *ngFor="let team of teams | async" >
@@ -84,29 +84,27 @@ import * as firebase from 'firebase/app';
             <div style="font-size:11px;padding:5px;">{{message.payload?.linkUserName}} {{message.payload?.linkuserFamilyName}}</div>
           </div>
           <div *ngIf="message.payload?.PERRINN?.process?.inputsComplete" style="clear:both;margin:5px">
-            <div style="float:left;background-color:#c7edcd;padding:3px">
+            <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
               <span style="font-size:11px">{{message.payload?.PERRINN?.process?.result}}</span>
             </div>
           </div>
           <div *ngIf="message.payload?.PERRINN?.transactionOut?.processed" style="clear:both;margin:5px">
-            <img src="./../assets/App icons/out.png" style="display:inline;float:left;height:30px">
-            <div style="float:left;background-color:#c7edcd;padding:5px">
+            <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
               <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.2-20'}}</span>
-              <span style="font-size:11px">have been sent to</span>
+              <span style="font-size:11px"> have been sent to </span>
               <span style="font-size:11px">{{message.payload?.PERRINN?.transactionOut?.receiverName}}</span>
-              <span style="font-size:11px">reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</span>
+              <span style="font-size:11px"> {{message.payload?.PERRINN?.transactionOut?.receiverFamilyName}}</span>
+              <span style="font-size:11px"> reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</span>
             </div>
-            <img [src]="message.payload?.PERRINN?.transactionOut?.receiverImageUrlThumb" style="object-fit:cover;height:30px;width:50px" (click)="router.navigate(['chat',message.payload?.PERRINN?.transactionOut?.receiver])">
           </div>
           <div *ngIf="message.payload?.PERRINN?.transactionIn?.processed" style="clear:both;margin:5px">
-            <img src="./../assets/App icons/in.png" style="display:inline;float:left;height:30px">
-            <div style="float:left;background-color:#c7edcd;padding:5px">
+            <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
               <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.2-20'}}</span>
-              <span style="font-size:11px">have been received from</span>
+              <span style="font-size:11px"> have been received from </span>
               <span style="font-size:11px">{{message.payload?.PERRINN?.transactionIn?.donorName}}</span>
-              <span style="font-size:11px">reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</span>
+              <span style="font-size:11px"> {{message.payload?.PERRINN?.transactionIn?.donorFamilyName}}</span>
+              <span style="font-size:11px"> reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</span>
             </div>
-            <img [src]="message.payload?.PERRINN?.transactionIn?.donorImageUrlThumb" style="object-fit:cover;height:30px;width:50px" (click)="router.navigate(['chat',message.payload?.PERRINN?.transactionIn?.donor])">
           </div>
           <div style="clear:both;text-align:center">
             <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
@@ -201,7 +199,7 @@ import * as firebase from 'firebase/app';
         </li>
       </ul>
       <div style="clear:both;float:left;width:90%">
-        <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Message team"></textarea>
+        <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
       </div>
       <div *ngIf="draftMessage" style="float:right;width:10%">
         <img src="./../assets/App icons/send.png" style="width:25px;margin:20px 5px 5px 5px" (click)="addMessage()">

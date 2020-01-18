@@ -13,7 +13,7 @@ import { userInterfaceService } from './userInterface.service';
     <div class="module form-module">
       <div class="form">
         <form>
-          <img src="./../assets/App icons/publiceye.jpg" style="width:95%;margin:10px 0 10px 0">
+          <img src="./../assets/App icons/teamExperience.jpg" style="width:95%;margin:10px 0 10px 0">
           <img src="./../assets/App icons/PERRINN logo.png" style="width:95%;margin:10px 0 10px 0">
           <div [hidden]="UI.currentUser!=null">
           <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser;messageUser=''">{{newUser?"Already have an account?":"Need a new account?"}}</div>
