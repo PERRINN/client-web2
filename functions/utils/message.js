@@ -2,6 +2,7 @@ const admin = require('firebase-admin')
 const processUtils = require('./process')
 const teamUtils = require('./team')
 const createMessageUtils = require('./createMessage')
+const emailUtils = require('../utils/email')
 
 module.exports = {
 
@@ -14,6 +15,7 @@ module.exports = {
       return batch.commit();
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
     });
   },
 
@@ -45,6 +47,7 @@ module.exports = {
       });
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
     });
   },
 
@@ -67,6 +70,7 @@ module.exports = {
         return 'done';
       }).catch(error=>{
         console.log(error);
+        emailUtils.sendErrorEmail(error);
       });
     });
   },
@@ -136,6 +140,7 @@ module.exports = {
       return 'done';
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
     });
   },
 
@@ -174,6 +179,7 @@ module.exports = {
       return 'done';
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
     });
   },
 
@@ -215,6 +221,7 @@ module.exports = {
       });
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
     });
   },
 
@@ -243,6 +250,7 @@ module.exports = {
       });
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
     });
   },
 
@@ -273,6 +281,7 @@ module.exports = {
       }
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
     });
   }
 

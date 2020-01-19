@@ -30,7 +30,26 @@ module.exports = {
         return 'done';
       }).catch(error=>{
         console.log(error);
+        sendErrorEmail(error);
       });
+    });
+  },
+
+  sendErrorEmail:(err)=>{
+    var email='perrinnlimited@gmail.com';
+    const mailOptions = {
+      from: 'PERRINN <perrinnlimited@gmail.com>',
+      to: email,
+      subject: 'Backend error',
+      html: `
+        <a  class=”link” href="https://console.firebase.google.com/u/0/project/perrinn-d5fc1/functions/logs?severity=DEBUG" target="_blank" style="padding:20px;text-decoration:none;text-align:center;font-size:14px;margin:50px;color:white;background-color:#267cb5;cursor:pointer">Go to backend</a>
+      `
+    };
+    return transporter.sendMail(mailOptions)
+    .then(result=>{
+      return 'done';
+    }).catch(error=>{
+      console.log(error);
     });
   },
 

@@ -26,6 +26,7 @@ exports=module.exports=functions.pubsub.schedule('every 10 minutes').onRun((cont
       return 'done';
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
       return error;
     });
   });

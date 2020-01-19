@@ -3,6 +3,7 @@ const teamUtils = require('./team')
 const dbUtils = require('./db')
 const onshapeUtils = require('./onshape')
 const googleUtils = require('./google')
+const emailUtils = require('../utils/email')
 
 module.exports = {
 
@@ -42,7 +43,8 @@ module.exports = {
       }
       return 'none';
     }).catch(error=>{
-      console.log('executeProcess: '+error);
+      console.log(error);
+      emailUtils.sendErrorEmail(error);
       return error;
     }).then(result=>{
       return result;

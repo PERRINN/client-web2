@@ -4,6 +4,7 @@ try { admin.initializeApp() } catch (e) {}
 const gcs = require('@google-cloud/storage')({
   keyFilename:'perrinn-d5fc1-firebase-adminsdk-rh8x2-b26a8ffeef.json',
 });
+const emailUtils = require('../utils/email')
 
 exports=module.exports=functions.storage.object().onFinalize((data,context)=>{
   const object=data;
@@ -32,5 +33,6 @@ exports=module.exports=functions.storage.object().onFinalize((data,context)=>{
     });
   }).catch(error=>{
     console.log(error);
+    emailUtils.sendErrorEmail(error);
   });
 });

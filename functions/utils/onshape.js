@@ -5,6 +5,7 @@ var crypto = require('crypto');
 var request = require('request-promise');
 const functions = require('firebase-functions')
 var u = require('url');
+const emailUtils = require('../utils/email')
 
 module.exports = {
 
@@ -54,6 +55,7 @@ module.exports = {
       });
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
       return error;
     });
   },

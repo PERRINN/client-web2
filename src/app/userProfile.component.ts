@@ -11,6 +11,10 @@ import * as firebase from 'firebase/app';
   template: `
   <div id='main_container'>
   <div class='sheet'>
+  <div *ngIf="!UI.currentUserClaims?.member" style="background-color:#f2f5d0;padding:5px">
+    <div style="color:#777;font-size:10px;float:left">You have limited access to the team. To become a member and gain full access, you need to top up your COINS.</div>
+    <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 10px 0 10px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/coin-credit','_blank')">More info</div>
+  </div>
   <img class='editButton' *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:25px;margin:10px" (click)="router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
   <div *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:100px;height:24px;text-align:center;line-height:24px;font-size:12px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:5px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
   <div *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:100px;height:24px;text-align:center;line-height:24px;font-size:12px;margin:10px;color:white;background-color:#267cb5;border-radius:5px;cursor:pointer" (click)="newMessage()">New message</div>
@@ -22,7 +26,7 @@ import * as firebase from 'firebase/app';
       <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
         <span >{{UI.focusUserObj?.name}}</span>
         <span style="font-size:10px"> {{UI.focusUserObj?.familyName}}</span>
-        <span *ngIf='UI.focusUserObj?.lastMessageBalance>0' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
+        <span *ngIf='UI.focusUserObj?.member' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
       </div>
       <div style="clear:both;float:left;font-size:10px;color:#999">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.previousIndex?UI.focusUserObj?.previousIndex:0}} Messages, {{UI.focusUserObj?.membershipCounter?UI.focusUserObj?.membershipCounter:0}} Membership days</div>
       <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(UI.focusUserObj?.lastMessageBalance?UI.focusUserObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>

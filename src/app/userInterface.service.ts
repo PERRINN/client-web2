@@ -15,6 +15,7 @@ export class userInterfaceService {
   currentTeamObj: any;
   currentTeamObjKey: string;
   currentUser: string;
+  currentUserClaims: any;
   currentUserObj: any;
   currentUserTeamsObj: any;
   process: any;
@@ -41,7 +42,9 @@ export class userInterfaceService {
         afs.doc<any>('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserObj = snapshot;
         });
-        this.addRecipient(this.currentUser);
+        firebase.auth().currentUser.getIdTokenResult().then(result=>{
+          this.currentUserClaims=result.claims;
+        });
         if (this.focusUser == null) { this.focusUser = auth.uid; }
       } else {
         this.currentUser=null;

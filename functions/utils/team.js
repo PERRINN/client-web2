@@ -24,33 +24,4 @@ module.exports = {
     });
   },
 
-  isNewDataValid:(key,beforeData,afterData)=>{
-    if(afterData[key]==undefined)return false;
-    if(beforeData==null||beforeData==undefined)return true;
-    if(beforeData[key]==undefined)return true;
-    if(beforeData[key]==afterData[key])return false;
-    return true;
-  },
-
-  isMemberOrLeader:(user,team)=>{
-    return admin.database().ref('PERRINNTeams/'+team).once('value').then(teamObj=>{
-      if(teamObj.child('leaders').child(user)||teamObj.child('members').child(user))return true;
-      else return false;
-    });
-  },
-
-  getTeamName:(team)=>{
-    return admin.database().ref('PERRINNTeams/'+team+'/name').once('value').then(name=>{
-      if(name.val()==undefined||name.val()==null)return '';
-      else return name.val();
-    });
-  },
-
-  getTeamImageUrlThumb:(team)=>{
-    return admin.database().ref('PERRINNTeams/'+team+'/imageUrlThumb').once('value').then(imageUrlThumb=>{
-      if(imageUrlThumb.val()==undefined||imageUrlThumb.val()==null)return '';
-      else return imageUrlThumb.val();
-    });
-  }
-
 }

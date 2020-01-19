@@ -3,6 +3,8 @@ const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
 const messageUtils = require('../../utils/message')
 const createMessageUtils = require('../../utils/createMessage')
+const customClaimsUtils = require('../../utils/customClaims')
+const emailUtils = require('../../utils/email')
 
 exports=module.exports=functions.firestore.document('PERRINNMessages/{message}').onCreate((data,context)=>{
   const messageData=data.data();
@@ -54,6 +56,8 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
       return null;
     }
     return messageUtils.writeMessageTransactionReceiverData(messageData.user,context.params.message);
+  }).then(()=>{
+    return customClaimsUtils.setCustomClaims(messageData.user);
   }).then(()=>{
     if(lockedUserChain)return admin.firestore().doc('PERRINNChain/'+messageData.user).update({lock:admin.firestore.FieldValue.delete()});
     return null;

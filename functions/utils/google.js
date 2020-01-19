@@ -1,6 +1,7 @@
 const admin = require('firebase-admin')
 const createMessageUtils = require('./createMessage')
 const {google} = require('googleapis');
+const emailUtils = require('../utils/email')
 
 module.exports = {
 
@@ -41,6 +42,7 @@ module.exports = {
       });
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
       return error;
     });
   }

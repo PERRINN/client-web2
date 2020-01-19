@@ -26,6 +26,7 @@ exports=module.exports=functions.database.ref('/toto').onCreate((data,context)=>
       return 'done';
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
       return error;
     });
   });

@@ -2,6 +2,7 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
 const emailUtils = require('../utils/email')
+const customClaimsUtils = require('../utils/customClaims')
 
 exports=module.exports=functions.pubsub.schedule('every 24 hours').onRun((context) => {
   return admin.firestore().collection('PERRINNTeams').where('lastMessageBalance','>',0).get().then(teams=>{
@@ -23,9 +24,16 @@ exports=module.exports=functions.pubsub.schedule('every 24 hours').onRun((contex
       });
       return batch.commit();
     }).then(()=>{
-      return 'done';
+      var setCustomClaims=[];
+      teams.forEach(team=>{
+        setCustomClaims.push(customClaimsUtils.setCustomClaims(team));
+      });
+      return Promise.all(setCustomClaims).then(()=>{
+        return 'done';
+      });
     }).catch(error=>{
       console.log(error);
+      emailUtils.sendErrorEmail(error);
       return error;
     });
   });
