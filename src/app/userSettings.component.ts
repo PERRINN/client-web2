@@ -71,22 +71,23 @@ export class UserSettingsComponent {
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
       this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUser);
-      this.UI.chatSubject='';
-      this.UI.chain=ref.id;
-      this.UI.showChatDetails=false;
-      this.UI.process={
-        inputs:{
-          name:this.name,
-          familyName:this.familyName
-        },
-        function:{
-          name:'updateUserName'
-        },
-        inputsComplete:true
-      };
-      this.UI.createMessageAFS(this.UI.currentUser,'Updating my name to: '+this.name+' '+this.familyName,'','');
-      this.router.navigate(['chat','']);
+      this.UI.addRecipient(this.UI.currentUser).then(()=>{
+        this.UI.chatSubject='';
+        this.UI.chain=ref.id;
+        this.UI.showChatDetails=false;
+        this.UI.process={
+          inputs:{
+            name:this.name,
+            familyName:this.familyName
+          },
+          function:{
+            name:'updateUserName'
+          },
+          inputsComplete:true
+        };
+        this.UI.createMessageAFS(this.UI.currentUser,'Updating my name to: '+this.name+' '+this.familyName,'','');
+        this.router.navigate(['chat','']);
+      });
     });
   }
 
@@ -96,18 +97,19 @@ export class UserSettingsComponent {
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
       this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUser);
-      this.UI.chatSubject='';
-      this.UI.chain=ref.id;
-      this.UI.showChatDetails=false;
-      this.UI.process={
-        function:{
-          name:'joinPERRINNOnshapeTeam'
-        },
-        inputsComplete:true
-      };
-      this.UI.createMessageAFS(this.UI.currentUser,'joining PERRINN Onshape team','','');
-      this.router.navigate(['chat','']);
+      this.UI.addRecipient(this.UI.currentUser).then(()=>{
+        this.UI.chatSubject='';
+        this.UI.chain=ref.id;
+        this.UI.showChatDetails=false;
+        this.UI.process={
+          function:{
+            name:'joinPERRINNOnshapeTeam'
+          },
+          inputsComplete:true
+        };
+        this.UI.createMessageAFS(this.UI.currentUser,'joining PERRINN Onshape team','','');
+        this.router.navigate(['chat','']);
+      });
     });
   }
 
@@ -117,18 +119,19 @@ export class UserSettingsComponent {
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
       this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUser);
-      this.UI.chatSubject='';
-      this.UI.chain=ref.id;
-      this.UI.showChatDetails=false;
-      this.UI.process={
-        function:{
-          name:'joinPERRINNGoogleGroup'
-        },
-        inputsComplete:true
-      };
-      this.UI.createMessageAFS(this.UI.currentUser,'joining PERRINN Google group','','');
-      this.router.navigate(['chat','']);
+      this.UI.addRecipient(this.UI.currentUser).then(()=>{
+        this.UI.chatSubject='';
+        this.UI.chain=ref.id;
+        this.UI.showChatDetails=false;
+        this.UI.process={
+          function:{
+            name:'joinPERRINNGoogleGroup'
+          },
+          inputsComplete:true
+        };
+        this.UI.createMessageAFS(this.UI.currentUser,'joining PERRINN Google group','','');
+        this.router.navigate(['chat','']);
+      });
     });
   }
 
@@ -168,22 +171,23 @@ export class UserSettingsComponent {
           serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(ref=>{
           this.UI.clearRecipient();
-          this.UI.addRecipient(this.UI.currentUser);
-          this.UI.chatSubject='';
-          this.UI.chain=ref.id;
-          this.UI.showChatDetails=false;
-          this.UI.process={
-            inputs:{
-              imageTimestamp:draftImage,
-              imageUrlOriginal:url
-            },
-            function:{
-              name:'updateUserImage'
-            },
-            inputsComplete:true
-          };
-          this.UI.createMessageAFS(this.UI.currentUser,'updating my profile picture',draftImage,url);
-          this.router.navigate(['chat','']);
+          this.UI.addRecipient(this.UI.currentUser).then(()=>{
+            this.UI.chatSubject='';
+            this.UI.chain=ref.id;
+            this.UI.showChatDetails=false;
+            this.UI.process={
+              inputs:{
+                imageTimestamp:draftImage,
+                imageUrlOriginal:url
+              },
+              function:{
+                name:'updateUserImage'
+              },
+              inputsComplete:true
+            };
+            this.UI.createMessageAFS(this.UI.currentUser,'updating my profile picture',draftImage,url);
+            this.router.navigate(['chat','']);
+          });
         });
       });
     });

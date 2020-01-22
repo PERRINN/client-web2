@@ -5,7 +5,7 @@ const emailUtils = require('../utils/email')
 const customClaimsUtils = require('../utils/customClaims')
 
 exports=module.exports=functions.pubsub.schedule('every 24 hours').onRun((context) => {
-  return admin.firestore().collection('PERRINNTeams').where('lastMessageBalance','>',0).get().then(teams=>{
+  return admin.firestore().collection('PERRINNTeams').where('lastMessageBalance','>',0).where('isUser','==',true).get().then(teams=>{
     if(teams==undefined)return null;
     return admin.firestore().doc('appSettings/costs').get().then(costs=>{
       var amountMembership=costs.data().membershipDay;

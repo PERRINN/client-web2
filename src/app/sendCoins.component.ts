@@ -103,26 +103,28 @@ export class SendCoinsComponent  {
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
       this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUser);
-      this.UI.addRecipient(this.receiver);
-      this.UI.chatSubject=this.reference;
-      this.UI.chain=ref.id;
-      this.UI.showChatDetails=false;
-      this.UI.process={
-        inputs:{
-          amount:this.amount,
-          receiver:this.receiver,
-          receiverName:this.receiverName,
-          receiverFamilyName:this.receiverFamilyName,
-          reference:this.reference
-        },
-        function:{
-          name:'transactionOut'
-        },
-        inputsComplete:true
-      };
-      this.UI.createMessageAFS(this.UI.currentUser,'sending you '+this.amount+' COINS','','');
-      this.router.navigate(['chat','']);
+      this.UI.addRecipient(this.UI.currentUser).then(()=>{
+        this.UI.addRecipient(this.receiver).then(()=>{
+          this.UI.chatSubject=this.reference;
+          this.UI.chain=ref.id;
+          this.UI.showChatDetails=false;
+          this.UI.process={
+            inputs:{
+              amount:this.amount,
+              receiver:this.receiver,
+              receiverName:this.receiverName,
+              receiverFamilyName:this.receiverFamilyName,
+              reference:this.reference
+            },
+            function:{
+              name:'transactionOut'
+            },
+            inputsComplete:true
+          };
+          this.UI.createMessageAFS(this.UI.currentUser,'sending '+this.amount+' COINS','','');
+          this.router.navigate(['chat','']);
+        });
+      });
     });
   }
 

@@ -93,10 +93,12 @@ export class SearchComponent  {
       this.UI.clearRecipient();
       this.UI.chatSubject='';
       this.UI.chain=ref.id;
-      this.UI.addRecipient(this.UI.currentUser);
-      this.UI.addRecipient(user);
-      this.UI.showChatDetails=false;
-      this.router.navigate(['chat','']);
+      this.UI.addRecipient(this.UI.currentUser).then(()=>{
+        this.UI.addRecipient(user).then(()=>{
+          this.UI.showChatDetails=false;
+          this.router.navigate(['chat','']);
+        });
+      });
     });
   }
 
