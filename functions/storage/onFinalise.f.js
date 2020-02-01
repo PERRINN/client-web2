@@ -1,9 +1,6 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
-const gcs = require('@google-cloud/storage')({
-  keyFilename:'perrinn-d5fc1-firebase-adminsdk-rh8x2-b26a8ffeef.json',
-});
 const emailUtils = require('../utils/email')
 
 exports=module.exports=functions.storage.object().onFinalize((data,context)=>{
@@ -11,8 +8,7 @@ exports=module.exports=functions.storage.object().onFinalize((data,context)=>{
   const filePath=object.name;
   const fileName=filePath.split('/').pop();
   const imageID=fileName.substring(0,13);
-  const fileBucket=object.bucket;
-  const bucket=gcs.bucket(fileBucket);
+  const bucket=admin.storage().bucket(object.bucket);
   const file=bucket.file(filePath);
   const config={
     action:'read',

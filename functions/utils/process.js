@@ -23,9 +23,9 @@ module.exports = {
           return result;
         });
       }
-      if (functionObj.name=='updateUserName') {
+      if (functionObj.name=='updateTeamName') {
         var nameLowerCase=inputs.name.toLowerCase()+' '+inputs.familyName.toLowerCase();
-        return admin.firestore().doc('PERRINNTeams/'+user).update({
+        return admin.firestore().doc('PERRINNTeams/'+inputs.target).update({
           name:inputs.name,
           familyName:inputs.familyName,
           searchName:nameLowerCase
@@ -33,8 +33,8 @@ module.exports = {
           return 'name updated';
         });
       }
-      if (functionObj.name=='updateUserImage') {
-        return admin.firestore().doc('PERRINNTeams/'+user).update({
+      if (functionObj.name=='updateTeamImage') {
+        return admin.firestore().doc('PERRINNTeams/'+inputs.target).update({
           imageTimestamp:inputs.imageTimestamp,
           imageUrlOriginal:inputs.imageUrlOriginal
         }).then(()=>{

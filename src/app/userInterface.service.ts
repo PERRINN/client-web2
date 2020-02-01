@@ -7,23 +7,24 @@ import * as firebase from 'firebase/app';
 
 @Injectable()
 export class userInterfaceService {
-  globalChatActivity: boolean;
-  loading: boolean;
-  focusUser: string;
-  focusUserObj: any;
-  currentTeam: string;
-  currentTeamObj: any;
-  currentTeamObjKey: string;
-  currentUser: string;
-  currentUserClaims: any;
-  currentUserObj: any;
-  currentUserTeamsObj: any;
-  process: any;
-  recipients: any;
-  recipientList: any;
-  chain: string;
-  chatSubject: string;
-  showChatDetails: boolean;
+  globalChatActivity:boolean;
+  loading:boolean;
+  focusUser:string;
+  focusUserObj:any;
+  currentTeam:string;
+  currentTeamObj:any;
+  currentTeamObjKey:string;
+  currentUser:string;
+  currentUserClaims:any;
+  currentUserObj:any;
+  currentUserTeamsObj:any;
+  process:any;
+  recipients:any;
+  recipientList:any;
+  chain:string;
+  chatSubject:string;
+  showChatDetails:boolean;
+  domain:any;
 
   constructor(
     private afAuth: AngularFireAuth,
@@ -36,11 +37,12 @@ export class userInterfaceService {
     this.recipients={};
     this.recipientList=[];
     this.chain='';
+    this.domain=[];
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser=auth.uid;
         afs.doc<any>('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
-          this.currentUserObj = snapshot;
+          this.currentUserObj=snapshot;
         });
         firebase.auth().currentUser.getIdTokenResult().then(result=>{
           this.currentUserClaims=result.claims;
@@ -78,7 +80,7 @@ export class userInterfaceService {
     this.recipientList=recipientArray;
   }
 
-  createMessageAFS(user,text,image,imageDownloadURL,auto){
+  createMessageAFS(text,image,imageDownloadURL,auto){
     text = text.replace(/(\r\n|\n|\r)/gm, '');
     if (text==''&&image=='') return null;
     const now = Date.now();

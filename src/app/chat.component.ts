@@ -13,13 +13,20 @@ import * as firebase from 'firebase/app';
   template: `
 
   <div *ngIf="UI.showChatDetails" id='main_container'>
-  <div class="sheet" style="background:#eee">
-    <div (click)="refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">messages</div>
-    <div *ngIf="!editing" style="font-size:18px;line-height:30px;margin:10px;font-family:sans-serif;">{{UI.chatSubject?UI.chatSubject:'no subject'}}</div>
-    <input *ngIf="editing" [(ngModel)]="UI.chatSubject">
-    <div *ngIf="!editing" (click)="editing=!editing" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:white;background-color:#4287f5;border-radius:3px;cursor:pointer">Edit subject</div>
-    <div *ngIf="editing" (click)="draftMessage='I have changed the subject of this chat';addMessage();editing=!editing;refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply</div>
-    <ul style="color:#333;border-style:solid;border-width:1px;background-color:white;margin:10px;border-radius:10px">
+  <div class="sheet">
+    <div (click)="refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
+    <div style="margin:10px">
+      <div style="float:left;font-size:18px;line-height:30px;font-family:sans-serif">{{UI.domain.name?UI.domain.name:'no domain'}}</div>
+    </div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
+    <div style="margin:10px">
+      <div *ngIf="!editing" style="float:left;font-size:18px;line-height:30px;font-family:sans-serif;">{{UI.chatSubject?UI.chatSubject:'no subject'}}</div>
+      <input *ngIf="editing" [(ngModel)]="UI.chatSubject">
+      <div *ngIf="!editing" (click)="editing=!editing" style="font-size:12px;text-align:center;line-height:30px;width:80px;color:#4287f5;cursor:pointer">edit</div>
+      <div *ngIf="editing" (click)="autoMessage=true;draftMessage='I have changed the subject of this chat';addMessage();editing=!editing;refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply</div>
+    </div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
+    <ul style="color:#333;margin:10px">
       <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['user',recipient[0]])" style="cursor:pointer;float:left">
         <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
         <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
@@ -235,6 +242,7 @@ export class ChatComponent {
   teams: Observable<any[]>;
   searchFilter: string;
   reads: any[];
+  autoMessage:boolean;
 
   constructor(
     public db: AngularFireDatabase,
@@ -248,15 +256,16 @@ export class ChatComponent {
     this.reads=[];
     this.editing=false;
     this.route.params.subscribe(params => {
-      this.isCurrentUserLeader = false;
-      this.isCurrentUserMember = false;
-      this.showDetails = {};
-      this.previousMessageTimestamp = 0;
-      this.previousMessageUser = '';
-      this.draftMessageDB = false;
-      this.draftImage = '';
-      this.draftImageDownloadURL = '';
-      this.draftMessage = '';
+      this.isCurrentUserLeader=false;
+      this.isCurrentUserMember=false;
+      this.showDetails={};
+      this.previousMessageTimestamp=0;
+      this.previousMessageUser='';
+      this.draftMessageDB=false;
+      this.draftImage='';
+      this.draftImageDownloadURL='';
+      this.draftMessage='';
+      this.autoMessage=false;
       this.messageNumberDisplay = 15;
 
       this.refreshMessages();
@@ -288,6 +297,7 @@ export class ChatComponent {
         if(!this.reads.includes(c.payload.doc.id))batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(c.payload.doc.id),{timestamp:firebase.firestore.FieldValue.arrayUnion(Date.now())},{merge:true});
         this.reads.push(c.payload.doc.id);
         if(c.payload.doc.data()['lastMessage']){
+          if(c.payload.doc.data()['domain']!=undefined)this.UI.domain=c.payload.doc.data()['domain'];
           this.UI.chatSubject=c.payload.doc.data()['chatSubject'];
           this.UI.recipients=c.payload.doc.data()['recipients'];
         }
@@ -341,9 +351,10 @@ export class ChatComponent {
   }
 
   addMessage() {
-    this.UI.createMessageAFS(this.UI.currentUser,this.draftMessage,this.draftImage,this.draftImageDownloadURL,false);
+    this.UI.createMessageAFS(this.draftMessage,this.draftImage,this.draftImageDownloadURL,this.autoMessage);
     this.draftMessage = '';
     this.draftImage = '';
+    this.autoMessage=false;
     this.UI.showChatDetails=false;
   }
 
