@@ -78,7 +78,7 @@ export class userInterfaceService {
     this.recipientList=recipientArray;
   }
 
-  createMessageAFS(user, text, image, imageDownloadURL){
+  createMessageAFS(user,text,image,imageDownloadURL,auto){
     text = text.replace(/(\r\n|\n|\r)/gm, '');
     if (text==''&&image=='') return null;
     const now = Date.now();
@@ -104,7 +104,8 @@ export class userInterfaceService {
       text:text,
       image:image,
       imageDownloadURL:imageDownloadURL,
-      process:this.process
+      process:this.process,
+      auto:auto
     }).then(()=>{
       this.process={};
       return null;

@@ -26,7 +26,7 @@ exports=module.exports=functions.pubsub.schedule('every 24 hours').onRun((contex
     }).then(()=>{
       var setCustomClaims=[];
       teams.forEach(team=>{
-        setCustomClaims.push(customClaimsUtils.setCustomClaims(team));
+        setCustomClaims.push(customClaimsUtils.setCustomClaims(team.id));
       });
       return Promise.all(setCustomClaims).then(()=>{
         return 'done';

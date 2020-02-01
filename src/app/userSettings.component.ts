@@ -45,7 +45,8 @@ export class UserSettingsComponent {
   name:string;
   familyName:string;
 
-  constructor(public afAuth: AngularFireAuth,
+  constructor(
+    public afAuth: AngularFireAuth,
     public afs: AngularFirestore,
     public router: Router,
     private storage: AngularFireStorage,
@@ -85,7 +86,7 @@ export class UserSettingsComponent {
           },
           inputsComplete:true
         };
-        this.UI.createMessageAFS(this.UI.currentUser,'Updating my name to: '+this.name+' '+this.familyName,'','');
+        this.UI.createMessageAFS(this.UI.currentUser,'Updating my name to: '+this.name+' '+this.familyName,'','',true);
         this.router.navigate(['chat','']);
       });
     });
@@ -107,7 +108,7 @@ export class UserSettingsComponent {
           },
           inputsComplete:true
         };
-        this.UI.createMessageAFS(this.UI.currentUser,'joining PERRINN Onshape team','','');
+        this.UI.createMessageAFS(this.UI.currentUser,'joining PERRINN Onshape team','','',true);
         this.router.navigate(['chat','']);
       });
     });
@@ -129,7 +130,7 @@ export class UserSettingsComponent {
           },
           inputsComplete:true
         };
-        this.UI.createMessageAFS(this.UI.currentUser,'joining PERRINN Google group','','');
+        this.UI.createMessageAFS(this.UI.currentUser,'joining PERRINN Google group','','',true);
         this.router.navigate(['chat','']);
       });
     });
@@ -185,7 +186,7 @@ export class UserSettingsComponent {
               },
               inputsComplete:true
             };
-            this.UI.createMessageAFS(this.UI.currentUser,'updating my profile picture',draftImage,url);
+            this.UI.createMessageAFS(this.UI.currentUser,'updating my profile picture',draftImage,url,true);
             this.router.navigate(['chat','']);
           });
         });

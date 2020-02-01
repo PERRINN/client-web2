@@ -121,7 +121,7 @@ export class SendCoinsComponent  {
             },
             inputsComplete:true
           };
-          this.UI.createMessageAFS(this.UI.currentUser,'sending '+this.amount+' COINS','','');
+          this.UI.createMessageAFS(this.UI.currentUser,'sending '+this.amount+' COINS','','',true);
           this.router.navigate(['chat','']);
         });
       });

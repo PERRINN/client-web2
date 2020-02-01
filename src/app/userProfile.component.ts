@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { userInterfaceService } from './userInterface.service';
 import * as firebase from 'firebase/app';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
   selector: 'user',
@@ -14,6 +15,10 @@ import * as firebase from 'firebase/app';
   <div *ngIf="!UI.currentUserClaims?.member" style="background-color:#f2f5d0;padding:5px">
     <div style="color:#777;font-size:10px;float:left">You have limited access to the team. To become a member and gain full access, you need to top up your COINS.</div>
     <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 10px 0 10px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/coin-credit','_blank')">More info</div>
+  </div>
+  <div *ngIf="UI.currentUserClaims?.member!=UI.currentUserObj?.member" style="background-color:#edd79f;padding:5px">
+    <div style="color:#777;font-size:10px;float:left">Please log out and back in to activate your settings.</div>
+    <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 10px 0 10px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="this.logout();router.navigate(['login']);">Logout</div>
   </div>
   <img class='editButton' *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:25px;margin:10px" (click)="router.navigate(['userSettings',UI.focusUser])" src="./../assets/App icons/settings.png">
   <div *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:100px;height:24px;text-align:center;line-height:24px;font-size:12px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:5px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
@@ -80,6 +85,7 @@ export class UserProfileComponent {
   view: string;
 
   constructor(
+    public afAuth: AngularFireAuth,
     public afs: AngularFirestore,
     public router: Router,
     public UI: userInterfaceService,
@@ -153,6 +159,11 @@ export class UserProfileComponent {
       this.UI.showChatDetails=true;
       this.router.navigate(['chat','']);
     });
+  }
+
+  logout() {
+    this.afAuth.auth.signOut();
+    this.UI.currentUser = null;
   }
 
 }

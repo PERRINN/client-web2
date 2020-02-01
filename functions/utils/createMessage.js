@@ -39,6 +39,7 @@ module.exports = {
           messageObj.name=userData.data().name;
           messageObj.familyName=userData.data().familyName;
           messageObj.imageUrlThumbUser=userData.data().imageUrlThumb;
+          messageObj.auto=true;
           return admin.firestore().collection('PERRINNMessages').add(messageObj);
         });
       });
