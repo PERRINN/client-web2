@@ -15,14 +15,16 @@ import * as firebase from 'firebase/app';
   <div *ngIf="UI.showChatDetails" id='main_container'>
   <div class="sheet">
     <div (click)="refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
-    <div style="margin:10px">
-      <div style="float:left;font-size:18px;line-height:30px;font-family:sans-serif">{{UI.domain.name?UI.domain.name:'no domain'}}</div>
+    <div style="cursor:pointer" (click)="router.navigate(['user',UI.currentDomain])">
+      <img [src]="UI.currentDomainObj.imageUrlThumb" style="float:right;object-fit:cover;height:50px;width:90px">
+      <div style="float:right;margin:10px">
+        <div style="font-size:16px;line-height:30px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
+      </div>
     </div>
-    <div class="seperator" style="width:100%;margin:0px"></div>
     <div style="margin:10px">
       <div *ngIf="!editing" style="float:left;font-size:18px;line-height:30px;font-family:sans-serif;">{{UI.chatSubject?UI.chatSubject:'no subject'}}</div>
       <input *ngIf="editing" [(ngModel)]="UI.chatSubject">
-      <div *ngIf="!editing" (click)="editing=!editing" style="font-size:12px;text-align:center;line-height:30px;width:80px;color:#4287f5;cursor:pointer">edit</div>
+      <div *ngIf="!editing" (click)="editing=!editing" style="font-size:12px;text-align:center;line-height:30px;width:110px;color:#4287f5;cursor:pointer">edit subject</div>
       <div *ngIf="editing" (click)="autoMessage=true;draftMessage='I have changed the subject of this chat';addMessage();editing=!editing;refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply</div>
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
@@ -51,9 +53,17 @@ import * as firebase from 'firebase/app';
 
   <div *ngIf="!UI.showChatDetails" id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
   <div class="sheet" style="background-color:#eee">
-  <div class="sheet" style="position:fixed;background:#fcfcfc;width:100%;color:#444;font-size:12px;padding:5px 10px 5px 10px;cursor:pointer" (click)="UI.showChatDetails=true">
-    <div style="font-weight:bold">{{UI.chatSubject}}</div>
-    <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1].name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
+  <div class="sheet" style="position:fixed;background:#fcfcfc;width:100%;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
+    <div style="float:left;margin:0 5px 0 5px">
+      <div style="font-weight:bold">{{UI.chatSubject}}</div>
+      <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1].name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
+    </div>
+    <div style="cursor:pointer" (click)="router.navigate(['user',UI.currentDomain])">
+      <img [src]="UI.currentDomainObj.imageUrlThumb" style="float:right;object-fit:cover;height:40px;width:75px">
+      <div style="float:right;margin:10px">
+        <div style="font-size:14px;line-height:15px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
+      </div>
+    </div>
   </div>
   <div class="spinner" *ngIf="UI.loading">
     <div class="bounce1"></div>
@@ -297,7 +307,12 @@ export class ChatComponent {
         if(!this.reads.includes(c.payload.doc.id))batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(c.payload.doc.id),{timestamp:firebase.firestore.FieldValue.arrayUnion(Date.now())},{merge:true});
         this.reads.push(c.payload.doc.id);
         if(c.payload.doc.data()['lastMessage']){
-          if(c.payload.doc.data()['domain']!=undefined)this.UI.domain=c.payload.doc.data()['domain'];
+          if(c.payload.doc.data()['domain']!=undefined){
+            this.UI.currentDomain=c.payload.doc.data()['domain'];
+            this.UI.currentDomainObj.name=c.payload.doc.data()['domainName'];
+            this.UI.currentDomainObj.imageUrlThumb=c.payload.doc.data()['domainImageUrlThumb'];
+          }
+          else this.UI.currentDomain='1xWBWkY3seEDb5R1bP9k';
           this.UI.chatSubject=c.payload.doc.data()['chatSubject'];
           this.UI.recipients=c.payload.doc.data()['recipients'];
         }

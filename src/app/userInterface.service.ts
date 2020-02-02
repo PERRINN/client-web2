@@ -24,7 +24,8 @@ export class userInterfaceService {
   chain:string;
   chatSubject:string;
   showChatDetails:boolean;
-  domain:any;
+  currentDomain:string;
+  currentDomainObj:any;
 
   constructor(
     private afAuth: AngularFireAuth,
@@ -37,7 +38,10 @@ export class userInterfaceService {
     this.recipients={};
     this.recipientList=[];
     this.chain='';
-    this.domain=[];
+    this.currentDomain='1xWBWkY3seEDb5R1bP9k';
+    afs.doc<any>('PERRINNTeams/'+this.currentDomain).valueChanges().subscribe(snapshot=>{
+      this.currentDomainObj=snapshot;
+    });
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser=auth.uid;
@@ -95,14 +99,17 @@ export class userInterfaceService {
       serverTimestamp:firebase.firestore.FieldValue.serverTimestamp(),
       chatSubject:this.chatSubject,
       chain:this.chain,
-      recipients: this.recipients,
-      recipientList: this.recipientList,
+      recipients:this.recipients,
+      recipientList:this.recipientList,
+      domain:this.currentDomain,
+      domainName:this.currentDomainObj.name,
+      domainImageUrlThumb:this.currentDomainObj.imageUrlThumb,
       emailNotifications: this.recipientList,
-      lastMessage: true,
-      user: this.currentUser,
-      name: this.currentUserObj.name,
-      familyName: this.currentUserObj.familyName,
-      imageUrlThumbUser: this.currentUserObj.imageUrlThumb,
+      lastMessage:true,
+      user:this.currentUser,
+      name:this.currentUserObj.name,
+      familyName:this.currentUserObj.familyName,
+      imageUrlThumbUser:this.currentUserObj.imageUrlThumb,
       text:text,
       image:image,
       imageDownloadURL:imageDownloadURL,

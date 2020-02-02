@@ -25,14 +25,14 @@ import { AngularFireAuth } from '@angular/fire/auth';
   <div *ngIf='(UI.currentUser==UI.focusUser)' style="float:right;width:100px;height:24px;text-align:center;line-height:24px;font-size:12px;margin:10px;color:white;background-color:#267cb5;border-radius:5px;cursor:pointer" (click)="newMessage()">New message</div>
   <div style="clear:both;background-color:#f4f7fc">
     <div style="float:left">
-      <img [src]="UI.focusUserObj?.imageUrlThumb" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:75px;width:75px;border-radius:50px">
+      <img [style.width]="UI.focusUserObj?.isDomain?'150px':'75px'" [style.border-radius]="UI.focusUserObj?.isDomain?'3%':'50%'" [src]="UI.focusUserObj?.imageUrlMedium" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:75px">
     </div>
     <div style="padding:10px">
       <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
         <span >{{UI.focusUserObj?.name}}</span>
         <span style="font-size:10px"> {{UI.focusUserObj?.familyName}}</span>
         <span *ngIf='UI.focusUserObj?.member' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
-        <span *ngIf='UI.focusUserObj?.isDomain' style="color:white;background-color:#e6b927;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
+        <span *ngIf='UI.focusUserObj?.isDomain' style="color:white;background-color:#b38300;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
       </div>
       <div style="clear:both;float:left;font-size:10px;color:#999">Joined {{UI.focusUserObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.focusUserObj?.previousIndex?UI.focusUserObj?.previousIndex:0}} Messages, {{UI.focusUserObj?.membershipCounter?UI.focusUserObj?.membershipCounter:0}} Membership days</div>
       <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(UI.focusUserObj?.lastMessageBalance?UI.focusUserObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
@@ -42,8 +42,14 @@ import { AngularFireAuth } from '@angular/fire/auth';
       <img [style.opacity]="UI.focusUserObj?.apps?.Onshape?.enabled?1:0.25" [style.cursor]="UI.focusUserObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.focusUserObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
     </div>
     <div style="clear:both">
-      <div [style.color]="view=='inbox'?'#267cb5':'#777'" [style.border-style]="view=='inbox'?'solid':'none'" style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;border-width:0 0 3px 0;cursor:pointer" (click)="clickInbox()">Inbox</div>
-      <div [style.color]="view=='team'?'#267cb5':'#777'" [style.border-style]="view=='team'?'solid':'none'" style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;border-width:0 0 3px 0;cursor:pointer" (click)="clickTeam()">Team</div>
+      <div [style.color]="view=='inbox'?'#267cb5':'#777'" [style.border-style]="view=='inbox'?'solid':'none'" style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;border-width:0 0 3px 0;cursor:pointer" (click)="view='inbox';refreshMessages()">Inbox</div>
+      <ul>
+        <li *ngFor="let domain of domains|async"
+          (click)="view=domain.payload.doc.id;refreshMessages()"
+          style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">
+          <div [style.color]="view==domain.payload.doc.id?'#267cb5':'#777'" [style.border-style]="view==domain.payload.doc.id?'solid':'none'" style="border-width:0 0 3px 0">{{domain.payload.doc.data().name}}</div>
+        </li>
+      </ul>
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
@@ -66,9 +72,10 @@ import { AngularFireAuth } from '@angular/fire/auth';
         <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
         <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}</div>
         <img src="./../assets/App icons/people.jpg" style="display:inline;margin-top:2px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(30);filter:brightness(30)">
-        <div style="float:left;color:#777;font-size:10px;width:40px;">{{message.payload.doc.data()?.recipientList.length}}</div>
+        <div style="float:left;color:#777;font-size:10px;width:40px">{{message.payload.doc.data()?.recipientList.length}}</div>
         <img src="./../assets/App icons/eye.png" style="display:inline;margin-top:2px;margin-right:3px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(80);filter:brightness(80)">
-        <div style="float:left;color:#777;font-size:10px">{{objectToArray(message.payload.doc.data()?.reads)?.length}}</div>
+        <div style="float:left;color:#777;font-size:10px;width:40px">{{objectToArray(message.payload.doc.data()?.reads)?.length}}</div>
+        <div style="float:left;color:#b38300;font-size:10px">{{message.payload.doc.data()?.domainName}}</div>
       </div>
       <div class="seperator" style="margin-left:60px"></div>
       {{last?scrollToTop(message.key):''}}
@@ -80,10 +87,11 @@ import { AngularFireAuth } from '@angular/fire/auth';
   `,
 })
 export class UserProfileComponent {
-  lastMessages: Observable<any[]>;
-  now: number;
-  scrollTeam: string;
-  view: string;
+  lastMessages:Observable<any[]>;
+  now:number;
+  scrollTeam:string;
+  view:string;
+  domains:Observable<any[]>;
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -92,7 +100,7 @@ export class UserProfileComponent {
     public UI: userInterfaceService,
     private route: ActivatedRoute
   ) {
-    this.view='';
+    this.view='inbox';
     this.UI.loading = false;
     this.UI.currentTeam = '';
     this.now = Date.now();
@@ -103,28 +111,27 @@ export class UserProfileComponent {
         this.UI.focusUserObj=snapshot;
       });
     });
-    this.clickInbox();
+    this.refreshMessages();
+    this.domains=this.afs.collection<any>('PERRINNTeams',ref=>ref.where('isDomain','==',true)).snapshotChanges();
   }
 
-  clickInbox(){
-    if (this.view=='inbox')return;
-    this.view='inbox';
-    this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
-      .where('recipientList','array-contains',this.UI.focusUser)
-      .where('lastMessage','==',true)
-      .orderBy('timestamp','desc')
-      .limit(30)
-    ).snapshotChanges();
-  }
-
-  clickTeam(){
-    if (this.view=='team')return;
-    this.view='team';
-    this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
-      .where('lastMessage','==',true)
-      .orderBy('timestamp','desc')
-      .limit(30)
-    ).snapshotChanges();
+  refreshMessages(){
+    if(this.view=='inbox'){
+      this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+        .where('recipientList','array-contains',this.UI.focusUser)
+        .where('lastMessage','==',true)
+        .orderBy('timestamp','desc')
+        .limit(30)
+      ).snapshotChanges();
+    }
+    else {
+      this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+        .where('domain','==',this.view)
+        .where('lastMessage','==',true)
+        .orderBy('timestamp','desc')
+        .limit(30)
+      ).snapshotChanges();
+    }
   }
 
   scrollToTop(team: string) {
