@@ -13,6 +13,7 @@ import * as firebase from 'firebase/app';
   <div class="sheet">
   <input id="searchInput" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Search">
   <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshSearchByCOINLists()">COIN holders' list</div>
+  <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshSearchDomainsList()">Domains list</div>
   </div>
   <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
@@ -76,6 +77,18 @@ export class SearchComponent  {
     this.teams = this.afs.collection('PERRINNTeams', ref => ref
     .where('isUser','==',true)
     .orderBy('lastMessageBalance',"desc")
+    .limit(20))
+    .snapshotChanges().pipe(map(changes => {
+      return changes.map(c => ({
+        key: c.payload.doc.id,
+        values: c.payload.doc.data(),
+      }));
+    }));
+  }
+
+  refreshSearchDomainsList() {
+    this.teams = this.afs.collection('PERRINNTeams', ref => ref
+    .where('isDomain','==',true)
     .limit(20))
     .snapshotChanges().pipe(map(changes => {
       return changes.map(c => ({

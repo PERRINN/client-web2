@@ -2,13 +2,16 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
 const emailUtils = require('../utils/email')
+const gcs = require('@google-cloud/storage')({
+  keyFilename:'perrinn-d5fc1-841e66c0cff2.json',
+});
 
 exports=module.exports=functions.storage.object().onFinalize((data,context)=>{
   const object=data;
   const filePath=object.name;
   const fileName=filePath.split('/').pop();
   const imageID=fileName.substring(0,13);
-  const bucket=admin.storage().bucket(object.bucket);
+  const bucket=gcs.bucket(object.bucket);
   const file=bucket.file(filePath);
   const config={
     action:'read',

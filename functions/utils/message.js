@@ -68,10 +68,10 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
       return batch.commit().then(()=>{
         return 'done';
-      }).catch(error=>{
-        console.log(error);
-        emailUtils.sendErrorEmail(error);
       });
+    }).catch(error=>{
+      console.log(error);
+      emailUtils.sendErrorEmail(error);
     });
   },
 
@@ -98,7 +98,8 @@ module.exports = {
         return 'done';
       });
     }).catch(error=>{
-      console.log('writeMessageProcessData: '+error);
+      console.log(error);
+      emailUtils.sendErrorEmail(error);
     });
   },
 
@@ -245,6 +246,7 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousMessage:message},{create:true});
       batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lastMessageBalance:balance},{create:true});
       batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousIndex:index},{create:true});
+      batch.update(admin.firestore().doc('PERRINNTeams/'+user),{enableEmailNotifications:true},{create:true});
       return batch.commit().then(()=>{
         return 'done';
       });

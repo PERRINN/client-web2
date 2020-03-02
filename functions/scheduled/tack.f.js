@@ -31,10 +31,10 @@ exports=module.exports=functions.pubsub.schedule('every 24 hours').onRun((contex
       return Promise.all(setCustomClaims).then(()=>{
         return 'done';
       });
-    }).catch(error=>{
-      console.log(error);
-      emailUtils.sendErrorEmail(error);
-      return error;
     });
+  }).catch(error=>{
+    console.log(error);
+    emailUtils.sendErrorEmail(error);
+    return error;
   });
 });

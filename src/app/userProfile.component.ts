@@ -46,8 +46,9 @@ import { AngularFireAuth } from '@angular/fire/auth';
       <ul>
         <li *ngFor="let domain of domains|async"
           (click)="view=domain.payload.doc.id;refreshMessages()"
-          style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">
+          style="position:relative;float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">
           <div [style.color]="view==domain.payload.doc.id?'#267cb5':'#777'" [style.border-style]="view==domain.payload.doc.id?'solid':'none'" style="border-width:0 0 3px 0">{{domain.payload.doc.data().name}}</div>
+          <div *ngIf="domain.payload.doc.data().isDomainFree" [style.color]="view==domain.payload.doc.id?'green':'#777'" style="font-size:7px;position:absolute;top:0;right:0"> free</div>
         </li>
       </ul>
     </div>
@@ -75,7 +76,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
         <div style="float:left;color:#777;font-size:10px;width:40px">{{message.payload.doc.data()?.recipientList.length}}</div>
         <img src="./../assets/App icons/eye.png" style="display:inline;margin-top:2px;margin-right:3px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(80);filter:brightness(80)">
         <div style="float:left;color:#777;font-size:10px;width:40px">{{objectToArray(message.payload.doc.data()?.reads)?.length}}</div>
-        <div style="float:left;color:#b38300;font-size:10px">{{message.payload.doc.data()?.domainName}}</div>
+        <div style="float:left;background-color:#777;height:5px;width:5px;margin:2px"></div>
+        <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.domainName}}</div>
       </div>
       <div class="seperator" style="margin-left:60px"></div>
       {{last?scrollToTop(message.key):''}}

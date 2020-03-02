@@ -37,6 +37,7 @@ import * as firebase from 'firebase/app';
     <span>Join PERRINN Onshape team</span>
     <span style="font-size:10px;margin-left:5px">(your PERRINN email must match your Onshape email)</span>
   </div>
+  <div *ngIf="UI.focusUserObj?.isUser" style="color:#555;margin:20px">Email notifications: {{(UI.focusUserObj?.enableEmailNotifications)?'ON':'OFF'}}</div>
   </div>
   <div *ngIf="UI.focusUser==UI.currentUser" class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div style="font-size:8px;margin:5px">version 0.0.11</div>

@@ -28,10 +28,9 @@ module.exports = {
       return transporter.sendMail(mailOptions)
       .then(result=>{
         return 'done';
-      }).catch(error=>{
-        console.log(error);
-        sendErrorEmail(error);
       });
+    }).catch(error=>{
+      console.log(error);
     });
   },
 

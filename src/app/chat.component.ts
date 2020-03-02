@@ -16,9 +16,9 @@ import * as firebase from 'firebase/app';
   <div class="sheet">
     <div (click)="refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
     <div style="cursor:pointer" (click)="router.navigate(['user',UI.currentDomain])">
-      <img [src]="UI.currentDomainObj.imageUrlThumb" style="float:right;object-fit:cover;height:50px;width:90px">
       <div style="float:right;margin:10px">
-        <div style="font-size:16px;line-height:30px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
+        <div style="float:right;font-size:16px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
+        <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
       </div>
     </div>
     <div style="margin:10px">
@@ -39,7 +39,7 @@ import * as firebase from 'firebase/app';
       <li *ngFor="let team of teams | async" >
         <div *ngIf="!UI.recipients[team.key]" style="padding:5px">
           <div style="float:left;width:175px">
-            <img [src]="team?.values.imageUrlThumb" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+            <img [src]="team?.values?.imageUrlThumb" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
             <span>{{team.values?.name}}</span>
             <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
@@ -59,9 +59,9 @@ import * as firebase from 'firebase/app';
       <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1].name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
     </div>
     <div style="cursor:pointer" (click)="router.navigate(['user',UI.currentDomain])">
-      <img [src]="UI.currentDomainObj.imageUrlThumb" style="float:right;object-fit:cover;height:40px;width:75px">
       <div style="float:right;margin:10px">
-        <div style="font-size:14px;line-height:15px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
+        <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
+        <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
       </div>
     </div>
   </div>

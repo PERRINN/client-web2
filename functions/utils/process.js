@@ -42,12 +42,12 @@ module.exports = {
         });
       }
       return 'none';
+    }).then(result=>{
+      return result;
     }).catch(error=>{
       console.log(error);
       emailUtils.sendErrorEmail(error);
       return error;
-    }).then(result=>{
-      return result;
     });
   }
 
