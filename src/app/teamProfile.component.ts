@@ -21,19 +21,21 @@ import { AngularFireAuth } from '@angular/fire/auth';
     <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 10px 0 10px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="this.logout();router.navigate(['login']);">Logout</div>
   </div>
   <div style="clear:both">
-    <div [style.color]="viewInbox?'#267cb5':'#777'" [style.border-style]="viewInbox?'solid':'none'" style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;border-width:0 0 3px 0;cursor:pointer" (click)="router.navigate(['team',UI.currentUser]);viewInbox=true">Inbox</div>
-    <ul>
+    <ul style="float:left">
       <li *ngFor="let domain of domains|async"
         (click)="router.navigate(['team',domain.payload.doc.id])"
         style="position:relative;float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">
-        <div [style.color]="UI.currentDomain==domain.payload.doc.id?'#267cb5':'#777'" [style.border-style]="UI.currentDomain==domain.payload.doc.id?'solid':'none'" style="border-width:0 0 3px 0">{{domain.payload.doc.data().name}}</div>
+        <div [style.color]="UI.currentDomain==domain.payload.doc.id?'#267cb5':'#777'" style="border-width:0 0 3px 0">{{domain.payload.doc.data().name}}</div>
         <div *ngIf="domain.payload.doc.data().isDomainFree" [style.color]="UI.currentDomain==domain.payload.doc.id?'green':'#777'" style="font-size:7px;position:absolute;top:0;right:0"> free</div>
       </li>
     </ul>
+    <img [src]="UI.currentUserObj?.imageUrlThumb" style="display:inline;float:right;margin: 5px;border-radius:50%;object-fit:cover;width:25px;height:25px;cursor:pointer" (click)="router.navigate(['team',UI.currentUser])">
+    <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
-  <div style="clear:both;background-color:#f4f7fc">
+  <div *ngIf="viewInbox" style="clear:both;font-size:20px;margin:15px">Inbox</div>
+  <div *ngIf="!viewInbox" style="clear:both;background-color:#f4f7fc">
     <div style="float:left">
-      <img [style.width]="UI.currentDomainObj?.isDomain?'150px':'75px'" [style.border-radius]="UI.currentDomainObj?.isDomain?'3%':'50%'" [src]="UI.currentDomainObj?.imageUrlMedium" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:75px">
+      <img [style.border-radius]="UI.currentDomainObj?.isDomain?'3%':'50%'" [src]="UI.currentDomainObj?.imageUrlMedium" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;width:75px;height:75px">
     </div>
     <div style="padding:10px">
       <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
@@ -54,8 +56,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
       <div class="seperator" style="width:100%;margin:0px"></div>
       <img [style.opacity]="UI.currentDomainObj?.apps?.Google?.enabled?1:0.25" [style.cursor]="UI.currentDomainObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="clear:both;float:left;width:25px;margin:10px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
       <img [style.opacity]="UI.currentDomainObj?.apps?.Onshape?.enabled?1:0.25" [style.cursor]="UI.currentDomainObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
-      <div style="float:right;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:5px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
-      <div style="float:right;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:5px;cursor:pointer" (click)="newMessage()">New message</div>
+      <div style="float:right;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
+      <div style="float:right;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newMessage()">New message</div>
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
@@ -113,20 +115,28 @@ export class TeamProfileComponent {
     this.now = Date.now();
     this.scrollTeam = '';
     this.route.params.subscribe(params => {
-      this.UI.switchDomain(params.id);
+      let domain=params.id;
+      if(params.id=='inbox'){
+        this.viewInbox=true;
+        domain=this.UI.currentUser;
+      }
+      else this.viewInbox=false;
+      this.UI.switchDomain(domain);
+      this.refreshMessages();
     });
-    this.refreshMessages();
     this.domains=this.afs.collection<any>('PERRINNTeams',ref=>ref.where('isDomain','==',true)).snapshotChanges();
   }
 
   refreshMessages(){
     if(this.viewInbox){
-      this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
-        .where('recipientList','array-contains',this.UI.currentDomain)
-        .where('lastMessage','==',true)
-        .orderBy('timestamp','desc')
-        .limit(30)
-      ).snapshotChanges();
+      this.afAuth.user.subscribe((auth) => {
+        this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+          .where('recipientList','array-contains',auth.uid)
+          .where('lastMessage','==',true)
+          .orderBy('timestamp','desc')
+          .limit(30)
+        ).snapshotChanges();
+      });
     }
     else {
       this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref

@@ -37,7 +37,7 @@ export class AppComponent {
 
   clickUserIcon() {
     if (this.UI.currentUser) {
-      this.router.navigate(['team', this.UI.currentUser]);
+      this.router.navigate(['team','inbox']);
     } else {
       this.router.navigate(['login']);
     }

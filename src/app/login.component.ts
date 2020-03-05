@@ -57,7 +57,7 @@ export class LoginComponent  {
     this.UI.currentTeam = '';
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
-        this.router.navigate(['team', auth.uid]);
+        this.router.navigate(['team','inbox']);
       }
     });
   }
