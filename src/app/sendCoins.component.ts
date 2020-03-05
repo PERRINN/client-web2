@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { userInterfaceService } from './userInterface.service';
+import { UserInterfaceService } from './userInterface.service';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import * as firebase from 'firebase/app';
 
@@ -18,7 +18,7 @@ import * as firebase from 'firebase/app';
     <span>{{receiverName}}</span>
     <span style="font-size:10px"> {{receiverFamilyName}}</span>
   </div>
-  <div style="float:right;margin:15px;font-size:12px">Balance available: C{{(UI.focusUserObj?.lastMessageBalance?UI.focusUserObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
+  <div style="float:right;margin:15px;font-size:12px">Balance available: C{{(UI.currentDomainObj?.lastMessageBalance?UI.currentDomainObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
   <div class="buttonDiv" [style.color]="inputsValid?'#267cb5':'#bbb'" style="clear:both;margin:15px;width:150px;font-size:11px" (click)="sendCoins()">Send COINS</div>
   <input maxlength="500" (keyup)="inputsValid=checkInputs()" [(ngModel)]="amount" placeholder="Amount">
   <input maxlength="500" (keyup)="inputsValid=checkInputs()" [(ngModel)]="reference" placeholder="Reference">
@@ -55,7 +55,7 @@ export class SendCoinsComponent  {
   constructor(
     public afs: AngularFirestore,
     public router: Router,
-    public UI: userInterfaceService
+    public UI: UserInterfaceService
   ) {
     this.receiver='';
     this.reference='';
@@ -92,7 +92,7 @@ export class SendCoinsComponent  {
     if(this.reference=='')return false;
     if(isNaN(this.amount))return false;
     if(Number(this.amount)<=0)return false;
-    if(Number(this.amount)>Number(this.UI.focusUserObj.lastMessageBalance))return false;
+    if(Number(this.amount)>Number(this.UI.currentDomainObj.lastMessageBalance))return false;
     return true;
   }
 

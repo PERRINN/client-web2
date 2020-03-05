@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { userInterfaceService } from './userInterface.service';
+import { UserInterfaceService } from './userInterface.service';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import * as firebase from 'firebase/app';
 
@@ -18,7 +18,7 @@ import * as firebase from 'firebase/app';
   <div class='sheet' style="margin-top:10px">
   <ul class="listLight">
     <li *ngFor="let team of teams | async" style="padding:5px">
-      <div style="float:left;width:250px" (click)="router.navigate(['user',team.key])">
+      <div style="float:left;width:250px" (click)="router.navigate(['team',team.key])">
         <img [src]="team?.values.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
         <span>{{team.values?.name}}</span>
         <span style="font-size:10px"> {{team.values?.familyName}}</span>
@@ -42,7 +42,7 @@ export class SearchComponent  {
   constructor(
     public afs: AngularFirestore,
     public router: Router,
-    public UI: userInterfaceService
+    public UI: UserInterfaceService
   ) {
     this.searchFilter='';
   }

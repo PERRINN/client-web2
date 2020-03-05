@@ -4,7 +4,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
-import { userInterfaceService } from './userInterface.service';
+import { UserInterfaceService } from './userInterface.service';
 import { AngularFireStorage } from '@angular/fire/storage';
 import * as firebase from 'firebase/app';
 
@@ -15,7 +15,7 @@ import * as firebase from 'firebase/app';
   <div *ngIf="UI.showChatDetails" id='main_container'>
   <div class="sheet">
     <div (click)="refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
-    <div style="cursor:pointer" (click)="router.navigate(['user',UI.currentDomain])">
+    <div style="cursor:pointer" (click)="router.navigate(['team',UI.currentDomain])">
       <div style="float:right;margin:10px">
         <div style="float:right;font-size:16px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
         <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
@@ -29,7 +29,7 @@ import * as firebase from 'firebase/app';
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
-      <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['user',recipient[0]])" style="cursor:pointer;float:left">
+      <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['team',recipient[0]])" style="cursor:pointer;float:left">
         <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
         <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
       </li>
@@ -58,7 +58,7 @@ import * as firebase from 'firebase/app';
       <div style="font-weight:bold">{{UI.chatSubject}}</div>
       <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1].name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
     </div>
-    <div style="cursor:pointer" (click)="router.navigate(['user',UI.currentDomain])">
+    <div style="cursor:pointer" (click)="router.navigate(['team',UI.currentDomain])">
       <div style="float:right;margin:10px">
         <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
         <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
@@ -79,7 +79,7 @@ import * as firebase from 'firebase/app';
       </div>
       <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
       <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="float:left;width:60px;min-height:10px">
-        <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['user',message.payload?.user])">
+        <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
       </div>
       <div [style.background-color]="message.payload?.auto?'#dfede3':'white'" style="cursor:text;border-radius:7px;margin:2px 10px 5px 60px">
         <div>
@@ -92,11 +92,11 @@ import * as firebase from 'firebase/app';
           <img *ngIf="message.payload?.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
           <img *ngIf="message.payload?.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
           <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
-          <div *ngIf="message.payload?.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.payload?.linkTeam])">
+          <div *ngIf="message.payload?.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['team',message.payload?.linkTeam])">
             <img [src]="message.payload?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
             <div style="font-size:11px;padding:5px;">{{message.payload?.linkTeamName}}</div>
           </div>
-          <div *ngIf="message.payload?.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['user',message.payload?.linkUser])">
+          <div *ngIf="message.payload?.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['team',message.payload?.linkUser])">
             <img [src]="message.payload?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
             <div style="font-size:11px;padding:5px;">{{message.payload?.linkUserName}} {{message.payload?.linkuserFamilyName}}</div>
           </div>
@@ -258,7 +258,7 @@ export class ChatComponent {
     public db: AngularFireDatabase,
     public afs: AngularFirestore,
     public router: Router,
-    public UI: userInterfaceService,
+    public UI: UserInterfaceService,
     private route: ActivatedRoute,
     private storage: AngularFireStorage,
   ) {
@@ -308,11 +308,9 @@ export class ChatComponent {
         this.reads.push(c.payload.doc.id);
         if(c.payload.doc.data()['lastMessage']){
           if(c.payload.doc.data()['domain']!=undefined){
-            this.UI.currentDomain=c.payload.doc.data()['domain'];
-            this.UI.currentDomainObj.name=c.payload.doc.data()['domainName'];
-            this.UI.currentDomainObj.imageUrlThumb=c.payload.doc.data()['domainImageUrlThumb'];
+            this.UI.switchDomain(c.payload.doc.data()['domain']);
           }
-          else this.UI.currentDomain='1xWBWkY3seEDb5R1bP9k';
+          else this.UI.switchDomain('1xWBWkY3seEDb5R1bP9k');
           this.UI.chatSubject=c.payload.doc.data()['chatSubject'];
           this.UI.recipients=c.payload.doc.data()['recipients'];
         }

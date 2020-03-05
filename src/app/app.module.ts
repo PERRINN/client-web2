@@ -7,14 +7,14 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ChatComponent }  from './chat.component';
 import { LoginComponent }  from './login.component';
-import { UserProfileComponent }  from './userProfile.component';
-import { UserSettingsComponent }  from './userSettings.component';
+import { TeamProfileComponent }  from './teamProfile.component';
+import { TeamSettingsComponent }  from './teamSettings.component';
 import { SearchComponent }  from './search.component';
 import { SendCoinsComponent }  from './sendCoins.component';
 import { BuyCoinsComponent }  from './buyCoins.component';
 import { LinkyModule } from 'angular-linky';
 
-import { userInterfaceService } from './userInterface.service';
+import { UserInterfaceService } from './userInterface.service';
 import { ScrollableDirective } from './scrollable.directive';
 
 import { AngularFireModule } from '@angular/fire';
@@ -40,8 +40,8 @@ export const firebaseConfig = {
     AppComponent,
     ChatComponent,
     LoginComponent,
-    UserProfileComponent,
-    UserSettingsComponent,
+    TeamProfileComponent,
+    TeamSettingsComponent,
     SearchComponent,
     SendCoinsComponent,
     BuyCoinsComponent,
@@ -61,7 +61,7 @@ export const firebaseConfig = {
     Ng2ImgMaxModule,
   ],
   providers: [
-    userInterfaceService,
+    UserInterfaceService,
   ],
   bootstrap: [AppComponent]
 })

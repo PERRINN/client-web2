@@ -3,21 +3,23 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
-import { userInterfaceService } from './userInterface.service';
+import { UserInterfaceService } from './userInterface.service';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import * as firebase from 'firebase/app';
 
 @Component({
-  selector: 'userSettings',
+  selector: 'teamSettings',
   template: `
   <div id='main_container'>
   <div class="sheet" style="background-color:#f5f5f5">
-  <img class="imageWithZoom" [src]="UI.focusUserObj?.imageUrlMedium?UI.focusUserObj?.imageUrlMedium:UI.focusUserObj?.imageUrlThumb" style="object-fit:cover;margin:10px;border-radius:5px;max-height:150px;width:50%" (click)="showFullScreenImage(UI.focusUserObj?.imageUrlOriginal)">
+  <img class="imageWithZoom" [src]="UI.currentDomainObj?.imageUrlMedium?UI.currentDomainObj?.imageUrlMedium:UI.currentDomainObj?.imageUrlThumb" style="object-fit:cover;margin:10px;border-radius:5px;max-height:150px;width:50%" (click)="showFullScreenImage(UI.currentDomainObj?.imageUrlOriginal)">
   <br/>
-  <span style="font-size:18px;line-height:30px;margin:15px;font-family:sans-serif;">{{UI.focusUserObj?.name}} {{UI.focusUserObj?.familyName}}</span>
-  <span *ngIf='UI.focusUserObj?.member' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:10px">Member</span>
-  <span *ngIf='UI.focusUserObj?.isDomain' style="color:white;background-color:#e6b927;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
+  <span style="font-size:18px;line-height:30px;margin:15px;font-family:sans-serif;">{{UI.currentDomainObj?.name}} {{UI.currentDomainObj?.familyName}}</span>
+  <span *ngIf='UI.currentDomainObj?.member' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:10px">Member</span>
+  <span *ngIf='UI.currentDomainObj?.isDomain' style="color:white;background-color:#e6b927;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
+  <br/>
+  <span style="font-size:12px;line-height:30px;margin:15px;font-family:sans-serif;">Membership cost: C{{(UI.currentDomainObj?.membershipCost?UI.currentDomainObj?.membershipCost:0)|number:'1.2-2'}}</span>
   <div class='sheet' style="margin-top:5px">
   <div style="color:blue;;cursor:pointer;margin:20px">
     <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
@@ -27,26 +29,31 @@ import * as firebase from 'firebase/app';
   </div>
   <div *ngIf="!editName" style="color:blue;cursor:pointer;margin:20px" (click)="editName=!editName">Edit name</div>
   <input *ngIf="editName" [(ngModel)]="name" placeholder="First name">
-  <input *ngIf="editName&&UI.focusUserObj?.isUser" [(ngModel)]="familyName" placeholder="Family name">
+  <input *ngIf="editName&&UI.currentDomainObj?.isUser" [(ngModel)]="familyName" placeholder="Family name">
   <div *ngIf="editName" (click)="applyNewName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply update</div>
-  <div *ngIf="UI.focusUserObj?.isUser" style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNGoogleGroup()">
+  <div *ngIf="!editMembershipCost" style="color:blue;cursor:pointer;margin:20px" (click)="editMembershipCost=!editMembershipCost">Edit membership cost</div>
+  <input *ngIf="editMembershipCost" [(ngModel)]="membershipCost" placeholder="Membership cost">
+  <div *ngIf="editMembershipCost" (click)="applyNewMembershipCost()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply update</div>
+  <div *ngIf="UI.currentDomainObj?.isUser" style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNGoogleGroup()">
     <span>Join PERRINN Google group</span>
     <span style="font-size:10px;margin-left:5px">(your PERRINN email must match your Google email)</span>
   </div>
-  <div *ngIf="UI.focusUserObj?.isUser" style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNOnshapeTeam()">
+  <div *ngIf="UI.currentDomainObj?.isUser" style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNOnshapeTeam()">
     <span>Join PERRINN Onshape team</span>
     <span style="font-size:10px;margin-left:5px">(your PERRINN email must match your Onshape email)</span>
   </div>
-  <div *ngIf="UI.focusUserObj?.isUser" style="color:#555;margin:20px">Email notifications: {{(UI.focusUserObj?.enableEmailNotifications)?'ON':'OFF'}}</div>
+  <div *ngIf="UI.currentDomainObj?.isUser" style="color:#555;margin:20px">Email notifications: {{(UI.currentDomainObj?.enableEmailNotifications)?'ON':'OFF'}}</div>
   </div>
-  <div *ngIf="UI.focusUser==UI.currentUser" class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
+  <div *ngIf="UI.currentDomain==UI.currentUser" class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div style="font-size:8px;margin:5px">version 0.0.11</div>
   </div>
   `,
 })
-export class UserSettingsComponent {
+export class TeamSettingsComponent {
   editName: boolean;
+  editMembershipCost: boolean;
   name:string;
+  membershipCost:string;
   familyName:string;
 
   constructor(
@@ -54,12 +61,15 @@ export class UserSettingsComponent {
     public afs: AngularFirestore,
     public router: Router,
     private storage: AngularFireStorage,
-    public UI: userInterfaceService
+    public UI: UserInterfaceService
   ) {
     this.editName=false;
-    this.name=this.UI.focusUserObj.name;
-    if(this.UI.focusUserObj.familyName==undefined) this.familyName='';
-    else this.familyName=this.UI.focusUserObj.familyName;
+    this.editMembershipCost=false;
+    this.name=this.UI.currentDomainObj.name;
+    if(this.UI.currentDomainObj.membershipCost==undefined) this.membershipCost='';
+    else this.membershipCost=this.UI.currentDomainObj.membershipCost;
+    if(this.UI.currentDomainObj.familyName==undefined) this.familyName='';
+    else this.familyName=this.UI.currentDomainObj.familyName;
   }
 
   logout() {
@@ -68,7 +78,7 @@ export class UserSettingsComponent {
   }
 
   applyNewName(){
-    if(this.name==this.UI.focusUserObj.name&&this.familyName==this.UI.focusUserObj.familyName||this.name==''){
+    if(this.name==this.UI.currentDomainObj.name&&this.familyName==this.UI.currentDomainObj.familyName||this.name==''){
       this.editName=false;
       return;
     }
@@ -78,13 +88,13 @@ export class UserSettingsComponent {
     }).then(ref=>{
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.addRecipient(this.UI.focusUser).then(()=>{
+        this.UI.addRecipient(this.UI.currentDomain).then(()=>{
           this.UI.chatSubject='';
           this.UI.chain=ref.id;
           this.UI.showChatDetails=false;
           this.UI.process={
             inputs:{
-              target:this.UI.focusUser,
+              target:this.UI.currentDomain,
               name:this.name,
               familyName:this.familyName
             },
@@ -94,6 +104,38 @@ export class UserSettingsComponent {
             inputsComplete:true
           };
           this.UI.createMessageAFS('Updating name to: '+this.name+' '+this.familyName,'','',true);
+          this.router.navigate(['chat','']);
+        });
+      });
+    });
+  }
+
+  applyNewMembershipCost(){
+    if(this.membershipCost==this.UI.currentDomainObj.membershipCost||this.membershipCost==''){
+      this.editMembershipCost=false;
+      return;
+    }
+    return this.afs.collection('IDs').add({
+      user:this.UI.currentUser,
+      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(ref=>{
+      this.UI.clearRecipient();
+      this.UI.addRecipient(this.UI.currentUser).then(()=>{
+        this.UI.addRecipient(this.UI.currentDomain).then(()=>{
+          this.UI.chatSubject='';
+          this.UI.chain=ref.id;
+          this.UI.showChatDetails=false;
+          this.UI.process={
+            inputs:{
+              target:this.UI.currentDomain,
+              membershipCost:this.membershipCost
+            },
+            function:{
+              name:'updateTeamMembershipCost'
+            },
+            inputsComplete:true
+          };
+          this.UI.createMessageAFS('Updating membership cost to: '+this.membershipCost,'','',true);
           this.router.navigate(['chat','']);
         });
       });
@@ -181,13 +223,13 @@ export class UserSettingsComponent {
         }).then(ref=>{
           this.UI.clearRecipient();
           this.UI.addRecipient(this.UI.currentUser).then(()=>{
-            this.UI.addRecipient(this.UI.focusUser).then(()=>{
+            this.UI.addRecipient(this.UI.currentDomain).then(()=>{
               this.UI.chatSubject='';
               this.UI.chain=ref.id;
               this.UI.showChatDetails=false;
               this.UI.process={
                 inputs:{
-                  target:this.UI.focusUser,
+                  target:this.UI.currentDomain,
                   imageTimestamp:draftImage,
                   imageUrlOriginal:url
                 },

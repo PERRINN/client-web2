@@ -2,7 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { userInterfaceService } from './userInterface.service';
+import { UserInterfaceService } from './userInterface.service';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import * as firebase from 'firebase/app';
 
@@ -90,7 +90,7 @@ export class BuyCoinsComponent {
     public afs: AngularFirestore,
     public router: Router,
     private _zone: NgZone,
-    public UI: userInterfaceService
+    public UI: UserInterfaceService
   ) {
     this.selectingCurrency = true;
     this.enteringCardDetails = false;

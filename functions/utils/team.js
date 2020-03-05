@@ -10,8 +10,7 @@ module.exports = {
     batch.update(admin.firestore().doc('PERRINNTeams/'+team),{name:name},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+team),{familyName:familyName},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+team),{searchName:nameLowerCase},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{leaders:{[user]:{name:name}}},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{leadersCount:1},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+team),{leaders:{[user]:{name:name,familyName:familyName,timestamp:admin.firestore.FieldValue.serverTimestamp()}}},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+team),{enableEmailNotifications:true},{create:true});
     if(parent!=''){
       batch.update(admin.firestore().doc('PERRINNTeams/'+team),{parent:parent},{create:true});
@@ -21,6 +20,9 @@ module.exports = {
     if(team==user)batch.update(admin.firestore().doc('PERRINNTeams/'+team),{isUser:true},{create:true});
     return batch.commit().then(()=>{
       return 'done';
+    }).catch(error=>{
+      console.log(error);
+      emailUtils.sendErrorEmail(error);
     });
   },
 

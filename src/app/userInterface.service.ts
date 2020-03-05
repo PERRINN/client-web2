@@ -6,11 +6,11 @@ import { map } from 'rxjs/operators';
 import * as firebase from 'firebase/app';
 
 @Injectable()
-export class userInterfaceService {
+export class UserInterfaceService {
   globalChatActivity:boolean;
   loading:boolean;
-  focusUser:string;
-  focusUserObj:any;
+  currentDomain:string;
+  currentDomainObj:any;
   currentTeam:string;
   currentTeamObj:any;
   currentTeamObjKey:string;
@@ -24,8 +24,6 @@ export class userInterfaceService {
   chain:string;
   chatSubject:string;
   showChatDetails:boolean;
-  currentDomain:string;
-  currentDomainObj:any;
 
   constructor(
     private afAuth: AngularFireAuth,
@@ -38,10 +36,6 @@ export class userInterfaceService {
     this.recipients={};
     this.recipientList=[];
     this.chain='';
-    this.currentDomain='1xWBWkY3seEDb5R1bP9k';
-    afs.doc<any>('PERRINNTeams/'+this.currentDomain).valueChanges().subscribe(snapshot=>{
-      this.currentDomainObj=snapshot;
-    });
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser=auth.uid;
@@ -51,12 +45,20 @@ export class userInterfaceService {
         firebase.auth().currentUser.getIdTokenResult().then(result=>{
           this.currentUserClaims=result.claims;
         });
-        if (this.focusUser == null) { this.focusUser = auth.uid; }
+        if(this.currentDomain==null)this.switchDomain(auth.uid)
       } else {
         this.currentUser=null;
-        this.focusUser=null;
+        this.currentDomain=null;
         this.currentTeam=null;
       }
+    });
+  }
+
+  switchDomain(domain){
+    if(domain==this.currentDomain)return;
+    this.currentDomain=domain;
+    return this.afs.doc<any>('PERRINNTeams/'+this.currentDomain).valueChanges().subscribe(snapshot=>{
+      this.currentDomainObj=snapshot;
     });
   }
 

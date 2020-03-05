@@ -87,7 +87,7 @@ module.exports = {
         inputsComplete=process.inputsComplete;
       }
     }
-    return processUtils.executeProcess(user,functionObj,inputs).then(result=>{
+    return processUtils.executeProcess(user,functionObj,inputs,message).then(result=>{
       if (result==undefined) result='undefined';
       batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.function":functionObj},{create:true});
       batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.inputs":inputs},{create:true});

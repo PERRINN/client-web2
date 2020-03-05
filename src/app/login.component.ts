@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { userInterfaceService } from './userInterface.service';
+import { UserInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'login',
@@ -52,12 +52,12 @@ export class LoginComponent  {
   messageUser: string;
   newUser: boolean;
 
-  constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase, public UI: userInterfaceService) {
+  constructor(public afAuth: AngularFireAuth, public router: Router, public db: AngularFireDatabase, public UI: UserInterfaceService) {
     this.newUser = false;
     this.UI.currentTeam = '';
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
-        this.router.navigate(['user', auth.uid]);
+        this.router.navigate(['team', auth.uid]);
       }
     });
   }
@@ -107,7 +107,7 @@ export class LoginComponent  {
           }
         }).then(_ => {
           this.afAuth.user.subscribe((auth) => {
-            this.db.list('users/' + auth.uid).push({
+            this.db.list('teams/' + auth.uid).push({
               timestamp: firebase.database.ServerValue.TIMESTAMP,
               name,
               familyName,

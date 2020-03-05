@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Router } from '@angular/router';
-import { userInterfaceService } from './userInterface.service';
+import { UserInterfaceService } from './userInterface.service';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +20,7 @@ import { userInterfaceService } from './userInterface.service';
 })
 export class AppComponent {
 
-  constructor(public db: AngularFireDatabase, public router: Router, public UI: userInterfaceService) {
+  constructor(public db: AngularFireDatabase, public router: Router, public UI: UserInterfaceService) {
     localStorage.clear();
   }
 
@@ -37,7 +37,7 @@ export class AppComponent {
 
   clickUserIcon() {
     if (this.UI.currentUser) {
-      this.router.navigate(['user', this.UI.currentUser]);
+      this.router.navigate(['team', this.UI.currentUser]);
     } else {
       this.router.navigate(['login']);
     }
