@@ -29,7 +29,10 @@ import { AngularFireAuth } from '@angular/fire/auth';
         <div *ngIf="domain.payload.doc.data().isDomainFree" [style.color]="UI.currentDomain==domain.payload.doc.id?'green':'#777'" style="font-size:7px;position:absolute;top:0;right:0"> free</div>
       </li>
     </ul>
-    <img [src]="UI.currentUserObj?.imageUrlThumb" style="display:inline;float:right;margin: 5px;border-radius:50%;object-fit:cover;width:25px;height:25px;cursor:pointer" (click)="router.navigate(['team',UI.currentUser])">
+    <div style="float:right;cursor:pointer" (click)="router.navigate(['team',UI.currentUser])">
+    <div style="float:right;margin:5px;font-size:10px">C{{(UI.currentUserObj?.lastMessageBalance?UI.currentUserObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
+      <img [src]="UI.currentUserObj?.imageUrlThumb" style="display:inline;float:right;margin: 5px;border-radius:50%;object-fit:cover;width:25px;height:25px">
+    </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   <div *ngIf="viewInbox" style="clear:both;font-size:20px;margin:15px">Inbox</div>

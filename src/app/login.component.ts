@@ -107,7 +107,7 @@ export class LoginComponent  {
           }
         }).then(_ => {
           this.afAuth.user.subscribe((auth) => {
-            this.db.list('teams/' + auth.uid).push({
+            this.db.list('users/' + auth.uid).push({
               timestamp: firebase.database.ServerValue.TIMESTAMP,
               name,
               familyName,
