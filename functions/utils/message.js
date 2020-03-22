@@ -261,6 +261,7 @@ module.exports = {
       if(messageObj.data().PERRINN.transactionOut.processed){
         let sender='-L7jqFf8OuGlZrfEK6dT';
         let receiverMessageObj={
+          domain:messageObj.data().domain,
           user:messageObj.data().PERRINN.transactionOut.receiver,
           text:messageObj.data().PERRINN.transactionOut.amount+" COINS received, reference: "+messageObj.data().PERRINN.transactionOut.reference,
           chain:messageObj.data().chain,

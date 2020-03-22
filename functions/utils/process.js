@@ -57,6 +57,7 @@ module.exports = {
               let familyName='';
               if(team.data().familyName!=undefined)familyName=team.data().familyName;
               let messageObj={
+                domain:messageData.data().domain,
                 user:user,
                 text:"I am sending "+team.data().membershipCost+" COINS reference: Membership cost",
                 chain:messageData.data().chain,

@@ -21,11 +21,13 @@ import { AngularFireAuth } from '@angular/fire/auth';
     <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 10px 0 10px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="this.logout();router.navigate(['login']);">Logout</div>
   </div>
   <div style="clear:both">
+    <div (click)="router.navigate(['team','inbox'])" [style.color]="UI.currentDomain=='inbox'?'#267cb5':'#777'" style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">Inbox</div>
+    <div (click)="router.navigate(['team','all'])" [style.color]="UI.currentDomain=='all'?'#267cb5':'#777'" style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">All</div>
     <ul style="float:left">
       <li *ngFor="let domain of domains|async"
         (click)="router.navigate(['team',domain.payload.doc.id])"
         style="position:relative;float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">
-        <div [style.color]="UI.currentDomain==domain.payload.doc.id?'#267cb5':'#777'" style="border-width:0 0 3px 0">{{domain.payload.doc.data().name}}</div>
+        <div [style.color]="UI.currentDomain==domain.payload.doc.id?'#267cb5':'#777'">{{domain.payload.doc.data().name}}</div>
         <div *ngIf="domain.payload.doc.data().isDomainFree" [style.color]="UI.currentDomain==domain.payload.doc.id?'green':'#777'" style="font-size:7px;position:absolute;top:0;right:0"> free</div>
       </li>
     </ul>
@@ -35,8 +37,9 @@ import { AngularFireAuth } from '@angular/fire/auth';
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
-  <div *ngIf="viewInbox" style="clear:both;font-size:20px;margin:15px">Inbox</div>
-  <div *ngIf="!viewInbox" style="clear:both;background-color:#f4f7fc">
+  <div *ngIf="UI.currentDomain=='inbox'" style="clear:both;font-size:16px;margin:15px">Inbox</div>
+  <div *ngIf="UI.currentDomain=='all'" style="clear:both;font-size:16px;margin:15px">Team wide messages</div>
+  <div *ngIf="!(UI.currentDomain=='inbox'||UI.currentDomain=='all')" style="clear:both;background-color:#f4f7fc">
     <div style="float:left">
       <img [style.border-radius]="UI.currentDomainObj?.isDomain?'3%':'50%'" [src]="UI.currentDomainObj?.imageUrlMedium" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;width:75px;height:75px">
     </div>
@@ -102,7 +105,6 @@ export class TeamProfileComponent {
   lastMessages:Observable<any[]>;
   now:number;
   scrollTeam:string;
-  viewInbox:boolean;
   domains:Observable<any[]>;
 
   constructor(
@@ -112,29 +114,31 @@ export class TeamProfileComponent {
     public UI: UserInterfaceService,
     private route: ActivatedRoute
   ) {
-    this.viewInbox=false;
     this.UI.loading = false;
     this.UI.currentTeam = '';
     this.now = Date.now();
     this.scrollTeam = '';
     this.route.params.subscribe(params => {
-      let domain=params.id;
-      if(params.id=='inbox'){
-        this.viewInbox=true;
-        domain=this.UI.currentUser;
-      }
-      else this.viewInbox=false;
-      this.UI.switchDomain(domain);
+      this.UI.switchDomain(params.id);
       this.refreshMessages();
     });
     this.domains=this.afs.collection<any>('PERRINNTeams',ref=>ref.where('isDomain','==',true)).snapshotChanges();
   }
 
   refreshMessages(){
-    if(this.viewInbox){
+    if(this.UI.currentDomain=='inbox'){
       this.afAuth.user.subscribe((auth) => {
         this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
           .where('recipientList','array-contains',auth.uid)
+          .where('lastMessage','==',true)
+          .orderBy('timestamp','desc')
+          .limit(30)
+        ).snapshotChanges();
+      });
+    }
+    else if(this.UI.currentDomain=='all'){
+      this.afAuth.user.subscribe((auth) => {
+        this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
           .where('lastMessage','==',true)
           .orderBy('timestamp','desc')
           .limit(30)

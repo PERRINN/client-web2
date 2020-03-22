@@ -10,7 +10,8 @@ module.exports = {
       user:messageObj.user,
       serverTimestamp: admin.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
-      return admin.firestore().doc('PERRINNTeams/'+'1xWBWkY3seEDb5R1bP9k').get().then(domainObj=>{
+      if(messageObj.domain==undefined)messageObj.domain=messageObj.user;
+      return admin.firestore().doc('PERRINNTeams/'+messageObj.domain).get().then(domainObj=>{
         return admin.firestore().doc('PERRINNTeams/'+messageObj.user).get().then(userData=>{
           var reads=[];
           messageObj.recipientList.forEach(recipient=>{

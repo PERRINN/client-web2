@@ -310,7 +310,6 @@ export class ChatComponent {
           if(c.payload.doc.data()['domain']!=undefined){
             this.UI.switchDomain(c.payload.doc.data()['domain']);
           }
-          else this.UI.switchDomain('1xWBWkY3seEDb5R1bP9k');
           this.UI.chatSubject=c.payload.doc.data()['chatSubject'];
           this.UI.recipients=c.payload.doc.data()['recipients'];
         }
