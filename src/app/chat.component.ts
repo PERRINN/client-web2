@@ -81,7 +81,7 @@ import * as firebase from 'firebase/app';
       <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="float:left;width:60px;min-height:10px">
         <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
       </div>
-      <div [style.background-color]="message.payload?.auto?'#dfede3':'white'" style="cursor:text;border-radius:7px;margin:2px 10px 5px 60px">
+      <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:7px;margin:2px 10px 5px 60px">
         <div>
           <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}{{message.payload?.firstName}}</div>
           <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#AAA;font-size:11px">{{message.payload?.timestamp | date:'HH:mm'}}</div>

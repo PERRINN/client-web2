@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
 import { Router } from '@angular/router';
 import { UserInterfaceService } from './userInterface.service';
 
@@ -20,7 +19,10 @@ import { UserInterfaceService } from './userInterface.service';
 })
 export class AppComponent {
 
-  constructor(public db: AngularFireDatabase, public router: Router, public UI: UserInterfaceService) {
+  constructor(
+    public router:Router,
+    public UI:UserInterfaceService
+  ) {
     localStorage.clear();
   }
 

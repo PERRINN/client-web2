@@ -1,7 +1,6 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
-const teamUtils = require('../../utils/team')
 const emailUtils = require('../../utils/email')
 
 exports=module.exports=functions.firestore.document('PERRINNTeams/{team}/reads/{message}').onCreate((data,context)=>{

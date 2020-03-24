@@ -37,7 +37,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
-  <div *ngIf="UI.currentDomain=='inbox'" style="clear:both;font-size:16px;margin:15px">Inbox</div>
+  <div *ngIf="UI.currentDomain=='inbox'" style="clear:both;font-size:16px;margin:15px">My inbox</div>
   <div *ngIf="UI.currentDomain=='all'" style="clear:both;font-size:16px;margin:15px">Team wide messages</div>
   <div *ngIf="!(UI.currentDomain=='inbox'||UI.currentDomain=='all')" style="clear:both;background-color:#f4f7fc">
     <div style="float:left">
@@ -55,14 +55,14 @@ import { AngularFireAuth } from '@angular/fire/auth';
       <div style="clear:both;float:left;font-size:10px;color:#999">{{objectToArray(UI.currentDomainObj?.leaders).length}} leaders, {{UI.currentDomainObj?.members?objectToArray(UI.currentDomainObj?.members).length:0}} members</div>
       <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(UI.currentDomainObj?.lastMessageBalance?UI.currentDomainObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
       <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
-      <div style="float:left;margin-left:10px;margin-top:3px;font-size:10px;color:green;line-height:14px;width:50px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['buyCoins'])">Top Up</div>
+      <div *ngIf="UI.currentDomain==UI.currentUser" style="float:left;margin-left:10px;margin-top:3px;font-size:10px;color:green;line-height:14px;width:50px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['buyCoins'])">Top Up</div>
       <div class="seperator" style="width:100%;margin:0px"></div>
       <div [style.color]="((UI.currentDomainObj?.members!=undefined)?(UI.currentDomainObj?.members[UI.currentUser]):false)?'#999':'#267cb5'" [style.cursor]="((UI.currentDomainObj?.members!=undefined)?(UI.currentDomainObj?.members[UI.currentUser]):false)?'default':'pointer'" style="clear:both;float:left;width:100px;text-align:center;line-height:14px;font-size:10px;margin:5px;border-style:solid;border-width:1px;border-radius:3px" (click)="joinTeam()">Join (C{{(UI.currentDomainObj?.membershipCost?UI.currentDomainObj?.membershipCost:0)|number:'1.2-2'}})</div>
       <div *ngIf='((UI.currentDomainObj?.members!=undefined)?(UI.currentDomainObj?.members[UI.currentUser]):false)' style="float:left;line-height:14px;font-size:10px;margin:5px;color:#777">You are a member of this team</div>
       <div class="seperator" style="width:100%;margin:0px"></div>
       <img [style.opacity]="UI.currentDomainObj?.apps?.Google?.enabled?1:0.25" [style.cursor]="UI.currentDomainObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="clear:both;float:left;width:25px;margin:10px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
       <img [style.opacity]="UI.currentDomainObj?.apps?.Onshape?.enabled?1:0.25" [style.cursor]="UI.currentDomainObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
-      <div style="float:right;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
+      <div *ngIf="UI.currentDomain==UI.currentUser" style="float:right;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
       <div style="float:right;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newMessage()">New message</div>
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>

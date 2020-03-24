@@ -1,6 +1,5 @@
 import { Injectable }    from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
 import * as firebase from 'firebase/app';
@@ -27,7 +26,6 @@ export class UserInterfaceService {
 
   constructor(
     private afAuth: AngularFireAuth,
-    public db: AngularFireDatabase,
     public afs: AngularFirestore
   ) {
     this.showChatDetails=false;

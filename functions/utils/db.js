@@ -1,5 +1,3 @@
-const admin = require('firebase-admin')
-const teamUtils = require('./team')
 
 module.exports = {
 
