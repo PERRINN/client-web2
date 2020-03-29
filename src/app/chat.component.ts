@@ -14,19 +14,15 @@ import * as firebase from 'firebase/app';
 
   <div *ngIf="UI.showChatDetails" id='main_container'>
   <div class="sheet">
-    <div (click)="refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
+    <div (click)="UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
     <div style="cursor:pointer" (click)="router.navigate(['team',UI.currentDomain])">
       <div style="float:right;margin:10px">
         <div style="float:right;font-size:16px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
         <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
       </div>
     </div>
-    <div style="margin:10px">
-      <div *ngIf="!editing" style="float:left;font-size:18px;line-height:30px;font-family:sans-serif;">{{UI.chatSubject?UI.chatSubject:'no subject'}}</div>
-      <input *ngIf="editing" [(ngModel)]="UI.chatSubject">
-      <div *ngIf="!editing" (click)="editing=!editing" style="font-size:12px;text-align:center;line-height:30px;width:110px;color:#4287f5;cursor:pointer">edit subject</div>
-      <div *ngIf="editing" (click)="autoMessage=true;draftMessage='I have changed the subject of this chat';addMessage();editing=!editing;refreshMessages();UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;width:80px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply</div>
-    </div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
+    <input [(ngModel)]="UI.chatSubject" style="margin:10px;border:0;background:none;box-shadow:none;border-radius: 0px" placeholder="Subject">
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
       <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['team',recipient[0]])" style="cursor:pointer;float:left">
@@ -51,18 +47,16 @@ import * as firebase from 'firebase/app';
   </div>
 
 
-  <div *ngIf="!UI.showChatDetails" id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
-  <div class="sheet" style="background-color:#eee">
-  <div class="sheet" style="position:fixed;background:#fcfcfc;width:100%;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
+  <div id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
+  <div class="sheet">
+  <div class="sheet" *ngIf="!UI.showChatDetails" style="position:fixed;background:#fcfcfc;width:100%;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
     <div style="float:left;margin:0 5px 0 5px">
       <div style="font-weight:bold">{{UI.chatSubject}}</div>
       <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1].name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
     </div>
-    <div style="cursor:pointer" (click)="router.navigate(['team',UI.currentDomain])">
-      <div style="float:right;margin:10px">
-        <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
-        <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
-      </div>
+    <div style="float:right;margin:10px">
+      <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
+      <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
     </div>
   </div>
   <div class="spinner" *ngIf="UI.loading">
@@ -75,16 +69,20 @@ import * as firebase from 'firebase/app';
     <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
       <div *ngIf="i<messageNumberDisplay" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''">
       <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:70px 15px 15px 15px">
-        <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:7px">{{message.payload?.timestamp|date:'fullDate'}}</div>
+        <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{message.payload?.timestamp|date:'fullDate'}}</div>
+      </div>
+      <div *ngIf="message.payload?.chatSubject!=this.previousMessageSubject&&!first" style="margin:10px 10px 10px 70px">
+        <div style="color:#777">Subject changed to: {{message.payload?.chatSubject}}</div>
+        <div style="color:#777;font-size:10px">was: {{previousMessageSubject}}</div>
       </div>
       <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
       <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="float:left;width:60px;min-height:10px">
         <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
       </div>
-      <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:7px;margin:2px 10px 5px 60px">
+      <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:3px;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
         <div>
-          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}{{message.payload?.firstName}}</div>
-          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#AAA;font-size:11px">{{message.payload?.timestamp | date:'HH:mm'}}</div>
+          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
+          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:11px">{{message.payload?.timestamp | date:'HH:mm'}}</div>
           <img *ngIf="message.payload?.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
           <img *ngIf="message.payload?.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
           <img *ngIf="message.payload?.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
@@ -127,14 +125,14 @@ import * as firebase from 'firebase/app';
             <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
           </div>
           <div *ngIf="showDetails[message.key]">
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
               <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MEMBERSHIP COST</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Count: {{message.payload?.PERRINN?.membershipCost?.counter}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.membershipCost?.amount|number:'1.3-3'}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.membershipCost?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
               <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE COST</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.messagingCost?.amount|number:'1.3-3'}}</div>
@@ -145,7 +143,7 @@ import * as firebase from 'firebase/app';
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.messagingCost?.processed}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.messagingCost?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
               <img src="./../assets/App icons/repeat.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">PROCESS</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Function: {{message.payload?.PERRINN?.process?.function|json}}</div>
@@ -154,7 +152,7 @@ import * as firebase from 'firebase/app';
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="(message.payload?.PERRINN?.process?.result!='none')?'#c7edcd':''">Result: {{message.payload?.PERRINN?.process?.result}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.process?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
               <img src="./../assets/App icons/out.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION OUT</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.3-3'}}</div>
@@ -165,7 +163,7 @@ import * as firebase from 'firebase/app';
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.transactionOut?.processed}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionOut?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
               <img src="./../assets/App icons/in.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION IN</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.3-3'}}</div>
@@ -174,7 +172,7 @@ import * as firebase from 'firebase/app';
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionIn?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.transactionIn?.processed}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionIn?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
               <img src="./../assets/App icons/chain.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE CHAIN</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Index:#{{message.payload?.PERRINN?.chain?.index}}</div>
@@ -183,7 +181,7 @@ import * as firebase from 'firebase/app';
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Next: {{message.payload?.PERRINN?.chain?.nextMessage}}</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.chain?.timestamp}}</div>
             </div>
-            <div style="float:left;border-radius:10px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
               <img src="./../assets/App icons/wallet.png" style="display:inline;float:right;height:25px;border-radius:25%">
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">WALLET</div>
               <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Previous balance: C{{message.payload?.PERRINN?.wallet?.previousBalance|number:'1.3-3'}}</div>
@@ -201,7 +199,7 @@ import * as firebase from 'firebase/app';
         </div>
       </div>
       </div>
-      {{storeMessageValues(message.payload?.user,message.payload?.timestamp)}}
+      {{storeMessageValues(message.payload)}}
       {{(last||i==(messageNumberDisplay-1))?scrollToBottom(message.payload?.timestamp):''}}
     </li>
   </ul>
@@ -234,25 +232,26 @@ import * as firebase from 'firebase/app';
     `
 })
 export class ChatComponent {
-  draftMessage: string;
-  draftImage: string;
-  draftImageDownloadURL: string;
-  draftMessageDB: boolean;
-  draftMessageUsers: Observable<any[]>;
-  messageNumberDisplay: number;
-  lastChatVisitTimestamp: number;
-  scrollMessageTimestamp: number;
-  previousMessageTimestamp: number;
-  previousMessageUser: string;
-  isCurrentUserLeader: boolean;
-  isCurrentUserMember: boolean;
-  showDetails: {};
-  messages: Observable<any[]>;
-  editing: boolean;
-  teams: Observable<any[]>;
-  searchFilter: string;
-  reads: any[];
+  draftMessage:string;
+  draftImage:string;
+  draftImageDownloadURL:string;
+  draftMessageDB:boolean;
+  draftMessageUsers:Observable<any[]>;
+  messageNumberDisplay:number;
+  lastChatVisitTimestamp:number;
+  scrollMessageTimestamp:number;
+  previousMessageTimestamp:number;
+  previousMessageUser:string;
+  previousMessageSubject:string;
+  isCurrentUserLeader:boolean;
+  isCurrentUserMember:boolean;
+  showDetails:{};
+  messages:Observable<any[]>;
+  teams:Observable<any[]>;
+  searchFilter:string;
+  reads:any[];
   autoMessage:boolean;
+  chatSubjectPreEditing:string;
 
   constructor(
     public db: AngularFireDatabase,
@@ -264,22 +263,21 @@ export class ChatComponent {
   ) {
     this.UI.loading = true;
     this.reads=[];
-    this.editing=false;
     this.route.params.subscribe(params => {
       this.isCurrentUserLeader=false;
       this.isCurrentUserMember=false;
       this.showDetails={};
       this.previousMessageTimestamp=0;
       this.previousMessageUser='';
+      this.previousMessageSubject='';
       this.draftMessageDB=false;
       this.draftImage='';
       this.draftImageDownloadURL='';
       this.draftMessage='';
       this.autoMessage=false;
       this.messageNumberDisplay = 15;
-
+      this.chatSubjectPreEditing='';
       this.refreshMessages();
-
     });
   }
 
@@ -310,7 +308,8 @@ export class ChatComponent {
           if(c.payload.doc.data()['domain']!=undefined){
             this.UI.switchDomain(c.payload.doc.data()['domain']);
           }
-          this.UI.chatSubject=c.payload.doc.data()['chatSubject'];
+          if(this.chatSubjectPreEditing==''||this.chatSubjectPreEditing==this.UI.chatSubject) this.UI.chatSubject=c.payload.doc.data()['chatSubject'];
+          this.chatSubjectPreEditing=c.payload.doc.data()['chatSubject'];
           this.UI.recipients=c.payload.doc.data()['recipients'];
         }
       });
@@ -334,20 +333,21 @@ export class ChatComponent {
   }
 
   isMessageNewTimeGroup(messageTimestamp:any) {
-    let isMessageNewTimeGroup: boolean;
+    let isMessageNewTimeGroup:boolean;
     isMessageNewTimeGroup = Math.abs(messageTimestamp - this.previousMessageTimestamp) > 1000 * 60 * 60 * 4;
     return isMessageNewTimeGroup;
   }
 
   isMessageNewUserGroup(user: any, messageTimestamp: any) {
-    let isMessageNewUserGroup: boolean;
+    let isMessageNewUserGroup:boolean;
     isMessageNewUserGroup = Math.abs(messageTimestamp - this.previousMessageTimestamp) > 1000 * 60 * 5 || (user != this.previousMessageUser);
     return isMessageNewUserGroup;
   }
 
-  storeMessageValues(user: any, timestamp: any) {
-    this.previousMessageUser = user;
-    this.previousMessageTimestamp = timestamp;
+  storeMessageValues(message) {
+    this.previousMessageUser=message.user;
+    this.previousMessageTimestamp=message.timestamp;
+    this.previousMessageSubject=message.chatSubject;
   }
 
   isDraftMessageRecent(draftMessageTimestamp: any) {

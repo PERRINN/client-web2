@@ -5,7 +5,6 @@ const emailUtils = require('../utils/email')
 module.exports = {
 
   setCustomClaims:(user)=>{
-    if(user=='-L7jqFf8OuGlZrfEK6dT')return;
     return admin.firestore().doc('PERRINNTeams/'+user).get().then(userObj=>{
       if(userObj==undefined)return;
       if(userObj.data()==undefined)return;
@@ -13,6 +12,9 @@ module.exports = {
       if(userObj.data().lastMessageBalance>0&&!Boolean(userObj.data().member)){
         return admin.auth().setCustomUserClaims(user,{
           member:true
+        }).catch(error=>{
+          console.log('no user account');
+          return 'no user account';
         }).then(()=>{
           return admin.firestore().doc('PERRINNTeams/'+user).update({
             member:true
@@ -33,6 +35,9 @@ module.exports = {
       if(userObj.data().lastMessageBalance<=0&&Boolean(userObj.data().member)){
         return admin.auth().setCustomUserClaims(user,{
           member:false
+        }).catch(error=>{
+          console.log('no user account');
+          return 'no user account';
         }).then(()=>{
           return admin.firestore().doc('PERRINNTeams/'+user).update({
             member:false

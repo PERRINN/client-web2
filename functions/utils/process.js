@@ -52,6 +52,7 @@ module.exports = {
           let sender='-L7jqFf8OuGlZrfEK6dT';
           let messageObj={
             user:sender,
+            domain:user,
             text:"Welcome to PERRINN, we are happy to have you here with us! If you have any question please ask here. We will be happy to help.",
             chatSubject:'Welcome to PERRINN',
             recipientList:[sender,'QYm5NATKa6MGD87UpNZCTl6IolX2',user]
@@ -74,6 +75,17 @@ module.exports = {
           membershipCost:inputs.membershipCost
         }).then(()=>{
           return 'membership cost updated';
+        });
+      }
+      if (functionObj.name=='addChild') {
+        return admin.firestore().doc('PERRINNTeams/'+inputs.target).update({
+          [`children.${inputs.child}`]:inputs.childObj
+        }).then(()=>{
+          return admin.firestore().doc('PERRINNTeams/'+inputs.child).update({
+            [`parents.${inputs.target}`]:inputs.parentObj
+          }).then(()=>{
+            return 'child added';
+          });
         });
       }
       if (functionObj.name=='joinTeam') {

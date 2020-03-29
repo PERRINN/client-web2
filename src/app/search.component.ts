@@ -24,7 +24,6 @@ import * as firebase from 'firebase/app';
         <span style="font-size:10px"> {{team.values?.familyName}}</span>
         <div style="font-size:12px;color:#999">C{{(team.values?.lastMessageBalance?team.values?.lastMessageBalance:0)|number:'1.2-2'}}</div>
       </div>
-      <div class="buttonDiv" style="float:left;font-size:11px;color:#267cb5" (click)="newChatWithUser(team.key)">New message</div>
     </li>
   </ul>
   </div>
@@ -96,23 +95,6 @@ export class SearchComponent  {
         values: c.payload.doc.data(),
       }));
     }));
-  }
-
-  newChatWithUser(user){
-    return this.afs.collection('IDs').add({
-      user:this.UI.currentUser,
-      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(ref=>{
-      this.UI.clearRecipient();
-      this.UI.chatSubject='';
-      this.UI.chain=ref.id;
-      this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.addRecipient(user).then(()=>{
-          this.UI.showChatDetails=false;
-          this.router.navigate(['chat','']);
-        });
-      });
-    });
   }
 
 }

@@ -16,32 +16,58 @@ import * as firebase from 'firebase/app';
   <img class="imageWithZoom" [src]="UI.currentDomainObj?.imageUrlMedium?UI.currentDomainObj?.imageUrlMedium:UI.currentDomainObj?.imageUrlThumb" style="object-fit:cover;margin:10px;border-radius:5px;max-height:150px;width:50%" (click)="showFullScreenImage(UI.currentDomainObj?.imageUrlOriginal)">
   <br/>
   <span style="font-size:18px;line-height:30px;margin:15px;font-family:sans-serif;">{{UI.currentDomainObj?.name}} {{UI.currentDomainObj?.familyName}}</span>
-  <span *ngIf='UI.currentDomainObj?.member' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:10px">Member</span>
+  <span *ngIf='UI.currentDomainObj?.member' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:10px">PERRINN Member</span>
   <span *ngIf='UI.currentDomainObj?.isDomain' style="color:white;background-color:#e6b927;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
   <br/>
   <span style="font-size:12px;line-height:30px;margin:15px;font-family:sans-serif;">Membership cost: C{{(UI.currentDomainObj?.membershipCost?UI.currentDomainObj?.membershipCost:0)|number:'1.2-2'}}</span>
   <div class='sheet' style="margin-top:5px">
-  <div style="color:blue;;cursor:pointer;margin:20px">
-    <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-    <label class="buttonUploadImage" for="chatImage" id="buttonFile">
-    <div>Upload new profile picture</div>
-    </label>
-  </div>
-  <div *ngIf="!editName" style="color:blue;cursor:pointer;margin:20px" (click)="editName=!editName">Edit name</div>
-  <input *ngIf="editName" [(ngModel)]="name" placeholder="First name">
-  <input *ngIf="editName&&UI.currentDomainObj?.isUser" [(ngModel)]="familyName" placeholder="Family name">
-  <div *ngIf="editName" (click)="applyNewName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply update</div>
-  <div *ngIf="!editMembershipCost" style="color:blue;cursor:pointer;margin:20px" (click)="editMembershipCost=!editMembershipCost">Edit membership cost</div>
-  <input *ngIf="editMembershipCost" [(ngModel)]="membershipCost" placeholder="Membership cost">
-  <div *ngIf="editMembershipCost" (click)="applyNewMembershipCost()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply update</div>
-  <div *ngIf="UI.currentDomainObj?.isUser" style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNGoogleGroup()">
-    <span>Join PERRINN Google group</span>
-    <span style="font-size:10px;margin-left:5px">(your PERRINN email must match your Google email)</span>
-  </div>
-  <div *ngIf="UI.currentDomainObj?.isUser" style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNOnshapeTeam()">
-    <span>Join PERRINN Onshape team</span>
-    <span style="font-size:10px;margin-left:5px">(your PERRINN email must match your Onshape email)</span>
-  </div>
+    <div style="color:blue;;cursor:pointer;margin:20px">
+      <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+      <label class="buttonUploadImage" for="chatImage" id="buttonFile">
+      <div>Upload new profile picture</div>
+      </label>
+    </div>
+    <div *ngIf="!editName" style="color:blue;cursor:pointer;margin:20px" (click)="editName=!editName">Edit name</div>
+    <input *ngIf="editName" [(ngModel)]="name" placeholder="First name">
+    <input *ngIf="editName&&UI.currentDomainObj?.isUser" [(ngModel)]="familyName" placeholder="Family name">
+    <div *ngIf="editName" (click)="applyNewName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply update</div>
+    <div *ngIf="!editMembershipCost" style="color:blue;cursor:pointer;margin:20px" (click)="editMembershipCost=!editMembershipCost">Edit membership cost</div>
+    <input *ngIf="editMembershipCost" [(ngModel)]="membershipCost" placeholder="Membership cost">
+    <div *ngIf="editMembershipCost" (click)="applyNewMembershipCost()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply update</div>
+  <div class="seperator" style="width:100%;margin:0px"></div>
+    <div style="font-size:10px;margin:20px;color:#777">Children: COINS from your wallet will automatically be used to keep your children's COIN balance positive.</div>
+    <ul style="color:#333;margin:20px">
+      <li *ngFor="let child of objectToArray(UI.currentDomainObj?.children)" (click)="router.navigate(['team',child[0]])" style="cursor:pointer">
+        <img [src]="child[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
+        <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{child[1]?.name}} {{child[1]?.familyName}}</div>
+      </li>
+    </ul>
+    <div *ngIf="!editChildren" style="color:blue;cursor:pointer;margin:20px" (click)="editChildren=!editChildren">Edit children</div>
+    <div *ngIf="editChildren">
+      <input id="searchInput" style="border:none" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="add a child">
+      <ul class="listLight">
+        <li *ngFor="let team of teams | async" >
+          <div *ngIf="!UI.recipients[team.key]" style="padding:5px">
+            <div style="float:left;width:175px">
+              <img [src]="team?.values?.imageUrlThumb" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+              <span>{{team.values?.name}}</span>
+              <span style="font-size:10px"> {{team.values?.familyName}}</span>
+            </div>
+            <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white;border-style:none" (click)="addChild(team)">Add</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  <div class="seperator" style="width:100%;margin:0px"></div>
+    <div *ngIf="UI.currentDomainObj?.isUser" style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNGoogleGroup()">
+      <span>Join PERRINN Google group</span>
+      <span style="font-size:10px;margin-left:5px">(your PERRINN email must match your Google email)</span>
+    </div>
+    <div *ngIf="UI.currentDomainObj?.isUser" style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNOnshapeTeam()">
+      <span>Join PERRINN Onshape team</span>
+      <span style="font-size:10px;margin-left:5px">(your PERRINN email must match your Onshape email)</span>
+    </div>
+  <div class="seperator" style="width:100%;margin:0px"></div>
   <div *ngIf="UI.currentDomainObj?.isUser" style="color:#555;margin:20px">Email notifications: {{(UI.currentDomainObj?.enableEmailNotifications)?'ON':'OFF'}}</div>
   </div>
   <div *ngIf="UI.currentDomain==UI.currentUser" class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
@@ -50,11 +76,14 @@ import * as firebase from 'firebase/app';
   `,
 })
 export class TeamSettingsComponent {
-  editName: boolean;
-  editMembershipCost: boolean;
+  editName:boolean;
+  editMembershipCost:boolean;
+  editChildren:boolean;
   name:string;
   membershipCost:string;
   familyName:string;
+  searchFilter:string;
+  teams:Observable<any[]>;
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -65,6 +94,7 @@ export class TeamSettingsComponent {
   ) {
     this.editName=false;
     this.editMembershipCost=false;
+    this.editChildren=false;
     this.name=this.UI.currentDomainObj.name;
     if(this.UI.currentDomainObj.membershipCost==undefined) this.membershipCost='';
     else this.membershipCost=this.UI.currentDomainObj.membershipCost;
@@ -105,6 +135,48 @@ export class TeamSettingsComponent {
           };
           this.UI.createMessageAFS('Updating name to: '+this.name+' '+this.familyName,'','',true);
           this.router.navigate(['chat','']);
+        });
+      });
+    });
+  }
+
+  addChild(team){
+    return this.afs.collection('IDs').add({
+      user:this.UI.currentUser,
+      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(ref=>{
+      this.UI.clearRecipient();
+      this.UI.addRecipient(this.UI.currentUser).then(()=>{
+        this.UI.addRecipient(this.UI.currentDomain).then(()=>{
+          this.UI.addRecipient(team.key).then(()=>{
+            this.UI.chatSubject='New child';
+            this.UI.chain=ref.id;
+            this.UI.showChatDetails=false;
+            this.UI.process={
+              inputs:{
+                target:this.UI.currentDomain,
+                child:team.key,
+                childObj:{
+                  name:team.values.name,
+                  familyName:team.values.familyName,
+                  imageUrlThumb:team.values.imageUrlThumb,
+                  timestamp:firebase.firestore.FieldValue.serverTimestamp()
+                },
+                parentObj:{
+                  name:this.UI.currentDomainObj.name,
+                  familyName:this.UI.currentDomainObj.familyName,
+                  imageUrlThumb:this.UI.currentDomainObj.imageUrlThumb,
+                  timestamp:firebase.firestore.FieldValue.serverTimestamp()
+                }
+              },
+              function:{
+                name:'addChild'
+              },
+              inputsComplete:true
+            };
+            this.UI.createMessageAFS('Adding child: '+team.values.name+' '+team.values.familyName,'','',true);
+            this.router.navigate(['chat','']);
+          });
         });
       });
     });
@@ -244,6 +316,34 @@ export class TeamSettingsComponent {
           });
         });
       });
+    });
+  }
+
+  refreshSearchLists() {
+    if (this.searchFilter) {
+      if (this.searchFilter.length > 1) {
+        this.teams = this.afs.collection('PERRINNTeams', ref => ref
+        .where('isUser','==',true)
+        .where('searchName','>=',this.searchFilter.toLowerCase())
+        .where('searchName','<=',this.searchFilter.toLowerCase()+'\uf8ff')
+        .orderBy('searchName')
+        .limit(10))
+        .snapshotChanges().pipe(map(changes => {
+          return changes.map(c => ({
+            key: c.payload.doc.id,
+            values: c.payload.doc.data(),
+          }));
+        }));
+      }
+    } else {
+      this.teams = null;
+    }
+  }
+
+  objectToArray(obj) {
+    if (obj == null) { return null; }
+    return Object.keys(obj).map(function(key) {
+      return [key, obj[key]];
     });
   }
 

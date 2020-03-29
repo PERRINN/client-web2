@@ -185,6 +185,7 @@ export class TeamProfileComponent {
       this.UI.chatSubject='';
       this.UI.chain=ref.id;
       this.UI.addRecipient(this.UI.currentUser);
+      this.UI.addRecipient(this.UI.currentDomain);
       this.UI.showChatDetails=true;
       this.router.navigate(['chat','']);
     });
