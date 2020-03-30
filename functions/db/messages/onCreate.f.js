@@ -4,6 +4,7 @@ try { admin.initializeApp() } catch (e) {}
 const messageUtils = require('../../utils/message')
 const createMessageUtils = require('../../utils/createMessage')
 const customClaimsUtils = require('../../utils/customClaims')
+const childTopUpUtils = require('../../utils/childTopUp')
 const emailUtils = require('../../utils/email')
 
 exports=module.exports=functions.firestore.document('PERRINNMessages/{message}').onCreate((data,context)=>{
@@ -56,6 +57,8 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
       return null;
     }
     return messageUtils.writeMessageTransactionReceiverData(messageData.user,context.params.message);
+  }).then(()=>{
+    return childTopUpUtils.performChildTopUp(messageData.user);
   }).then(()=>{
     return customClaimsUtils.setCustomClaims(messageData.user);
   }).then(()=>{
