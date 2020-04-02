@@ -27,7 +27,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
       <li *ngFor="let domain of domains|async"
         (click)="router.navigate(['team',domain.payload.doc.id])"
         style="position:relative;float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">
-        <div [style.color]="UI.currentDomain==domain.payload.doc.id?'#267cb5':'#777'">{{domain.payload.doc.data().name}}</div>
+        <div [style.color]="UI.currentDomain==domain.payload.doc.id?'#267cb5':'#777'">{{domain.payload.doc.data()?.name}}</div>
         <div *ngIf="domain.payload.doc.data().isDomainFree" [style.color]="UI.currentDomain==domain.payload.doc.id?'green':'#777'" style="font-size:7px;position:absolute;top:0;right:0"> free</div>
       </li>
     </ul>
@@ -41,7 +41,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
   <div *ngIf="UI.currentDomain=='all'" style="clear:both;font-size:16px;margin:15px">Team wide messages</div>
   <div *ngIf="!(UI.currentDomain=='inbox'||UI.currentDomain=='all')" style="clear:both;background-color:#f4f7fc">
     <div style="float:left">
-      <img [style.border-radius]="UI.currentDomainObj?.isDomain?'3%':'50%'" [src]="UI.currentDomainObj?.imageUrlMedium" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;width:75px;height:75px">
+      <img [style.border-radius]="UI.currentDomainObj?.isUser?'50%':'3%'" [src]="UI.currentDomainObj?.imageUrlMedium" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;width:75px;height:75px">
     </div>
     <div style="padding:10px">
       <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
@@ -62,6 +62,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
       <div class="seperator" style="width:100%;margin:0px"></div>
       <img [style.opacity]="UI.currentDomainObj?.apps?.Google?.enabled?1:0.25" [style.cursor]="UI.currentDomainObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="clear:both;float:left;width:25px;margin:10px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
       <img [style.opacity]="UI.currentDomainObj?.apps?.Onshape?.enabled?1:0.25" [style.cursor]="UI.currentDomainObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
+      <div *ngIf="UI.currentDomain==UI.currentUser" style="float:right;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newTeam()">New team</div>
       <div *ngIf="UI.currentDomain==UI.currentUser" style="float:right;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
       <div style="float:right;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newMessage()">New message</div>
     </div>
@@ -228,6 +229,43 @@ export class TeamProfileComponent {
     });
   }
 
+  newTeam(){
+    return this.afs.collection('IDs').add({
+      user:this.UI.currentUser,
+      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(ref=>{
+      const imageUrlThumb="https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fthumb_1523055261437Screen%20Shot%202018-04-06%20at%2022.36.21.png?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=SGP4NyP%2F6GgfWJNbhdi4wfFgHG3F0ZdkD371QQaDohxo3HNKvvIasuVe3N1y77%2FzMM2lVcmTnzOD7dghStRSOolCTzJ%2BXOF7HRXunOJbQyjNDbZh2c8j6Ng0CDQweO8TAKfxeSpAfxDe96zYt4lLAlXwCoGZzFP%2FhdglsjflD8i%2FIsium%2Big45lFs5hCsLlEL9WCPNPMGgFFwIxWJnpGQ7OfzoOKrVeyKT7mtn1UsQ2nf1LmnlEYIfs4CzI3%2FFBm9NvvSxlfykKichh9FxG8NaMHcuRd4XvZlh0g4sZdAmwkoHDBTFPhc%2Br3vMgSb1XO%2FFOZAjaRY8v4rUaXiJEbCQ%3D%3D";
+      const imageUrlMedium="https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fmedium_1523055261437Screen%20Shot%202018-04-06%20at%2022.36.21.png?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=WBDL52YygQ1yrfHTmygdhqldkZnJYJ6DiyAVV8up%2BKEeYJgRMVfPKtQNvtXurJt5uE0CTIRzGgbKBFW%2FaPjYx10JmIYLEM5NHRaZjI9czIXSnlzKzM4aJfXljHfwgMuk3c1St%2BmGnQMeAwyD9dZpqsppTHDYUEuYyw%2BbcaWG7fpRzSleXde1QZ8N1%2Bqa0DjuemU81bTJoG5vOAXa8qHuigTaOJlHP%2Fw9WN3pxiA6Q5tea9kfBEXwOJ2Pm5wL6hAoexAwATDMsQI2T2LEbLizJY2e8VoKTqK3u3TdAnoD38CQUrCDI61w3vTlW%2BxKeFB3huZjtH3V7MPJ%2FTgpOknE3g%3D%3D";
+      const imageUrlOriginal="https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Foriginal_1523055261437Screen%20Shot%202018-04-06%20at%2022.36.21.png?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=c8sqTFAMkJMDEr0CZdFAMD0I9gsBWMqqy21O2wmkAKRt3H%2B9Z2DZNnZgzdFPPOgYTSojdOyuhzy8X%2FyET97nUi3fnwQfy1eQrCu%2F5iI4GbCEaZqsosbMz5MiLOsVoLGOlLpjFekVOQTIuniZfTRuPfEL6zNzyyyQasAHfZOqz76E1FkQBg3sYWiabS4sfcirSP%2BhIQT4k6Px02B%2BARos4%2F%2FnivTla9KX8OPYH7tmUj%2Fsc%2F1sPiQaqIrWXpC5HX4TLZ9w%2Bdl83HSCSBYmkwUAOtrtJ1uncwwhia4pzmniLvfXj1%2BikJA6HXcon44Ymv8jDpHh4AqbBVqAXTWyIzKzaQ%3D%3D";
+      this.UI.clearRecipient();
+      this.UI.addRecipient(this.UI.currentUser).then(()=>{
+        this.UI.addRecipient(this.UI.currentDomain).then(()=>{
+          this.UI.chatSubject='New team';
+          this.UI.chain=ref.id;
+          this.UI.showChatDetails=false;
+          this.UI.process={
+            inputs:{
+              target:ref.id,
+              name:'New',
+              familyName:'',
+              imageUrlThumb:imageUrlThumb,
+              imageUrlMedium:imageUrlMedium,
+              imageUrlOriginal:imageUrlOriginal,
+              leaderName:this.UI.currentDomainObj.name,
+              leaderFamilyName:this.UI.currentDomainObj.familyName,
+              leaderImageUrlThumb:this.UI.currentDomainObj.imageUrlThumb
+            },
+            function:{
+              name:'createTeam'
+            },
+            inputsComplete:true
+          };
+          this.UI.createMessageAFS('Creating a new team id: '+ref.id,'','',true);
+          this.router.navigate(['team',ref.id]);
+        });
+      });
+    });
+  }
 
   logout() {
     this.afAuth.auth.signOut();

@@ -17,7 +17,7 @@ import * as firebase from 'firebase/app';
     <div (click)="UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
     <div style="cursor:pointer" (click)="router.navigate(['team',UI.currentDomain])">
       <div style="float:right;margin:10px">
-        <div style="float:right;font-size:16px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
+        <div style="float:right;font-size:16px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
         <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
       </div>
     </div>
@@ -52,10 +52,10 @@ import * as firebase from 'firebase/app';
   <div class="sheet" *ngIf="!UI.showChatDetails" style="position:fixed;background:#fcfcfc;width:100%;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
     <div style="float:left;margin:0 5px 0 5px">
       <div style="font-weight:bold">{{UI.chatSubject}}</div>
-      <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1].name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
+      <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1]?.name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
     </div>
     <div style="float:right;margin:10px">
-      <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj.name}}</div>
+      <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
       <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
     </div>
   </div>
@@ -210,7 +210,7 @@ import * as firebase from 'firebase/app';
     <div>
       <ul style="list-style:none;float:left;">
         <li *ngFor="let user of draftMessageUsers | async">
-        <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values.name}}...</div>
+        <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values?.name}}...</div>
         </li>
       </ul>
       <div style="clear:both;float:left;width:90%">

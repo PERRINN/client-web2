@@ -22,7 +22,7 @@ import * as firebase from 'firebase/app';
   <div class="buttonDiv" [style.color]="inputsValid?'#267cb5':'#bbb'" style="clear:both;margin:15px;width:150px;font-size:11px" (click)="sendCoins()">Send COINS</div>
   <input maxlength="500" (keyup)="inputsValid=checkInputs()" [(ngModel)]="amount" placeholder="Amount">
   <input maxlength="500" (keyup)="inputsValid=checkInputs()" [(ngModel)]="reference" placeholder="Reference">
-  <input maxlength="500" (keyup)="refreshSearchLists();inputsValid=checkInputs()" [(ngModel)]="searchFilter" placeholder="Search user">
+  <input maxlength="500" (keyup)="refreshSearchLists();inputsValid=checkInputs()" [(ngModel)]="searchFilter" placeholder="Search recipient">
   <ul class="listLight">
     <li *ngFor="let team of teams | async" >
       <div style="padding:5px">
@@ -70,7 +70,6 @@ export class SendCoinsComponent  {
     if (this.searchFilter) {
       if (this.searchFilter.length > 1) {
         this.teams = this.afs.collection('PERRINNTeams', ref => ref
-        .where('isUser','==',true)
         .where('searchName','>=',this.searchFilter.toLowerCase())
         .where('searchName','<=',this.searchFilter.toLowerCase()+'\uf8ff')
         .orderBy('searchName')
