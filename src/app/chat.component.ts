@@ -43,6 +43,11 @@ import * as firebase from 'firebase/app';
         </div>
       </li>
     </ul>
+    <div class="seperator" style="width:100%;margin:0px"></div>
+      <div *ngIf="!pinNextMessage" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="pinNextMessage=true">Pin next message</div>
+      <div *ngIf="pinNextMessage" style="float:left;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#777;">Next message will be pinned</div>
+      <div *ngIf="pinNextMessage" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="pinNextMessage=false">Cancel</div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   </div>
 
@@ -252,6 +257,7 @@ export class ChatComponent {
   reads:any[];
   autoMessage:boolean;
   chatSubjectPreEditing:string;
+  pinNextMessage:boolean;
 
   constructor(
     public db: AngularFireDatabase,
@@ -277,6 +283,7 @@ export class ChatComponent {
       this.autoMessage=false;
       this.messageNumberDisplay = 15;
       this.chatSubjectPreEditing='';
+      this.pinNextMessage=false;
       this.refreshMessages();
     });
   }
@@ -363,10 +370,11 @@ export class ChatComponent {
   }
 
   addMessage() {
-    this.UI.createMessageAFS(this.draftMessage,this.draftImage,this.draftImageDownloadURL,this.autoMessage);
+    this.UI.createMessageAFS(this.draftMessage,this.draftImage,this.draftImageDownloadURL,this.autoMessage,this.pinNextMessage);
     this.draftMessage = '';
     this.draftImage = '';
     this.autoMessage=false;
+    this.pinNextMessage=false;
     this.UI.showChatDetails=false;
   }
 

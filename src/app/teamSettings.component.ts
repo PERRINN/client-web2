@@ -133,7 +133,7 @@ export class TeamSettingsComponent {
             },
             inputsComplete:true
           };
-          this.UI.createMessageAFS('Updating name to: '+this.name+' '+this.familyName,'','',true);
+          this.UI.createMessageAFS('Updating name to: '+this.name+' '+this.familyName,'','',true,false);
           this.router.navigate(['chat','']);
         });
       });
@@ -174,7 +174,7 @@ export class TeamSettingsComponent {
               },
               inputsComplete:true
             };
-            this.UI.createMessageAFS('Adding child: '+team.values.name+' '+team.values.familyName,'','',true);
+            this.UI.createMessageAFS('Adding child: '+team.values.name+' '+team.values.familyName,'','',true,false);
             this.router.navigate(['chat','']);
           });
         });
@@ -207,7 +207,7 @@ export class TeamSettingsComponent {
             },
             inputsComplete:true
           };
-          this.UI.createMessageAFS('Updating membership cost to: '+this.membershipCost,'','',true);
+          this.UI.createMessageAFS('Updating membership cost to: '+this.membershipCost,'','',true,false);
           this.router.navigate(['chat','']);
         });
       });
@@ -230,7 +230,7 @@ export class TeamSettingsComponent {
           },
           inputsComplete:true
         };
-        this.UI.createMessageAFS('joining PERRINN Onshape team','','',true);
+        this.UI.createMessageAFS('joining PERRINN Onshape team','','',true,false);
         this.router.navigate(['chat','']);
       });
     });
@@ -252,7 +252,7 @@ export class TeamSettingsComponent {
           },
           inputsComplete:true
         };
-        this.UI.createMessageAFS('joining PERRINN Google group','','',true);
+        this.UI.createMessageAFS('joining PERRINN Google group','','',true,false);
         this.router.navigate(['chat','']);
       });
     });
@@ -310,7 +310,7 @@ export class TeamSettingsComponent {
                 },
                 inputsComplete:true
               };
-              this.UI.createMessageAFS('updating profile picture',draftImage,url,true);
+              this.UI.createMessageAFS('updating profile picture',draftImage,url,true,false);
               this.router.navigate(['chat','']);
             });
           });
