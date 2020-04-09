@@ -3,7 +3,6 @@ const onshapeUtils = require('./onshape')
 const googleUtils = require('./google')
 const emailUtils = require('../utils/email')
 const createMessageUtils = require('../utils/createMessage')
-const teamUtils = require('./team')
 
 module.exports = {
 
@@ -44,7 +43,7 @@ module.exports = {
         batch.update(admin.firestore().doc('PERRINNTeams/'+user),{imageUrlMedium:inputs.imageUrlMedium},{create:true});
         batch.update(admin.firestore().doc('PERRINNTeams/'+user),{imageUrlOriginal:inputs.imageUrlOriginal},{create:true});
         batch.update(admin.firestore().doc('PERRINNTeams/'+user),{searchName:nameLowerCase},{create:true});
-        batch.update(admin.firestore().doc('PERRINNTeams/'+user),{leaders:{[user]:{name:inputs.name,familyName:inputs.familyName,timestamp:admin.firestore.FieldValue.serverTimestamp()}}},{create:true});
+        batch.update(admin.firestore().doc('PERRINNTeams/'+user),{members:{[user]:{name:inputs.name,familyName:inputs.familyName,leader:true,timestamp:admin.firestore.FieldValue.serverTimestamp()}}},{create:true});
         batch.update(admin.firestore().doc('PERRINNTeams/'+user),{enableEmailNotifications:true},{create:true});
         batch.update(admin.firestore().doc('PERRINNTeams/'+user),{isUser:true},{create:true});
         return batch.commit().then(()=>{
@@ -72,7 +71,7 @@ module.exports = {
         batch.update(admin.firestore().doc('PERRINNTeams/'+inputs.target),{imageUrlMedium:inputs.imageUrlMedium},{create:true});
         batch.update(admin.firestore().doc('PERRINNTeams/'+inputs.target),{imageUrlOriginal:inputs.imageUrlOriginal},{create:true});
         batch.update(admin.firestore().doc('PERRINNTeams/'+inputs.target),{searchName:nameLowerCase},{create:true});
-        batch.update(admin.firestore().doc('PERRINNTeams/'+inputs.target),{leaders:{[user]:{name:inputs.leaderName,familyName:inputs.leaderFamilyName,timestamp:admin.firestore.FieldValue.serverTimestamp()}}},{create:true});
+        batch.update(admin.firestore().doc('PERRINNTeams/'+inputs.target),{members:{[user]:{name:inputs.leaderName,familyName:inputs.leaderFamilyName,leader:true,timestamp:admin.firestore.FieldValue.serverTimestamp()}}},{create:true});
         return batch.commit().then(()=>{
           return 'team created';
         });
@@ -139,6 +138,13 @@ module.exports = {
               return 'member added';
             });
           });
+        });
+      }
+      if (functionObj.name=='unpinMessage') {
+        return admin.firestore().doc('PERRINNMessages/'+inputs.target).update({
+          pin:false
+        }).then(()=>{
+          return 'message unpinned';
         });
       }
       return 'none';

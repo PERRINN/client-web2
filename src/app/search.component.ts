@@ -14,8 +14,9 @@ import * as firebase from 'firebase/app';
   <input id="searchInput" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Search">
   <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshSearchByCOINLists()">COIN holders' list</div>
   <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshSearchDomainsList()">Domains list</div>
+  <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
-  <div class='sheet' style="margin-top:10px">
+  <div class='sheet'>
   <ul class="listLight">
     <li *ngFor="let team of teams | async" style="padding:5px">
       <div style="float:left;width:250px" (click)="router.navigate(['team',team.key])">
@@ -26,8 +27,7 @@ import * as firebase from 'firebase/app';
       </div>
     </li>
   </ul>
-  </div>
-  <div class='sheet' style="margin-top:10px">
+  <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   </div>
   `,

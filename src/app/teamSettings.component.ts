@@ -19,8 +19,13 @@ import * as firebase from 'firebase/app';
   <span *ngIf='UI.currentDomainObj?.member' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:10px">PERRINN Member</span>
   <span *ngIf='UI.currentDomainObj?.isDomain' style="color:white;background-color:#e6b927;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
   <br/>
+  <span style="font-size:16px;line-height:30px;margin:15px;font-family:sans-serif;">Balance: C{{(UI.currentDomainObj?.lastMessageBalance?UI.currentDomainObj?.lastMessageBalance:0)|number:'1.2-2'}}</span>
+  <span *ngIf="UI.currentDomain==UI.currentUser" style="margin:15px;font-size:10px;color:green;padding:5px;width:100px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['buyCoins'])">Top Up</span>
+  <br/>
   <span style="font-size:12px;line-height:30px;margin:15px;font-family:sans-serif;">Membership cost: C{{(UI.currentDomainObj?.membershipCost?UI.currentDomainObj?.membershipCost:0)|number:'1.2-2'}}</span>
-  <div class='sheet' style="margin-top:5px">
+  <div class="seperator" style="width:100%;margin:0px"></div>
+  </div>
+  <div class='sheet'>
     <div style="color:blue;;cursor:pointer;margin:20px">
       <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
       <label class="buttonUploadImage" for="chatImage" id="buttonFile">
@@ -69,7 +74,6 @@ import * as firebase from 'firebase/app';
     </div>
   <div class="seperator" style="width:100%;margin:0px"></div>
   <div *ngIf="UI.currentDomainObj?.isUser" style="color:#555;margin:20px">Email notifications: {{(UI.currentDomainObj?.enableEmailNotifications)?'ON':'OFF'}}</div>
-  </div>
   <div *ngIf="UI.currentDomain==UI.currentUser" class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div style="font-size:8px;margin:5px">version 0.0.11</div>
   </div>

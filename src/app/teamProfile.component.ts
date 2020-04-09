@@ -39,7 +39,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
   </div>
   <div *ngIf="UI.currentDomain=='inbox'" style="clear:both;font-size:16px;margin:15px">My inbox</div>
   <div *ngIf="UI.currentDomain=='all'" style="clear:both;font-size:16px;margin:15px">Team wide messages</div>
-  <div class="seperator" style="width:100%;margin:0px"></div>
+  <div *ngIf="UI.currentDomain=='inbox'||UI.currentDomain=='all'" class="seperator" style="width:100%;margin:0px"></div>
   <div *ngIf="!(UI.currentDomain=='inbox'||UI.currentDomain=='all')">
     <div style="clear:both;background-color:#f4f7fc">
       <div style="float:left">
@@ -52,19 +52,20 @@ import { AngularFireAuth } from '@angular/fire/auth';
           <span *ngIf='UI.currentDomainObj?.member' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">PERRINN member</span>
           <span *ngIf='UI.currentDomainObj?.isDomain' style="color:white;background-color:#b38300;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
         </div>
-        <img class='editButton' *ngIf='(UI.currentDomainObj?.leaders[UI.currentUser]!=undefined)' style="float:right;width:20px" (click)="router.navigate(['teamSettings',UI.currentDomain])" src="./../assets/App icons/settings.png">
-        <div style="clear:both;float:left;font-size:10px;color:#999">Created {{UI.currentDomainObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.currentDomainObj?.previousIndex?UI.currentDomainObj?.previousIndex:0}} Messages, {{UI.currentDomainObj?.membershipCounter?UI.currentDomainObj?.membershipCounter:0}} Membership days</div>
-        <div style="clear:both;float:left;font-size:10px;color:#999">{{objectToArray(UI.currentDomainObj?.leaders).length}} leaders, {{UI.currentDomainObj?.members?objectToArray(UI.currentDomainObj?.members).length:0}} members</div>
+        <img class='editButton' *ngIf='UI.currentDomainObj?.members[UI.currentUser]?.leader' style="float:right;width:20px" (click)="router.navigate(['teamSettings',UI.currentDomain])" src="./../assets/App icons/settings.png">
         <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(UI.currentDomainObj?.lastMessageBalance?UI.currentDomainObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
         <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
-        <div *ngIf="UI.currentDomain==UI.currentUser" style="float:left;margin-left:10px;margin-top:3px;font-size:10px;color:green;line-height:14px;width:50px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['buyCoins'])">Top Up</div>
-        <div class="seperator" style="width:100%;margin:0px"></div>
-        <div *ngIf='((UI.currentDomainObj?.members!=undefined)?(UI.currentDomainObj?.members[UI.currentUser]):false)' style="float:left;line-height:14px;font-size:10px;margin:5px;color:#777">You are a member of this team</div>
-        <div class="seperator" style="width:100%;margin:0px"></div>
-        <img [style.opacity]="UI.currentDomainObj?.apps?.Google?.enabled?1:0.25" [style.cursor]="UI.currentDomainObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="clear:both;float:left;width:25px;margin:10px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
-        <img [style.opacity]="UI.currentDomainObj?.apps?.Onshape?.enabled?1:0.25" [style.cursor]="UI.currentDomainObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
+        <div style="clear:both;float:left;font-size:10px;color:#999">Created {{UI.currentDomainObj?.createdTimestamp|date:'MMMM yyyy'}}, {{UI.currentDomainObj?.previousIndex?UI.currentDomainObj?.previousIndex:0}} Messages, {{UI.currentDomainObj?.membershipCounter?UI.currentDomainObj?.membershipCounter:0}} Membership days</div>
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
+      <span style="margin:10px;font-size:10px;color:#999">{{UI.currentDomainObj?.members?objectToArray(UI.currentDomainObj?.members).length:0}} members</span>
+      <span *ngIf='((UI.currentDomainObj?.members!=undefined)?(UI.currentDomainObj?.members[UI.currentUser]):false)' style="font-size:10px;margin:10px;color:#777">You are a member of this team</span>
+      <br\>
+      <span (click)="router.navigate(['team',member[0]])" style="margin:10px;font-size:10px;cursor:pointer" *ngFor="let member of objectToArray(UI.currentDomainObj?.members);let last=last">{{member[0]==UI.currentUser?'You':member[1]?.name}}{{member[0]==UI.currentUser?'':member[1]?.familyName!=undefinied?' '+member[1]?.familyName:''}}{{member[1]?.leader?' (Leader)':''}}{{last?"":", "}}</span>
+      <div class="seperator" style="width:100%;margin:0px"></div>
+      <img *ngIf="UI.currentDomainObj?.apps?.Google?.enabled" [style.cursor]="UI.currentDomainObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="clear:both;float:left;width:25px;margin:10px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
+      <img *ngIf="UI.currentDomainObj?.apps?.Onshape?.enabled" [style.cursor]="UI.currentDomainObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
+      <div *ngIf="UI.currentDomainObj?.apps?.Onshape?.enabled||UI.currentDomainObj?.apps?.Google?.enabled" class="seperator" style="width:100%;margin:0px"></div>
     </div>
       <div style="float:left;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newMessage()">New message</div>
       <div *ngIf="UI.currentDomain==UI.currentUser" style="float:left;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
@@ -84,11 +85,12 @@ import { AngularFireAuth } from '@angular/fire/auth';
         <img [src]="message.payload.doc.data()?.imageUrlThumbUser" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:40px;border-radius:20px">
       </div>
       <div>
-        <div style="margin:2px;color:green;font-size:10px">Pinned Message</div>
-        <div style="float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
+        <div style="float:left;color:green;font-size:10px">Pinned Message</div>
+        <div *ngIf="message.payload.doc.data()?.user==UI.currentUser" style="float:left;width:80px;text-align:center;font-size:10px;color:green;cursor:pointer;text-decoration:underline" (click)="unpinMessage(message.payload.doc.data())">unpin</div>
+        <div style="clear:both;float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
         <div *ngIf="(now-message.payload.doc.data()?.timestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{message.payload.doc.data()?.timestamp|date:'d MMM yyyy'}}</div>
         <div *ngIf="(now-message.payload.doc.data()?.timestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{message.payload.doc.data()?.timestamp|date:'HH:mm'}}</div>
-        <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]"></div>
+        <div style="float:right;margin:9px 15px 0 0;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]" [style.background-color]="message.payload.doc.data()?.recipients[UI.currentUser]==undefined?'lightblue':'red'"></div>
         <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
         <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}</div>
         <img src="./../assets/App icons/people.jpg" style="display:inline;margin-top:2px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(30);filter:brightness(30)">
@@ -111,7 +113,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
         <div style="float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
         <div *ngIf="(now-message.payload.doc.data()?.timestamp)>43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{message.payload.doc.data()?.timestamp|date:'d MMM yyyy'}}</div>
         <div *ngIf="(now-message.payload.doc.data()?.timestamp)<=43200000" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{message.payload.doc.data()?.timestamp|date:'HH:mm'}}</div>
-        <div style="float:right;margin:5px;margin:9px 15px 0 0;background-color:red;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]"></div>
+        <div style="float:right;margin:9px 15px 0 0;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]" [style.background-color]="message.payload.doc.data()?.recipients[UI.currentUser]==undefined?'lightblue':'red'"></div>
         <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
         <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}</div>
         <img src="./../assets/App icons/people.jpg" style="display:inline;margin-top:2px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(30);filter:brightness(30)">
@@ -300,6 +302,24 @@ export class TeamProfileComponent {
         });
       });
     });
+  }
+
+  unpinMessage(message){
+    event.stopPropagation();
+    this.UI.chatSubject=message.chatSubject;
+    this.UI.chain=message.chain;
+    this.UI.showChatDetails=false;
+    this.UI.recipients=message.recipients;
+    this.UI.process={
+      inputs:{
+        target:message.PERRINN.chain.currentMessage
+      },
+      function:{
+        name:'unpinMessage'
+      },
+      inputsComplete:true
+    };
+    this.UI.createMessageAFS('Unpinning message: '+message.text,'','',true,false);
   }
 
   logout() {
