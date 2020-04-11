@@ -11,7 +11,7 @@ import * as firebase from 'firebase/app';
   template: `
 
   <div class="sheet">
-    <div *ngIf="modal" class="fixed" style="z-index:99;background-color:#aaa;opacity:0.7;width:100%;height:100vh"></div>
+    <div class="fixed" id="overlay" style="z-index:99;background-color:#aaa;opacity:0.7;width:100%;height:100vh;cursor:pointer" (click)="readAll()"></div>
   </div>
   <div class="sheet">
     <div class="fixed" style="z-index:999999;top:100px">
@@ -27,7 +27,7 @@ import * as firebase from 'firebase/app';
               <span style="font-size:11px;color:green"> {{message.payload?.PERRINN?.process?.result}}</span>
             </div>
             <div class="seperator" style="width:100%;margin:0px"></div>
-            {{first?modalOn():''}}
+            {{showOverlay()}}
           </div>
         </li>
       </ul>
@@ -37,8 +37,8 @@ import * as firebase from 'firebase/app';
 })
 export class ChatModalComponent {
   messages:Observable<any[]>;
+  messageList:any;
   reads:any;
-  modal:boolean;
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -46,8 +46,12 @@ export class ChatModalComponent {
     public UI: UserInterfaceService,
   ) {
     this.reads={};
-    this.modal=false;
+    this.messageList={};
     this.refreshMessages();
+  }
+
+  ngOnInit() {
+    this.hideOverlay();
   }
 
   refreshMessages() {
@@ -55,24 +59,39 @@ export class ChatModalComponent {
       this.messages=this.afs.collection('PERRINNMessages',ref=>ref
         .where('recipientList','array-contains',auth.uid)
         .where('auto','==',true)
-        .orderBy('timestamp','desc')
-        .limit(3)
+        .orderBy('serverTimestamp','desc')
+        .limit(5)
       ).snapshotChanges().pipe(map(changes => {
-        return changes.map(c => ({key:c.payload.doc.id,payload:c.payload.doc.data()}));
+        changes.forEach(c=>{
+          this.messageList[c.payload.doc.id]=true;
+        });
+        return changes.reverse().map(c => ({key:c.payload.doc.id,payload:c.payload.doc.data()}));
       }));
     });
   }
 
   readMessage(message){
-    this.modal=false;
+    this.hideOverlay();
     var batch = this.afs.firestore.batch();
     if(this.reads[message]==undefined)batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(message),{timestamp:firebase.firestore.FieldValue.arrayUnion(Date.now())},{merge:true});
     this.reads[message]=true;
     return batch.commit();
   }
 
-  modalOn(){
-    this.modal=true;
+  readAll(){
+    Object.keys(this.messageList).forEach(key=>{
+      this.readMessage(key);
+    });
+  }
+
+  hideOverlay() {
+    const overlay = document.getElementById('overlay') as HTMLDivElement;
+    overlay.style.visibility = 'hidden';
+  }
+
+  showOverlay() {
+    const overlay = document.getElementById('overlay') as HTMLDivElement;
+    overlay.style.visibility = 'visible';
   }
 
   objectToArray(obj) {

@@ -102,7 +102,7 @@ export class SendCoinsComponent  {
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
         this.UI.addRecipient(this.receiver).then(()=>{
-          this.UI.chatSubject=this.reference;
+          this.UI.chatSubject='Send COINS';
           this.UI.chain=ref.id;
           this.UI.showChatDetails=false;
           this.UI.process={
