@@ -14,7 +14,10 @@ import { UserInterfaceService } from './userInterface.service';
         <img src="./../assets/App icons/website.png" style="padding:2px;cursor:pointer;float:left;width:30px;margin:5px 5px 5px 45px;border-radius:3px;filter: brightness(0) invert(1)" onclick="window.open('https://sites.google.com/view/perrinn/home','_blank')">
       </div>
     </div>
-    <router-outlet></router-outlet>
+    <div id='main_container'>
+      <chatModal></chatModal>
+      <router-outlet></router-outlet>
+    </div>
   `,
 })
 export class AppComponent {

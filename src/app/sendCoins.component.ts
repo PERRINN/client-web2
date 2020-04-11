@@ -9,7 +9,6 @@ import * as firebase from 'firebase/app';
 @Component({
   selector: 'sendCoins',
   template: `
-  <div id='main_container'>
   <div class="sheet">
   <div style="float:left;margin:15px;font-size:18px">Send COINS</div>
   <div *ngIf="receiver" style="margin:15px;float:left;width:200px">
@@ -35,7 +34,6 @@ import * as firebase from 'firebase/app';
       </div>
     </li>
   </ul>
-  </div>
   </div>
   `,
 })
@@ -121,7 +119,6 @@ export class SendCoinsComponent  {
             inputsComplete:true
           };
           this.UI.createMessageAFS('sending '+this.amount+' COINS','','',true,false);
-          this.router.navigate(['chat','']);
         });
       });
     });

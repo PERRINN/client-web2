@@ -8,7 +8,6 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 @Component({
   selector: 'login',
   template: `
-  <div id='main_container'>
   <div id="login">
     <div class="module form-module">
       <div class="form">
@@ -36,7 +35,6 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
       </div>
       <div class="cta"><a href='mailto:perrinnlimited@gmail.com'>Contact PERRINN</a></div>
     </div>
-  </div>
   </div>
   `,
 })

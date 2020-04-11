@@ -9,7 +9,6 @@ import * as firebase from 'firebase/app';
 @Component({
   selector: 'buyCoins',
   template: `
-  <div id='main_container'>
   <div style="width:320px;color:white;background-color:green;border-radius:5px;margin:25px auto;padding:25px;text-align:center">
     <span style="font-size:12px">Buy</span>
     <br/>
@@ -67,7 +66,6 @@ import * as firebase from 'firebase/app';
       <div class='content' style="text-align:center">{{messagePayment}}</div>
       <div class='content' style="padding-top:30px; text-align:center">{{messagePERRINNTransaction}}</div>
     </div>
-  </div>
   </div>
   `,
 })
@@ -143,7 +141,7 @@ export class BuyCoinsComponent {
   }
 
   objectToArray(obj) {
-    if (obj == null) { return null; }
+    if (obj == null) { return []; }
     return Object.keys(obj).map(function(key) {
       return [key, obj[key]];
     });

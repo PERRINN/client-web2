@@ -11,7 +11,6 @@ import * as firebase from 'firebase/app';
 @Component({
   selector: 'teamSettings',
   template: `
-  <div id='main_container'>
   <div class="sheet" style="background-color:#f5f5f5">
   <img class="imageWithZoom" [src]="UI.currentDomainObj?.imageUrlMedium?UI.currentDomainObj?.imageUrlMedium:UI.currentDomainObj?.imageUrlThumb" style="object-fit:cover;margin:10px;border-radius:5px;max-height:150px;width:50%" (click)="showFullScreenImage(UI.currentDomainObj?.imageUrlOriginal)">
   <br/>
@@ -40,7 +39,18 @@ import * as firebase from 'firebase/app';
     <input *ngIf="editMembershipCost" [(ngModel)]="membershipCost" placeholder="Membership cost">
     <div *ngIf="editMembershipCost" (click)="applyNewMembershipCost()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply update</div>
   <div class="seperator" style="width:100%;margin:0px"></div>
-    <div style="font-size:10px;margin:20px;color:#777">Children: COINS from your wallet will automatically be used to keep your children's COIN balance positive.</div>
+    <div style="font-size:14px;margin:20px;color:#444">Members</div>
+    <div style="font-size:10px;margin:20px;color:#777">Members can communicate, write messages here. Leaders can modify the team.</div>
+    <ul style="color:#333;margin:20px">
+      <li *ngFor="let child of objectToArray(UI.currentDomainObj?.members)" (click)="router.navigate(['team',child[0]])" style="cursor:pointer">
+        <img [src]="child[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
+        <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{child[1]?.name}} {{child[1]?.familyName}} {{child[1]?.leader?'(Leader)':''}}</div>
+      </li>
+    </ul>
+    <div *ngIf="!editMembers" style="color:blue;cursor:pointer;margin:20px" (click)="editMembers=!editMembers">Edit members</div>
+  <div class="seperator" style="width:100%;margin:0px"></div>
+    <div style="font-size:14px;margin:20px;color:#444">Children</div>
+    <div style="font-size:10px;margin:20px;color:#777">COINS from your wallet will automatically be used to keep your children's COIN balance positive.</div>
     <ul style="color:#333;margin:20px">
       <li *ngFor="let child of objectToArray(UI.currentDomainObj?.children)" (click)="router.navigate(['team',child[0]])" style="cursor:pointer">
         <img [src]="child[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
@@ -76,12 +86,12 @@ import * as firebase from 'firebase/app';
   <div *ngIf="UI.currentDomainObj?.isUser" style="color:#555;margin:20px">Email notifications: {{(UI.currentDomainObj?.enableEmailNotifications)?'ON':'OFF'}}</div>
   <div *ngIf="UI.currentDomain==UI.currentUser" class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div style="font-size:8px;margin:5px">version 0.0.11</div>
-  </div>
   `,
 })
 export class TeamSettingsComponent {
   editName:boolean;
   editMembershipCost:boolean;
+  editMembers:boolean;
   editChildren:boolean;
   name:string;
   membershipCost:string;
@@ -98,6 +108,7 @@ export class TeamSettingsComponent {
   ) {
     this.editName=false;
     this.editMembershipCost=false;
+    this.editMembers=false;
     this.editChildren=false;
     this.name=this.UI.currentDomainObj.name;
     if(this.UI.currentDomainObj.membershipCost==undefined) this.membershipCost='';
@@ -138,7 +149,6 @@ export class TeamSettingsComponent {
             inputsComplete:true
           };
           this.UI.createMessageAFS('Updating name to: '+this.name+' '+this.familyName,'','',true,false);
-          this.router.navigate(['chat','']);
         });
       });
     });
@@ -179,7 +189,6 @@ export class TeamSettingsComponent {
               inputsComplete:true
             };
             this.UI.createMessageAFS('Adding child: '+team.values.name+' '+team.values.familyName,'','',true,false);
-            this.router.navigate(['chat','']);
           });
         });
       });
@@ -212,7 +221,6 @@ export class TeamSettingsComponent {
             inputsComplete:true
           };
           this.UI.createMessageAFS('Updating membership cost to: '+this.membershipCost,'','',true,false);
-          this.router.navigate(['chat','']);
         });
       });
     });
@@ -235,7 +243,6 @@ export class TeamSettingsComponent {
           inputsComplete:true
         };
         this.UI.createMessageAFS('joining PERRINN Onshape team','','',true,false);
-        this.router.navigate(['chat','']);
       });
     });
   }
@@ -257,7 +264,6 @@ export class TeamSettingsComponent {
           inputsComplete:true
         };
         this.UI.createMessageAFS('joining PERRINN Google group','','',true,false);
-        this.router.navigate(['chat','']);
       });
     });
   }
@@ -315,7 +321,6 @@ export class TeamSettingsComponent {
                 inputsComplete:true
               };
               this.UI.createMessageAFS('updating profile picture',draftImage,url,true,false);
-              this.router.navigate(['chat','']);
             });
           });
         });
@@ -345,7 +350,7 @@ export class TeamSettingsComponent {
   }
 
   objectToArray(obj) {
-    if (obj == null) { return null; }
+    if (obj == null) { return []; }
     return Object.keys(obj).map(function(key) {
       return [key, obj[key]];
     });

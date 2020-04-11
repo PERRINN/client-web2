@@ -12,8 +12,7 @@ import * as firebase from 'firebase/app';
   selector: 'chat',
   template: `
 
-  <div *ngIf="UI.showChatDetails" id='main_container'>
-  <div class="sheet">
+  <div class="sheet" *ngIf="UI.showChatDetails">
     <div (click)="UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
     <div style="cursor:pointer" (click)="router.navigate(['team',UI.currentDomain])">
       <div style="float:right;margin:10px">
@@ -43,195 +42,193 @@ import * as firebase from 'firebase/app';
         </div>
       </li>
     </ul>
+    <div *ngIf="!searchFilter" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="addAllMembers()">Add all members</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
       <div *ngIf="!pinNextMessage" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="pinNextMessage=true">Pin next message</div>
       <div *ngIf="pinNextMessage" style="float:left;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#777;">Next message will be pinned</div>
       <div *ngIf="pinNextMessage" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="pinNextMessage=false">Cancel</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
-  </div>
 
 
-  <div id='main_container' scrollable (scrollPosition)="scrollHandler($event)">
-  <div class="sheet">
-  <div class="sheet" *ngIf="!UI.showChatDetails" style="position:fixed;background:#fcfcfc;width:100%;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
-    <div style="float:left;margin:0 5px 0 5px">
-      <div style="font-weight:bold">{{UI.chatSubject}}</div>
-      <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1]?.name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
+  <div class="sheet" id="chatWindow" *ngIf="!UI.showChatDetails" scrollable (scrollPosition)="scrollHandler($event)">
+    <div class="fixed" style="background:#fcfcfc;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
+      <div style="float:left;margin:0 5px 0 5px">
+        <div style="font-weight:bold">{{UI.chatSubject}}</div>
+        <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1]?.name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
+      </div>
+      <div style="float:right;margin:10px">
+        <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
+        <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
+      </div>
     </div>
-    <div style="float:right;margin:10px">
-      <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
-      <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
+    <div class="spinner" *ngIf="UI.loading">
+      <div class="bounce1"></div>
+      <div class="bounce2"></div>
+      <div class="bounce3"></div>
     </div>
-  </div>
-  <div class="spinner" *ngIf="UI.loading">
-    <div class="bounce1"></div>
-    <div class="bounce2"></div>
-    <div class="bounce3"></div>
-  </div>
-  <div>
-  <ul style="list-style:none;">
-    <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
-      <div *ngIf="i<messageNumberDisplay" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''">
-      <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:70px 15px 15px 15px">
-        <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{message.payload?.timestamp|date:'fullDate'}}</div>
-      </div>
-      <div *ngIf="message.payload?.chatSubject!=this.previousMessageSubject&&!first" style="margin:10px 10px 10px 70px">
-        <div style="color:#777">Subject changed to: {{message.payload?.chatSubject}}</div>
-        <div style="color:#777;font-size:10px">was: {{previousMessageSubject}}</div>
-      </div>
-      <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
-      <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="float:left;width:60px;min-height:10px">
-        <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
-      </div>
-      <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:3px;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
-        <div>
-          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
-          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:11px">{{message.payload?.timestamp | date:'HH:mm'}}</div>
-          <img *ngIf="message.payload?.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <img *ngIf="message.payload?.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <img *ngIf="message.payload?.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <img *ngIf="message.payload?.action=='process'" src="./../assets/App icons/repeat.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <img *ngIf="message.payload?.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <img *ngIf="message.payload?.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-          <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
-          <div *ngIf="message.payload?.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['team',message.payload?.linkTeam])">
-            <img [src]="message.payload?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
-            <div style="font-size:11px;padding:5px;">{{message.payload?.linkTeamName}}</div>
-          </div>
-          <div *ngIf="message.payload?.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['team',message.payload?.linkUser])">
-            <img [src]="message.payload?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
-            <div style="font-size:11px;padding:5px;">{{message.payload?.linkUserName}} {{message.payload?.linkuserFamilyName}}</div>
-          </div>
-          <div *ngIf="message.payload?.PERRINN?.process?.inputsComplete" style="clear:both;margin:5px">
-            <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
-              <span style="font-size:11px">{{message.payload?.PERRINN?.process?.result}}</span>
-            </div>
-          </div>
-          <div *ngIf="message.payload?.PERRINN?.transactionOut?.processed" style="clear:both;margin:5px">
-            <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
-              <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.3-3'}}</span>
-              <span style="font-size:11px"> have been sent to </span>
-              <span style="font-size:11px">{{message.payload?.PERRINN?.transactionOut?.receiverName}}</span>
-              <span style="font-size:11px"> {{message.payload?.PERRINN?.transactionOut?.receiverFamilyName}}</span>
-              <span style="font-size:11px"> reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</span>
-            </div>
-          </div>
-          <div *ngIf="message.payload?.PERRINN?.transactionIn?.processed" style="clear:both;margin:5px">
-            <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
-              <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.3-3'}}</span>
-              <span style="font-size:11px"> have been received from </span>
-              <span style="font-size:11px">{{message.payload?.PERRINN?.transactionIn?.donorName}}</span>
-              <span style="font-size:11px"> {{message.payload?.PERRINN?.transactionIn?.donorFamilyName}}</span>
-              <span style="font-size:11px"> reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</span>
-            </div>
-          </div>
-          <div style="clear:both;text-align:center">
-            <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
-          </div>
-          <div *ngIf="showDetails[message.key]">
-            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
-              <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MEMBERSHIP COST</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Count: {{message.payload?.PERRINN?.membershipCost?.counter}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.membershipCost?.amount|number:'1.3-3'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.membershipCost?.timestamp}}</div>
-            </div>
-            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
-              <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE COST</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.messagingCost?.amount|number:'1.3-3'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Read: C{{message.payload?.PERRINN?.messagingCost?.amountRead|number:'1.3-3'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Write: C{{message.payload?.PERRINN?.messagingCost?.amountWrite|number:'1.3-3'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message.payload?.PERRINN?.messagingCost?.receiver}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.status=='rejected balance low'?'#fcebb8':''">Status: {{message.payload?.PERRINN?.messagingCost?.status}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.messagingCost?.processed}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.messagingCost?.timestamp}}</div>
-            </div>
-            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
-              <img src="./../assets/App icons/repeat.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">PROCESS</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Function: {{message.payload?.PERRINN?.process?.function|json}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs complete: {{message.payload?.PERRINN?.process?.inputsComplete}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs: {{message.payload?.PERRINN?.process?.inputs|json}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="(message.payload?.PERRINN?.process?.result!='none')?'#c7edcd':''">Result: {{message.payload?.PERRINN?.process?.result}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.process?.timestamp}}</div>
-            </div>
-            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
-              <img src="./../assets/App icons/out.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION OUT</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.3-3'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message.payload?.PERRINN?.transactionOut?.receiver}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Message: {{message.payload?.PERRINN?.transactionOut?.receiverMessage}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.status=='rejected balance low'?'#fcebb8':''">Status: {{message.payload?.PERRINN?.transactionOut?.status}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.transactionOut?.processed}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionOut?.timestamp}}</div>
-            </div>
-            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
-              <img src="./../assets/App icons/in.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION IN</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.3-3'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Donor: {{message.payload?.PERRINN?.transactionIn?.donor}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionIn?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.transactionIn?.processed}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionIn?.timestamp}}</div>
-            </div>
-            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
-              <img src="./../assets/App icons/chain.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE CHAIN</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Index:#{{message.payload?.PERRINN?.chain?.index}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.chain?.previousMessage!=undefined?'#c7edcd':''">Previous: {{message.payload?.PERRINN?.chain?.previousMessage}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Current: {{message.payload?.PERRINN?.chain?.currentMessage}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Next: {{message.payload?.PERRINN?.chain?.nextMessage}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.chain?.timestamp}}</div>
-            </div>
-            <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
-              <img src="./../assets/App icons/wallet.png" style="display:inline;float:right;height:25px;border-radius:25%">
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">WALLET</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Previous balance: C{{message.payload?.PERRINN?.wallet?.previousBalance|number:'1.3-3'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.wallet?.amount|number:'1.3-3'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.wallet?.balance!=undefined?'#c7edcd':''">Balance: C{{message.payload?.PERRINN?.wallet?.balance|number:'1.3-3'}}</div>
-              <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.wallet?.timestamp}}</div>
-            </div>
-          </div>
-        </div>
-        <div class='messageFooter' style="cursor:pointer;clear:both;height:15px" (click)="switchShowDetails(message.key)">
-          <div style="float:left;width:100px;text-align:right;line-height:10px">...</div>
-          <img *ngIf="message.payload?.PERRINN?.dataWrite=='complete'" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
-          <div style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">{{message.payload?.PERRINN?.dataWrite!='complete'?message.payload?.PERRINN?.dataWrite:''}}</div>
-          <div *ngIf="message.payload?.PERRINN?.chain?.nextMessage=='none'&&message.payload?.PERRINN?.wallet?.balance!=undefined" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">C{{message.payload?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
-        </div>
-      </div>
-      </div>
-      {{storeMessageValues(message.payload)}}
-      {{(last||i==(messageNumberDisplay-1))?scrollToBottom(message.payload?.timestamp):''}}
-    </li>
-  </ul>
-  <div style="height:125px;width:100%"></div>
-  </div>
-
-  <div class="sheet" style="position:fixed;bottom:0;width:100%;background-color:#f2f2f2">
     <div>
-      <ul style="list-style:none;float:left;">
-        <li *ngFor="let user of draftMessageUsers | async">
-        <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values?.name}}...</div>
+      <ul style="list-style:none;">
+        <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
+          <div *ngIf="i<messageNumberDisplay" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''">
+          <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:70px 15px 15px 15px">
+            <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{message.payload?.timestamp|date:'fullDate'}}</div>
+          </div>
+          <div *ngIf="message.payload?.chatSubject!=this.previousMessageSubject&&!first" style="margin:10px 10px 10px 70px">
+            <div style="color:#777">Subject changed to: {{message.payload?.chatSubject}}</div>
+            <div style="color:#777;font-size:10px">was: {{previousMessageSubject}}</div>
+          </div>
+          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
+          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="float:left;width:60px;min-height:10px">
+            <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
+          </div>
+          <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:3px;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
+            <div>
+              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
+              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:11px">{{message.payload?.timestamp | date:'HH:mm'}}</div>
+              <img *ngIf="message.payload?.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+              <img *ngIf="message.payload?.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+              <img *ngIf="message.payload?.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+              <img *ngIf="message.payload?.action=='process'" src="./../assets/App icons/repeat.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+              <img *ngIf="message.payload?.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+              <img *ngIf="message.payload?.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
+              <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
+              <div *ngIf="message.payload?.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['team',message.payload?.linkTeam])">
+                <img [src]="message.payload?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
+                <div style="font-size:11px;padding:5px;">{{message.payload?.linkTeamName}}</div>
+              </div>
+              <div *ngIf="message.payload?.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['team',message.payload?.linkUser])">
+                <img [src]="message.payload?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
+                <div style="font-size:11px;padding:5px;">{{message.payload?.linkUserName}} {{message.payload?.linkuserFamilyName}}</div>
+              </div>
+              <div *ngIf="message.payload?.PERRINN?.process?.inputsComplete" style="clear:both;margin:5px">
+                <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
+                  <span style="font-size:11px">{{message.payload?.PERRINN?.process?.result}}</span>
+                </div>
+              </div>
+              <div *ngIf="message.payload?.PERRINN?.transactionOut?.processed" style="clear:both;margin:5px">
+                <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
+                  <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.3-3'}}</span>
+                  <span style="font-size:11px"> have been sent to </span>
+                  <span style="font-size:11px">{{message.payload?.PERRINN?.transactionOut?.receiverName}}</span>
+                  <span style="font-size:11px"> {{message.payload?.PERRINN?.transactionOut?.receiverFamilyName}}</span>
+                  <span style="font-size:11px"> reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</span>
+                </div>
+              </div>
+              <div *ngIf="message.payload?.PERRINN?.transactionIn?.processed" style="clear:both;margin:5px">
+                <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
+                  <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.3-3'}}</span>
+                  <span style="font-size:11px"> have been received from </span>
+                  <span style="font-size:11px">{{message.payload?.PERRINN?.transactionIn?.donorName}}</span>
+                  <span style="font-size:11px"> {{message.payload?.PERRINN?.transactionIn?.donorFamilyName}}</span>
+                  <span style="font-size:11px"> reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</span>
+                </div>
+              </div>
+              <div style="clear:both;text-align:center">
+                <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
+              </div>
+              <div *ngIf="showDetails[message.key]">
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                  <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MEMBERSHIP COST</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Count: {{message.payload?.PERRINN?.membershipCost?.counter}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.membershipCost?.amount|number:'1.3-3'}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.membershipCost?.timestamp}}</div>
+                </div>
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                  <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE COST</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.messagingCost?.amount|number:'1.3-3'}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Read: C{{message.payload?.PERRINN?.messagingCost?.amountRead|number:'1.3-3'}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Write: C{{message.payload?.PERRINN?.messagingCost?.amountWrite|number:'1.3-3'}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message.payload?.PERRINN?.messagingCost?.receiver}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.status=='rejected balance low'?'#fcebb8':''">Status: {{message.payload?.PERRINN?.messagingCost?.status}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.messagingCost?.processed}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.messagingCost?.timestamp}}</div>
+                </div>
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                  <img src="./../assets/App icons/repeat.png" style="display:inline;float:right;height:25px;border-radius:25%">
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">PROCESS</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Function: {{message.payload?.PERRINN?.process?.function|json}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs complete: {{message.payload?.PERRINN?.process?.inputsComplete}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs: {{message.payload?.PERRINN?.process?.inputs|json}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="(message.payload?.PERRINN?.process?.result!='none')?'#c7edcd':''">Result: {{message.payload?.PERRINN?.process?.result}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.process?.timestamp}}</div>
+                </div>
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                  <img src="./../assets/App icons/out.png" style="display:inline;float:right;height:25px;border-radius:25%">
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION OUT</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.3-3'}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message.payload?.PERRINN?.transactionOut?.receiver}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Message: {{message.payload?.PERRINN?.transactionOut?.receiverMessage}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.status=='rejected balance low'?'#fcebb8':''">Status: {{message.payload?.PERRINN?.transactionOut?.status}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.transactionOut?.processed}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionOut?.timestamp}}</div>
+                </div>
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                  <img src="./../assets/App icons/in.png" style="display:inline;float:right;height:25px;border-radius:25%">
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION IN</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.3-3'}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Donor: {{message.payload?.PERRINN?.transactionIn?.donor}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionIn?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.transactionIn?.processed}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionIn?.timestamp}}</div>
+                </div>
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                  <img src="./../assets/App icons/chain.png" style="display:inline;float:right;height:25px;border-radius:25%">
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE CHAIN</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Index:#{{message.payload?.PERRINN?.chain?.index}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.chain?.previousMessage!=undefined?'#c7edcd':''">Previous: {{message.payload?.PERRINN?.chain?.previousMessage}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Current: {{message.payload?.PERRINN?.chain?.currentMessage}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Next: {{message.payload?.PERRINN?.chain?.nextMessage}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.chain?.timestamp}}</div>
+                </div>
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                  <img src="./../assets/App icons/wallet.png" style="display:inline;float:right;height:25px;border-radius:25%">
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">WALLET</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Previous balance: C{{message.payload?.PERRINN?.wallet?.previousBalance|number:'1.3-3'}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.wallet?.amount|number:'1.3-3'}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.wallet?.balance!=undefined?'#c7edcd':''">Balance: C{{message.payload?.PERRINN?.wallet?.balance|number:'1.3-3'}}</div>
+                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.wallet?.timestamp}}</div>
+                </div>
+              </div>
+            </div>
+            <div class='messageFooter' style="cursor:pointer;clear:both;height:15px" (click)="switchShowDetails(message.key)">
+              <div style="float:left;width:100px;text-align:right;line-height:10px">...</div>
+              <img *ngIf="message.payload?.PERRINN?.dataWrite=='complete'" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
+              <div style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">{{message.payload?.PERRINN?.dataWrite!='complete'?message.payload?.PERRINN?.dataWrite:''}}</div>
+              <div *ngIf="message.payload?.PERRINN?.chain?.nextMessage=='none'&&message.payload?.PERRINN?.wallet?.balance!=undefined" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">C{{message.payload?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
+            </div>
+          </div>
+          </div>
+          {{storeMessageValues(message.payload)}}
+          {{(last||i==(messageNumberDisplay-1))?scrollToBottom(message.payload?.timestamp):''}}
         </li>
       </ul>
-      <div style="clear:both;float:left;width:90%">
-        <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
-      </div>
-      <div *ngIf="draftMessage" style="float:right;width:10%">
-        <img src="./../assets/App icons/send.png" style="width:25px;margin:20px 5px 5px 5px" (click)="addMessage()">
-      </div>
-      <div *ngIf="!draftMessage" style="float:right;width:10%">
-        <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
-        <label class="buttonUploadImage" for="chatImage" id="buttonFile">
-        <img src="./../assets/App icons/camera.png" style="width:25px;margin:20px 5px 5px 5px">
-        </label>
-      </div>
+      <div style="height:125px;width:100%"></div>
     </div>
   </div>
+
+  <div class="sheet">
+  <div class="fixed" style="bottom:0;background-color:#f2f2f2">
+    <ul style="list-style:none;float:left;">
+      <li *ngFor="let user of draftMessageUsers | async">
+      <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values?.name}}...</div>
+      </li>
+    </ul>
+    <div style="clear:both;float:left;width:90%">
+      <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
+    </div>
+    <div *ngIf="draftMessage" style="float:right;width:10%">
+      <img src="./../assets/App icons/send.png" style="width:25px;margin:20px 5px 5px 5px" (click)="addMessage()">
+    </div>
+    <div *ngIf="!draftMessage" style="float:right;width:10%">
+      <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
+      <label class="buttonUploadImage" for="chatImage" id="buttonFile">
+      <img src="./../assets/App icons/camera.png" style="width:25px;margin:20px 5px 5px 5px">
+      </label>
+    </div>
   </div>
   </div>
     `
@@ -363,7 +360,7 @@ export class ChatComponent {
 
   scrollToBottom(scrollMessageTimestamp: number) {
     if (scrollMessageTimestamp != this.scrollMessageTimestamp) {
-      const element = document.getElementById('main_container');
+      const element = document.getElementById('chatWindow');
       element.scrollTop = element.scrollHeight;
       this.scrollMessageTimestamp = scrollMessageTimestamp;
     }
@@ -422,9 +419,16 @@ export class ChatComponent {
   }
 
   objectToArray(obj) {
-    if (obj == null) { return null; }
+    if (obj == null) { return []; }
     return Object.keys(obj).map(function(key) {
       return [key, obj[key]];
+    });
+  }
+
+  addAllMembers(){
+    let members=this.objectToArray(this.UI.currentDomainObj.members);
+    members.forEach(member=>{
+      this.UI.addRecipient(member[0]);
     });
   }
 

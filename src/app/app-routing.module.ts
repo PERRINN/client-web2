@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login.component';
 import { ChatComponent } from './chat.component';
+import { ChatModalComponent } from './chatModal.component';
 import { TeamProfileComponent } from './teamProfile.component';
 import { TeamSettingsComponent } from './teamSettings.component';
 import { SearchComponent } from './search.component';

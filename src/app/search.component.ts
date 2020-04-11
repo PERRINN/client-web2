@@ -9,7 +9,6 @@ import * as firebase from 'firebase/app';
 @Component({
   selector: 'search',
   template: `
-  <div id='main_container'>
   <div class="sheet">
   <input id="searchInput" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Search">
   <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshSearchByCOINLists()">COIN holders' list</div>
@@ -28,7 +27,6 @@ import * as firebase from 'firebase/app';
     </li>
   </ul>
   <div class="seperator" style="width:100%;margin:0px"></div>
-  </div>
   </div>
   `,
 })
