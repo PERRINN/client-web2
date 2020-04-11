@@ -11,7 +11,10 @@ import * as firebase from 'firebase/app';
   template: `
 
   <div class="sheet">
-    <div class="fixed" style="z-index:999999">
+    <div *ngIf="modal" class="fixed" style="z-index:99;background-color:#aaa;opacity:0.7;width:100%;height:100vh"></div>
+  </div>
+  <div class="sheet">
+    <div class="fixed" style="z-index:999999;top:100px">
       <ul style="list-style:none">
         <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index" style="cursor:pointer" (click)="readMessage(message.key)">
           <div *ngIf="(reads[message.key]==undefined)&&(message.payload?.reads==undefinied?true:!message.payload?.reads[UI.currentUser])">
@@ -24,6 +27,7 @@ import * as firebase from 'firebase/app';
               <span style="font-size:11px;color:green"> {{message.payload?.PERRINN?.process?.result}}</span>
             </div>
             <div class="seperator" style="width:100%;margin:0px"></div>
+            {{first?modalOn():''}}
           </div>
         </li>
       </ul>
@@ -34,6 +38,7 @@ import * as firebase from 'firebase/app';
 export class ChatModalComponent {
   messages:Observable<any[]>;
   reads:any;
+  modal:boolean;
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -41,6 +46,7 @@ export class ChatModalComponent {
     public UI: UserInterfaceService,
   ) {
     this.reads={};
+    this.modal=false;
     this.refreshMessages();
   }
 
@@ -58,10 +64,15 @@ export class ChatModalComponent {
   }
 
   readMessage(message){
+    this.modal=false;
     var batch = this.afs.firestore.batch();
     if(this.reads[message]==undefined)batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(message),{timestamp:firebase.firestore.FieldValue.arrayUnion(Date.now())},{merge:true});
     this.reads[message]=true;
     return batch.commit();
+  }
+
+  modalOn(){
+    this.modal=true;
   }
 
   objectToArray(obj) {
