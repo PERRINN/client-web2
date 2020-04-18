@@ -285,6 +285,19 @@ module.exports = {
       console.log(error);
       emailUtils.sendErrorEmail(error);
     });
+  },
+
+  writeMessageDomainData:(messageData)=>{
+    var batch=admin.firestore().batch();
+    batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.name`]:messageData.name},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.familyName`]:messageData.familyName},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.imageUrlThumb`]:messageData.imageUrlThumbUser},{create:true});
+    return batch.commit().then(()=>{
+      return 'done';
+    }).catch(error=>{
+      console.log(error);
+      emailUtils.sendErrorEmail(error);
+    });
   }
 
 }

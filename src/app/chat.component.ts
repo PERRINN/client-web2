@@ -13,14 +13,13 @@ import * as firebase from 'firebase/app';
   template: `
 
   <div class="sheet" *ngIf="UI.showChatDetails">
-    <div (click)="UI.showChatDetails=false" style="font-size:12px;text-align:center;line-height:20px;padding:2px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
-    <div style="cursor:pointer" (click)="router.navigate(['team',UI.currentDomain])">
-      <div style="float:right;margin:10px">
-        <div style="float:right;font-size:16px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
-        <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
-      </div>
+    <div style="background:#f2f2f2">
+    <div style="float:left;padding:10px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0;font-size:14px;font-family:sans-serif;background:#f4f7fc" (click)="router.navigate(['team',UI.currentDomain])">
+      <div style="font-size:14px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
     </div>
-    <div class="seperator" style="width:100%;margin:0px"></div>
+      <div (click)="UI.showChatDetails=false" style="float:left;font-size:12px;line-height:20px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
+      <div class="seperator" style="width:100%;margin:0px"></div>
+    </div>
     <input [(ngModel)]="UI.chatSubject" style="margin:10px;border:0;background:none;box-shadow:none;border-radius: 0px" placeholder="Subject">
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
@@ -51,16 +50,16 @@ import * as firebase from 'firebase/app';
   </div>
 
 
-  <div class="sheet" id="chatWindow" *ngIf="!UI.showChatDetails" scrollable (scrollPosition)="scrollHandler($event)">
-    <div class="fixed" style="background:#fcfcfc;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
-      <div style="float:left;margin:0 5px 0 5px">
+  <div class="sheet" id="chat_window" style="overflow-y:auto;height:100%" *ngIf="!UI.showChatDetails" scrollable (scrollPosition)="scrollHandler($event)">
+    <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
+      <div style="float:left;padding:10px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0;background:#f4f7fc" (click)="router.navigate(['team',UI.currentDomain])">
+        <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
+      </div>
+      <div style="float:left;margin:0 5px 0 10px">
         <div style="font-weight:bold">{{UI.chatSubject}}</div>
         <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1]?.name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
       </div>
-      <div style="float:right;margin:10px">
-        <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
-        <div style="float:right;background-color:#777;height:5px;width:5px;margin:2px"></div>
-      </div>
+      <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
     <div class="spinner" *ngIf="UI.loading">
       <div class="bounce1"></div>
@@ -212,6 +211,7 @@ import * as firebase from 'firebase/app';
 
   <div class="sheet">
   <div class="fixed" style="bottom:0;background-color:#f2f2f2">
+    <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="list-style:none;float:left;">
       <li *ngFor="let user of draftMessageUsers | async">
       <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values?.name}}...</div>
@@ -267,6 +267,7 @@ export class ChatComponent {
     this.UI.loading = true;
     this.reads=[];
     this.route.params.subscribe(params => {
+      this.UI.chain=params.id;
       this.isCurrentUserLeader=false;
       this.isCurrentUserMember=false;
       this.showDetails={};
@@ -360,7 +361,7 @@ export class ChatComponent {
 
   scrollToBottom(scrollMessageTimestamp: number) {
     if (scrollMessageTimestamp != this.scrollMessageTimestamp) {
-      const element = document.getElementById('chatWindow');
+      const element = document.getElementById('chat_window');
       element.scrollTop = element.scrollHeight;
       this.scrollMessageTimestamp = scrollMessageTimestamp;
     }

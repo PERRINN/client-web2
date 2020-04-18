@@ -58,6 +58,8 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     }
     return messageUtils.writeMessageTransactionReceiverData(messageData.user,context.params.message);
   }).then(()=>{
+    return messageUtils.writeMessageDomainData(messageData);
+  }).then(()=>{
     return childTopUpUtils.performChildTopUp(messageData.user);
   }).then(()=>{
     return customClaimsUtils.setCustomClaims(messageData.user);

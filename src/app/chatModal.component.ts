@@ -11,7 +11,7 @@ import * as firebase from 'firebase/app';
   template: `
 
   <div class="sheet">
-    <div class="fixed" id="overlay" style="z-index:99;background-color:#aaa;opacity:0.7;width:100%;height:100vh;cursor:pointer" (click)="readAll()"></div>
+    <div class="fixed" id="overlay" style="z-index:99;background-color:#aaa;opacity:0.5;width:100%;height:100vh;cursor:pointer" (click)="readAll()"></div>
   </div>
   <div class="sheet">
     <div class="fixed" style="z-index:999999;top:100px">
@@ -56,17 +56,20 @@ export class ChatModalComponent {
 
   refreshMessages() {
     this.afAuth.user.subscribe((auth) => {
-      this.messages=this.afs.collection('PERRINNMessages',ref=>ref
-        .where('recipientList','array-contains',auth.uid)
-        .where('auto','==',true)
-        .orderBy('serverTimestamp','desc')
-        .limit(5)
-      ).snapshotChanges().pipe(map(changes => {
-        changes.forEach(c=>{
-          this.messageList[c.payload.doc.id]=true;
-        });
-        return changes.reverse().map(c => ({key:c.payload.doc.id,payload:c.payload.doc.data()}));
-      }));
+      if (auth != null) {
+        this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+          .where('recipientList','array-contains',auth.uid)
+          .where('auto','==',true)
+          .orderBy('serverTimestamp','desc')
+          .limit(5)
+        ).snapshotChanges().pipe(map(changes => {
+          changes.forEach(c=>{
+            if(c.payload.doc.data().reads==undefined)this.messageList[c.payload.doc.id]=true;
+            else if(c.payload.doc.data().reads[this.UI.currentUser]==undefined)this.messageList[c.payload.doc.id]=true;
+          });
+          return changes.reverse().map(c => ({key:c.payload.doc.id,payload:c.payload.doc.data()}));
+        }));
+      }
     });
   }
 

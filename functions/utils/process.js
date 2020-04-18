@@ -102,44 +102,6 @@ module.exports = {
           });
         });
       }
-      if (functionObj.name=='joinTeam') {
-        return admin.firestore().doc('PERRINNMessages/'+message).get().then(messageData=>{
-          return admin.firestore().doc('PERRINNTeams/'+inputs.target).get().then(team=>{
-            if(team.data().membershipCost!=undefined)
-            if (team.data().membershipCost>0){
-              let familyName='';
-              if(team.data().familyName!=undefined)familyName=team.data().familyName;
-              let messageObj={
-                domain:messageData.data().domain,
-                user:user,
-                text:"I am sending "+team.data().membershipCost+" COINS reference: Membership cost",
-                chain:messageData.data().chain,
-                chatSubject:messageData.data().chatSubject,
-                recipientList:messageData.data().recipientList,
-                process:{
-                  inputs:{
-                    amount:team.data().membershipCost,
-                    receiver:inputs.target,
-                    receiverName:team.data().name,
-                    receiverFamilyName:familyName,
-                    reference:'Membership cost'
-                  },
-                  function:{
-                    name:'transactionOut'
-                  },
-                  inputsComplete:true
-                }
-              };
-              createMessageUtils.createMessageAFS(messageObj);
-            }
-            return admin.firestore().doc('PERRINNTeams/'+inputs.target).update({
-              [`members.${inputs.member}`]:inputs.memberObj
-            }).then(()=>{
-              return 'member added';
-            });
-          });
-        });
-      }
       if (functionObj.name=='unpinMessage') {
         return admin.firestore().doc('PERRINNMessages/'+inputs.target).update({
           pin:false

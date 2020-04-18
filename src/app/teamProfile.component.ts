@@ -20,36 +20,40 @@ import { AngularFireAuth } from '@angular/fire/auth';
     <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 10px 0 10px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="this.logout();router.navigate(['login']);">Logout</div>
   </div>
   <div style="clear:both">
-    <div (click)="router.navigate(['team','inbox'])" [style.color]="UI.currentDomain=='inbox'?'#267cb5':'#777'" style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">Inbox</div>
-    <div (click)="router.navigate(['team','all'])" [style.color]="UI.currentDomain=='all'?'#267cb5':'#777'" style="float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">All</div>
+    <div (click)="router.navigate(['team','inbox'])" [style.color]="UI.currentDomain=='inbox'?'#267cb5':'#777'" style="float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">Inbox</div>
+    <div (click)="router.navigate(['team','all'])" [style.color]="UI.currentDomain=='all'?'#267cb5':'#777'" style="float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">All</div>
     <ul style="float:left">
       <li *ngFor="let domain of domains|async"
         (click)="router.navigate(['team',domain.payload.doc.id])"
-        style="position:relative;float:left;margin: 5px 5px 0 5px;width:75px;height:24px;text-align:center;line-height:24px;font-size:12px;cursor:pointer">
+        style="position:relative;float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">
         <div [style.color]="UI.currentDomain==domain.payload.doc.id?'#267cb5':'#777'">{{domain.payload.doc.data()?.name}}</div>
-        <div *ngIf="domain.payload.doc.data().isDomainFree" [style.color]="UI.currentDomain==domain.payload.doc.id?'green':'#777'" style="font-size:7px;position:absolute;top:0;right:0"> free</div>
+        <div *ngIf="domain.payload.doc.data().isDomainFree" [style.color]="UI.currentDomain==domain.payload.doc.id?'green':'#777'" style="font-size:7px;position:absolute;top:0;right:10px"> free</div>
       </li>
     </ul>
     <div style="float:right;cursor:pointer" (click)="router.navigate(['team',UI.currentUser])">
     <div style="float:right;margin:5px;font-size:10px">C{{(UI.currentUserObj?.lastMessageBalance?UI.currentUserObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
-      <img [src]="UI.currentUserObj?.imageUrlThumb" style="display:inline;float:right;margin: 5px;border-radius:50%;object-fit:cover;width:25px;height:25px">
+      <img [src]="UI.currentUserObj?.imageUrlThumb" style="display:inline;float:right;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
-  <div *ngIf="UI.currentDomain=='inbox'" style="clear:both;font-size:16px;margin:15px">My inbox</div>
-  <div *ngIf="UI.currentDomain=='all'" style="clear:both;font-size:16px;margin:15px">Team wide messages</div>
+  <div *ngIf="UI.currentDomain=='inbox'" style="clear:both;background:#f2f2f2;font-size:16px;padding:5px 15px 5px 15px">My inbox</div>
+  <div *ngIf="UI.currentDomain=='all'" style="clear:both;background:#f2f2f2;font-size:16px;padding:5px 15px 5px 15px">Team wide messages</div>
   <div *ngIf="UI.currentDomain=='inbox'||UI.currentDomain=='all'" class="seperator" style="width:100%;margin:0px"></div>
   <div *ngIf="!(UI.currentDomain=='inbox'||UI.currentDomain=='all')">
     <div style="clear:both;background-color:#f4f7fc">
       <div style="float:left">
-        <img [style.border-radius]="UI.currentDomainObj?.isUser?'50%':'3%'" [src]="UI.currentDomainObj?.imageUrlMedium" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;width:75px;height:75px">
+        <img [style.border-radius]="UI.currentDomainObj?.isUser?'50%':'3%'" [src]="UI.currentDomainObj?.imageUrlMedium" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px">
       </div>
       <div style="padding:10px">
         <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
-          <span >{{UI.currentDomainObj?.name}}</span>
-          <span style="font-size:10px"> {{UI.currentDomainObj?.familyName}}</span>
-          <span *ngIf='UI.currentDomainObj?.member' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">PERRINN member</span>
-          <span *ngIf='UI.currentDomainObj?.isDomain' style="color:white;background-color:#b38300;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
+          <div style="float:left">
+            <span >{{UI.currentDomainObj?.name}}</span>
+            <span style="font-size:10px"> {{UI.currentDomainObj?.familyName}}</span>
+            <span *ngIf='UI.currentDomainObj?.member' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
+            <span *ngIf='UI.currentDomainObj?.isDomain' style="color:white;background-color:#b38300;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
+          </div>
+          <img *ngIf="UI.currentDomainObj?.apps?.Google?.enabled" [style.cursor]="UI.currentDomainObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="float:left;width:15px;margin:5px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
+          <img *ngIf="UI.currentDomainObj?.apps?.Onshape?.enabled" [style.cursor]="UI.currentDomainObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:15px;margin:5px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
         </div>
         <img class='editButton' *ngIf='UI.currentDomainObj?.members[UI.currentUser]?.leader' style="float:right;width:20px" (click)="router.navigate(['teamSettings',UI.currentDomain])" src="./../assets/App icons/settings.png">
         <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(UI.currentDomainObj?.lastMessageBalance?UI.currentDomainObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
@@ -59,27 +63,19 @@ import { AngularFireAuth } from '@angular/fire/auth';
       <div class="seperator" style="width:100%;margin:0px"></div>
         <span style="margin:10px;font-size:10px;color:#999">{{objectToArray(UI.currentDomainObj?.members).length}} {{objectToArray(UI.currentDomainObj?.members).length>1?'members':'member'}}</span>
         <span (click)="router.navigate(['team',member[0]])" style="font-size:10px;cursor:pointer" *ngFor="let member of objectToArray(UI.currentDomainObj?.members);let last=last">{{member[0]==UI.currentUser?'You':member[1]?.name}}{{member[0]==UI.currentUser?'':member[1]?.familyName!=undefinied?' '+member[1]?.familyName:''}}{{member[1]?.leader?' (Leader)':''}}{{last?"":", "}}</span>
-      <div class="seperator" style="width:100%;margin:0px"></div>
       <div *ngIf="objectToArray(UI.currentDomainObj?.children).length>0">
         <span style="margin:10px;font-size:10px;color:#999">{{objectToArray(UI.currentDomainObj?.children).length}} {{objectToArray(UI.currentDomainObj?.children).length>1?'children':'child'}}</span>
         <span (click)="router.navigate(['team',member[0]])" style="font-size:10px;cursor:pointer" *ngFor="let member of objectToArray(UI.currentDomainObj?.children);let last=last">{{member[0]==UI.currentUser?'You':member[1]?.name}}{{member[0]==UI.currentUser?'':member[1]?.familyName!=undefinied?' '+member[1]?.familyName:''}}{{member[1]?.leader?' (Leader)':''}}{{last?"":", "}}</span>
-        <div class="seperator" style="width:100%;margin:0px"></div>
       </div>
       <div *ngIf="objectToArray(UI.currentDomainObj?.parents).length>0">
         <span style="margin:10px;font-size:10px;color:#999">{{objectToArray(UI.currentDomainObj?.parents).length}} {{objectToArray(UI.currentDomainObj?.parents).length>1?'parents':'parent'}}</span>
         <span (click)="router.navigate(['team',member[0]])" style="font-size:10px;cursor:pointer" *ngFor="let member of objectToArray(UI.currentDomainObj?.parents);let last=last">{{member[0]==UI.currentUser?'You':member[1]?.name}}{{member[0]==UI.currentUser?'':member[1]?.familyName!=undefinied?' '+member[1]?.familyName:''}}{{member[1]?.leader?' (Leader)':''}}{{last?"":", "}}</span>
-        <div class="seperator" style="width:100%;margin:0px"></div>
       </div>
-      <div *ngIf="UI.currentDomainObj?.apps?.Onshape?.enabled||UI.currentDomainObj?.apps?.Google?.enabled">
-        <img *ngIf="UI.currentDomainObj?.apps?.Google?.enabled" [style.cursor]="UI.currentDomainObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="clear:both;float:left;width:25px;margin:10px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
-        <img *ngIf="UI.currentDomainObj?.apps?.Onshape?.enabled" [style.cursor]="UI.currentDomainObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:25px;margin:10px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
-        <div class="seperator" style="width:100%;margin:0px"></div>
-      </div>
+      <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
       <div style="float:left;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newMessage()">New message</div>
       <div *ngIf="UI.currentDomain==UI.currentUser" style="float:left;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
       <div *ngIf="UI.currentDomain==UI.currentUser" style="float:left;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newTeam()">New team</div>
-      <div [style.color]="((UI.currentDomainObj?.members!=undefined)?(UI.currentDomainObj?.members[UI.currentUser]):false)?'#999':'#267cb5'" [style.cursor]="((UI.currentDomainObj?.members!=undefined)?(UI.currentDomainObj?.members[UI.currentUser]):false)?'default':'pointer'" style="float:left;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;border-style:solid;border-width:1px;border-radius:3px" (click)="joinTeam()">Join (C{{(UI.currentDomainObj?.membershipCost?UI.currentDomainObj?.membershipCost:0)|number:'1.2-2'}})</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   <div class="spinner" *ngIf="UI.loading">
@@ -106,7 +102,6 @@ import { AngularFireAuth } from '@angular/fire/auth';
         <div style="float:left;color:#777;font-size:10px;width:40px">{{message.payload.doc.data()?.recipientList.length}}</div>
         <img src="./../assets/App icons/eye.png" style="display:inline;margin-top:2px;margin-right:3px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(80);filter:brightness(80)">
         <div style="float:left;color:#777;font-size:10px;width:40px">{{objectToArray(message.payload.doc.data()?.reads)?.length}}</div>
-        <div style="float:left;background-color:#777;height:5px;width:5px;margin:2px"></div>
         <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.domainName}}</div>
       </div>
       <div class="seperator"></div>
@@ -129,7 +124,6 @@ import { AngularFireAuth } from '@angular/fire/auth';
         <div style="float:left;color:#777;font-size:10px;width:40px">{{message.payload.doc.data()?.recipientList.length}}</div>
         <img src="./../assets/App icons/eye.png" style="display:inline;margin-top:2px;margin-right:3px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(80);filter:brightness(80)">
         <div style="float:left;color:#777;font-size:10px;width:40px">{{objectToArray(message.payload.doc.data()?.reads)?.length}}</div>
-        <div style="float:left;background-color:#777;height:5px;width:5px;margin:2px"></div>
         <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.domainName}}</div>
       </div>
       <div class="seperator"></div>
@@ -232,43 +226,7 @@ export class TeamProfileComponent {
       this.UI.addRecipient(this.UI.currentUser);
       this.UI.addRecipient(this.UI.currentDomain);
       this.UI.showChatDetails=true;
-      this.router.navigate(['chat','']);
-    });
-  }
-
-  joinTeam(){
-    if(this.UI.currentDomainObj.members!=undefined)
-      if(this.UI.currentDomainObj.members[this.UI.currentUser]!=undefined)
-        return;
-    return this.afs.collection('IDs').add({
-      user:this.UI.currentUser,
-      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(ref=>{
-      this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.addRecipient(this.UI.currentDomain).then(()=>{
-          this.UI.chatSubject='Joining this team.';
-          this.UI.chain=ref.id;
-          this.UI.showChatDetails=false;
-          this.UI.process={
-            inputs:{
-              target:this.UI.currentDomain,
-              member:this.UI.currentUser,
-              memberObj:{
-                name:this.UI.currentUserObj.name,
-                familyName:this.UI.currentUserObj.familyName,
-                imageUrlThumb:this.UI.currentUserObj.imageUrlThumb,
-                timestamp:firebase.firestore.FieldValue.serverTimestamp()
-              }
-            },
-            function:{
-              name:'joinTeam'
-            },
-            inputsComplete:true
-          };
-          this.UI.createMessageAFS('Joining '+this.UI.currentDomainObj.name,'','',true,false);
-        });
-      });
+      this.router.navigate(['chat',ref.id]);
     });
   }
 
