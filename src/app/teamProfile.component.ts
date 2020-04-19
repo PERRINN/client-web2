@@ -20,20 +20,21 @@ import { AngularFireAuth } from '@angular/fire/auth';
     <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 10px 0 10px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="this.logout();router.navigate(['login']);">Logout</div>
   </div>
   <div style="clear:both">
-    <div (click)="router.navigate(['team','inbox'])" [style.color]="UI.currentDomain=='inbox'?'#267cb5':'#777'" style="float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">Inbox</div>
-    <div (click)="router.navigate(['team','all'])" [style.color]="UI.currentDomain=='all'?'#267cb5':'#777'" style="float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">All</div>
-    <ul style="float:left">
-      <li *ngFor="let domain of domains|async"
-        (click)="router.navigate(['team',domain.payload.doc.id])"
-        style="position:relative;float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">
-        <div [style.color]="UI.currentDomain==domain.payload.doc.id?'#267cb5':'#777'">{{domain.payload.doc.data()?.name}}</div>
-        <div *ngIf="domain.payload.doc.data().isDomainFree" [style.color]="UI.currentDomain==domain.payload.doc.id?'green':'#777'" style="font-size:7px;position:absolute;top:0;right:10px"> free</div>
-      </li>
-    </ul>
     <div style="float:right;cursor:pointer" (click)="router.navigate(['team',UI.currentUser])">
     <div style="float:right;margin:5px;font-size:10px">C{{(UI.currentUserObj?.lastMessageBalance?UI.currentUserObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
       <img [src]="UI.currentUserObj?.imageUrlThumb" style="display:inline;float:right;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
     </div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
+    <div (click)="router.navigate(['team','inbox'])" [style.color]="UI.currentDomain=='inbox'?'#267cb5':'#777'" [style.background]="UI.currentDomain=='inbox'?'#f4f7fc':'none'" style="float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">Inbox</div>
+    <div (click)="router.navigate(['team','all'])" [style.color]="UI.currentDomain=='all'?'#267cb5':'#777'" [style.background]="UI.currentDomain=='all'?'#f4f7fc':'none'" style="float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">All</div>
+    <ul style="float:left">
+      <li *ngFor="let domain of domains|async"
+        (click)="router.navigate(['team',domain.payload.doc.id])"
+        [style.background]="UI.currentDomain==domain.payload.doc.id?'#f4f7fc':'none'"
+        style="position:relative;float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">
+        <div [style.color]="UI.currentDomain==domain.payload.doc.id?'#267cb5':'#777'">{{domain.payload.doc.data()?.name}}</div>
+      </li>
+    </ul>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   <div *ngIf="UI.currentDomain=='inbox'" style="clear:both;background:#f2f2f2;font-size:16px;padding:5px 15px 5px 15px">My inbox</div>
@@ -73,9 +74,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
-      <div style="float:left;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newMessage()">New message</div>
-      <div *ngIf="UI.currentDomain==UI.currentUser" style="float:left;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
-      <div *ngIf="UI.currentDomain==UI.currentUser" style="float:left;width:80px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newTeam()">New team</div>
+      <div style="float:left;width:100px;height:25px;text-align:center;line-height:23px;font-size:12px;margin:10px;color:white;background-color:#267cb5;border-radius:4px;cursor:pointer" (click)="newMessage()">New message</div>
+      <div *ngIf="UI.currentDomain==UI.currentUser" style="float:left;width:100px;height:25px;text-align:center;line-height:23px;font-size:12px;margin:10px;color:white;background-color:#267cb5;border-radius:4px;cursor:pointer" (click)="newTeam()">New team</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   <div class="spinner" *ngIf="UI.loading">

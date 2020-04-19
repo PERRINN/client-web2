@@ -46,6 +46,7 @@ import * as firebase from 'firebase/app';
       <div *ngIf="!pinNextMessage" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="pinNextMessage=true">Pin next message</div>
       <div *ngIf="pinNextMessage" style="float:left;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#777;">Next message will be pinned</div>
       <div *ngIf="pinNextMessage" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="pinNextMessage=false">Cancel</div>
+      <div *ngIf="UI.currentDomain==UI.currentUser" style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
 
