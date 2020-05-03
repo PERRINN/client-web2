@@ -18,9 +18,9 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
           <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser;messageUser=''">{{newUser?"Already have an account?":"Need a new account?"}}</div>
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *" (keyup)="messageUser=''" required/>
           <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *" (keyup)="messageUser=''" required/>
-          <button [hidden]="newUser" type="button" (click)="login(email,password)">Login</button>
-          <div [hidden]="newUser" style="text-align:center; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="resetPassword(email)">Forgot password?</div>
-          <div [hidden]="!newUser">
+          <button *ngIf="!newUser" type="button" (click)="login(email,password)">Login</button>
+          <div *ngIf="!newUser" style="text-align:center; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="resetPassword(email)">Forgot password?</div>
+          <div *ngIf="newUser">
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *" (keyup)="messageUser=''"/>
           <input maxlength="500" [(ngModel)]="name" name="name" type="text" placeholder="First name *" (keyup)="messageUser=''"/>
           <input maxlength="500" [(ngModel)]="familyName" name="familyName" type="text" placeholder="Last name *" (keyup)="messageUser=''"/>

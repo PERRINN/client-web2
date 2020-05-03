@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "7.2.3",
     "@angular/platform-server": "7.2.3",
     "@angular/router": "7.2.3",
+    "@sendgrid/mail": "^7.1.0",
     "angular-linky": "^1.2.2",
     "blueimp-canvas-to-blob": "^3.14.0",
     "core-js": "^2.5.4",

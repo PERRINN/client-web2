@@ -7,8 +7,8 @@ let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     auth: {
-        user: 'perrinnlimited@gmail.com',
-        pass: functions.config().email.password
+        user: 'nicolas@perrinn.com',
+        pass: functions.config().email2.password
     }
 });
 
@@ -18,7 +18,7 @@ module.exports = {
     return admin.auth().getUser(dest).then(function(userRecord) {
       var email=userRecord.toJSON().email;
       const mailOptions = {
-        from: 'PERRINN <perrinnlimited@gmail.com>',
+        from: 'PERRINN <hello@perrinn.com>',
         to: email,
         subject: 'You have a new message',
         html: `
@@ -37,7 +37,7 @@ module.exports = {
   sendErrorEmail:(err)=>{
     var email='perrinnlimited@gmail.com';
     const mailOptions = {
-      from: 'PERRINN <perrinnlimited@gmail.com>',
+      from: 'PERRINN <hello@perrinn.com>',
       to: email,
       subject: 'Backend error',
       html: `

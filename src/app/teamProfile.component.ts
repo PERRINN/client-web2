@@ -25,13 +25,13 @@ import { AngularFireAuth } from '@angular/fire/auth';
       <img [src]="UI.currentUserObj?.imageUrlThumb" style="display:inline;float:right;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
-    <div (click)="router.navigate(['team','inbox'])" [style.color]="UI.currentDomain=='inbox'?'#267cb5':'#777'" [style.background]="UI.currentDomain=='inbox'?'#f4f7fc':'none'" style="float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">Inbox</div>
-    <div (click)="router.navigate(['team','all'])" [style.color]="UI.currentDomain=='all'?'#267cb5':'#777'" [style.background]="UI.currentDomain=='all'?'#f4f7fc':'none'" style="float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">All</div>
+    <div (click)="router.navigate(['team','inbox'])" [style.color]="UI.currentDomain=='inbox'?'#267cb5':'#777'" [style.background]="UI.currentDomain=='inbox'?'#f4f7fc':'none'" style="float:left;padding:7px;min-width:50px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">Inbox</div>
+    <div (click)="router.navigate(['team','all'])" [style.color]="UI.currentDomain=='all'?'#267cb5':'#777'" [style.background]="UI.currentDomain=='all'?'#f4f7fc':'none'" style="float:left;padding:7px;min-width:50px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">All</div>
     <ul style="float:left">
       <li *ngFor="let domain of domains|async"
         (click)="router.navigate(['team',domain.payload.doc.id])"
         [style.background]="UI.currentDomain==domain.payload.doc.id?'#f4f7fc':'none'"
-        style="position:relative;float:left;padding:7px;width:90px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">
+        style="position:relative;float:left;padding:7px;min-width:50px;text-align:center;font-size:12px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0">
         <div [style.color]="UI.currentDomain==domain.payload.doc.id?'#267cb5':'#777'">{{domain.payload.doc.data()?.name}}</div>
       </li>
     </ul>
@@ -83,7 +83,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
     <div class="bounce2"></div>
     <div class="bounce3"></div>
   </div>
-  <ul class="listLight">
+  <ul class="listLight" *ngIf="UI.currentDomain!='inbox'&&UI.currentDomain!='all'">
     <li *ngFor="let message of pinnedMessages|async;let last=last"
       (click)="UI.chain=message.payload.doc.data()?.chain;UI.showChatDetails=false;router.navigate(['chat',message.payload.doc.data()?.chain])">
       <div style="float:left">
