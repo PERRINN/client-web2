@@ -36,7 +36,6 @@ body {
   height: 100vh;
   overflow-y: auto;
   padding-bottom:5px;
-  padding-top:40px;
 }
 #login {
   width: 10000px;
