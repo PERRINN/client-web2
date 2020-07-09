@@ -212,19 +212,19 @@ import * as firebase from 'firebase/app';
 
   <div class="sheet">
   <div class="fixed" style="bottom:0;background-color:#f2f2f2">
-    <div class="seperator" style="width:100%;margin:0px"></div>
+    <div class="seperator" style="width:100%"></div>
     <ul style="list-style:none;float:left;">
       <li *ngFor="let user of draftMessageUsers | async">
       <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values?.name}}...</div>
       </li>
     </ul>
     <div style="clear:both;float:left;width:90%">
-      <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:none;padding:9px;margin:10px;border-radius:3px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
+      <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;padding:9px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
     </div>
-    <div *ngIf="draftMessage" style="float:right;width:10%">
+    <div *ngIf="draftMessage" style="float:right;width:10%;cursor:pointer">
       <img src="./../assets/App icons/send.png" style="width:25px;margin:20px 5px 5px 5px" (click)="addMessage()">
     </div>
-    <div *ngIf="!draftMessage" style="float:right;width:10%">
+    <div *ngIf="!draftMessage" style="float:right;width:10%;cursor:pointer">
       <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
       <label class="buttonUploadImage" for="chatImage" id="buttonFile">
       <img src="./../assets/App icons/camera.png" style="width:25px;margin:20px 5px 5px 5px">
