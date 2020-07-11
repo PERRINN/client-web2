@@ -93,7 +93,7 @@ import * as firebase from 'firebase/app';
   <div class="seperator" style="width:100%;margin:0px"></div>
   <div *ngIf="UI.currentDomainObj?.isUser" style="color:#555;margin:20px">Email notifications: {{(UI.currentDomainObj?.enableEmailNotifications)?'ON':'OFF'}}</div>
   <div *ngIf="UI.currentDomain==UI.currentUser" class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
-  <div style="font-size:8px;margin:5px">version 0.0.11</div>
+  <div class="seperator" style="width:100%;margin-bottom:250px"></div>
   `,
 })
 export class TeamSettingsComponent {
