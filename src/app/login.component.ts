@@ -149,7 +149,6 @@ export class LoginComponent  {
                 domainName:name,
                 domainImageUrlThumb:imageUrlThumb,
                 emailNotifications:this.UI.recipientList,
-                lastMessage:true,
                 user:auth.uid,
                 imageUrlThumbUser:imageUrlThumb,
                 name:name,

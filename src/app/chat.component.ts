@@ -112,7 +112,7 @@ import * as firebase from 'firebase/app';
                   <span style="font-size:11px">{{message.payload?.PERRINN?.process?.result}}</span>
                 </div>
               </div>
-              <div *ngIf="message.payload?.PERRINN?.transactionOut?.processed" style="clear:both;margin:5px">
+              <div *ngIf="message.payload?.PERRINN?.transactionOut?.amount>0" style="clear:both;margin:5px">
                 <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
                   <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.3-3'}}</span>
                   <span style="font-size:11px"> have been sent to </span>
@@ -121,7 +121,7 @@ import * as firebase from 'firebase/app';
                   <span style="font-size:11px"> reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</span>
                 </div>
               </div>
-              <div *ngIf="message.payload?.PERRINN?.transactionIn?.processed" style="clear:both;margin:5px">
+              <div *ngIf="message.payload?.PERRINN?.transactionIn?.amount>0" style="clear:both;margin:5px">
                 <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
                   <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.3-3'}}</span>
                   <span style="font-size:11px"> have been received from </span>
@@ -134,14 +134,14 @@ import * as firebase from 'firebase/app';
                 <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
               </div>
               <div *ngIf="showDetails[message.key]">
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
                   <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MEMBERSHIP COST</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Count: {{message.payload?.PERRINN?.membershipCost?.counter}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.membershipCost?.amount|number:'1.3-3'}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.membershipCost?.timestamp}}</div>
                 </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
                   <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE COST</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.messagingCost?.amount|number:'1.3-3'}}</div>
@@ -149,10 +149,9 @@ import * as firebase from 'firebase/app';
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Write: C{{message.payload?.PERRINN?.messagingCost?.amountWrite|number:'1.3-3'}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message.payload?.PERRINN?.messagingCost?.receiver}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.status=='rejected balance low'?'#fcebb8':''">Status: {{message.payload?.PERRINN?.messagingCost?.status}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.messagingCost?.processed}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.messagingCost?.timestamp}}</div>
                 </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
                   <img src="./../assets/App icons/repeat.png" style="display:inline;float:right;height:25px;border-radius:25%">
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">PROCESS</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Function: {{message.payload?.PERRINN?.process?.function|json}}</div>
@@ -161,7 +160,7 @@ import * as firebase from 'firebase/app';
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="(message.payload?.PERRINN?.process?.result!='none')?'#c7edcd':''">Result: {{message.payload?.PERRINN?.process?.result}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.process?.timestamp}}</div>
                 </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
                   <img src="./../assets/App icons/out.png" style="display:inline;float:right;height:25px;border-radius:25%">
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION OUT</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.3-3'}}</div>
@@ -169,19 +168,17 @@ import * as firebase from 'firebase/app';
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Message: {{message.payload?.PERRINN?.transactionOut?.receiverMessage}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.status=='rejected balance low'?'#fcebb8':''">Status: {{message.payload?.PERRINN?.transactionOut?.status}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.transactionOut?.processed}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionOut?.timestamp}}</div>
                 </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
                   <img src="./../assets/App icons/in.png" style="display:inline;float:right;height:25px;border-radius:25%">
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION IN</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.3-3'}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Donor: {{message.payload?.PERRINN?.transactionIn?.donor}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionIn?.processed?'#c7edcd':''">Processed: {{message.payload?.PERRINN?.transactionIn?.processed}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionIn?.timestamp}}</div>
                 </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
                   <img src="./../assets/App icons/chain.png" style="display:inline;float:right;height:25px;border-radius:25%">
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE CHAIN</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Index:#{{message.payload?.PERRINN?.chain?.index}}</div>
@@ -190,7 +187,7 @@ import * as firebase from 'firebase/app';
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Next: {{message.payload?.PERRINN?.chain?.nextMessage}}</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.chain?.timestamp}}</div>
                 </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:225px">
+                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
                   <img src="./../assets/App icons/wallet.png" style="display:inline;float:right;height:25px;border-radius:25%">
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">WALLET</div>
                   <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Previous balance: C{{message.payload?.PERRINN?.wallet?.previousBalance|number:'1.3-3'}}</div>
@@ -217,7 +214,7 @@ import * as firebase from 'firebase/app';
   </div>
 
   <div class="sheet">
-  <div class="fixed" style="bottom:0;background-color:#f2f2f2">
+  <div class="fixed" style="bottom:0">
     <div class="seperator" style="width:100%"></div>
     <ul style="list-style:none;float:left;">
       <li *ngFor="let user of draftMessageUsers | async">
@@ -419,7 +416,6 @@ export class ChatComponent {
       uploader.value = '0';
       document.getElementById('buttonFile').style.visibility = 'visible';
       document.getElementById('uploader').style.visibility = 'hidden';
-      this.draftMessage = task.task.snapshot.ref.name.substring(0, 13);
       this.draftImage = task.task.snapshot.ref.name.substring(0, 13);
       storageRef.getDownloadURL().subscribe(url => {
         this.draftImageDownloadURL = url;

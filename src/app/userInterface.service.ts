@@ -105,7 +105,6 @@ export class UserInterfaceService {
       domainName:this.currentDomainObj.name,
       domainImageUrlThumb:this.currentDomainObj.imageUrlThumb,
       emailNotifications: this.recipientList,
-      lastMessage:true,
       user:this.currentUser,
       name:this.currentUserObj.name,
       familyName:this.currentUserObj.familyName,
