@@ -199,8 +199,7 @@ import * as firebase from 'firebase/app';
             </div>
             <div class='messageFooter' style="cursor:pointer;clear:both;height:15px" (click)="switchShowDetails(message.key)">
               <div style="float:left;width:100px;text-align:right;line-height:10px">...</div>
-              <img *ngIf="message.payload?.PERRINN?.dataWrite=='complete'" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
-              <div style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">{{message.payload?.PERRINN?.dataWrite!='complete'?message.payload?.PERRINN?.dataWrite:''}}</div>
+              <img *ngIf="message.payload?.PERRINN!=undefined" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
               <div *ngIf="message.payload?.PERRINN?.chain?.nextMessage=='none'&&message.payload?.PERRINN?.wallet?.balance!=undefined" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">C{{message.payload?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
             </div>
           </div>
