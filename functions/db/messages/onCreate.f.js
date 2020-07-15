@@ -98,7 +98,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     if(process!=undefined&&process!=null){
       if(process.function!=undefined&&process.function!=null){
         if(process.function.name=='transactionOut'){
-          if(checkTransactionInputs(user,process.inputs)) {
+          if(checkTransactionInputs(process.inputs)) {
             amountTransactionOut=process.inputs.amount;
             receiverTransactionOut=process.inputs.receiver;
             receiverName=process.inputs.receiverName;
@@ -215,7 +215,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
 });
 
 
-function checkTransactionInputs (user,inputs) {
+function checkTransactionInputs(inputs) {
   if(inputs.amount>0&&inputs.amount<=100000){
     if(inputs.reference!=''){
       return true;
