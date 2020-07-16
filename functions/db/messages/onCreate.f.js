@@ -47,6 +47,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
 
     //message chain data
     const userObj=await admin.firestore().doc('PERRINNTeams/'+user).get()
+    const domainObj=await admin.firestore().doc('PERRINNTeams/'+messageData.domain).get()
     const chainLastMessages=await admin.firestore().collection('PERRINNMessages').where('chain','==',messageData.chain).where('lastMessage','==',true).get()
     const costs=await admin.firestore().doc('appSettings/costs').get()
     let previousMessage='none';
@@ -93,6 +94,17 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.inputsComplete":inputsComplete},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.result":result},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.timestamp":admin.firestore.FieldValue.serverTimestamp()},{create:true});
+    if(functionObj.name=='createUser'){
+      let sender='-L7jqFf8OuGlZrfEK6dT';
+      let messageObj={
+        user:sender,
+        domain:user,
+        text:"Welcome to PERRINN, we are happy to have you here with us! If you have any question please ask here. We will be happy to help.",
+        chatSubject:'Welcome to PERRINN',
+        recipientList:[sender,'QYm5NATKa6MGD87UpNZCTl6IolX2',user]
+      };
+      await createMessageUtils.createMessageAFS(messageObj);
+    }
 
     //message transaction out
     if(process!=undefined&&process!=null){
@@ -174,9 +186,12 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lastMessageBalance:balance},{create:true});
 
     //email notifications
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.emailNotifications":messageData.recipientList},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{enableEmailNotifications:true},{create:true});
 
     //message domain data
+    if(domainObj.data()!=undefined)if(domainObj.data().name!=undefined)batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.domain.name":domainObj.data().name},{create:true});
+    if(domainObj.data()!=undefined)if(domainObj.data().imageUrlThumb!=undefined)batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.domain.imageUrlThumb":domainObj.data().imageUrlThumb},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.name`]:messageData.name},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.familyName`]:messageData.familyName},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.imageUrlThumb`]:messageData.imageUrlThumbUser},{create:true});
@@ -202,6 +217,24 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
         }
       };
     }
+
+    //message recipients data
+    var reads=[];
+    messageData.recipientList.forEach(recipient=>{
+      reads.push(admin.firestore().doc('PERRINNTeams/'+recipient).get());
+    });
+    const recipientsObj=await Promise.all(reads)
+    messageData.recipientList.forEach((recipient,index)=>{
+      var name='';
+      var familyName='';
+      var imageUrlThumb='';
+      if(recipientsObj[index].data().name!=undefined)name=recipientsObj[index].data().name;
+      if(recipientsObj[index].data().familyName!=undefined)familyName=recipientsObj[index].data().familyName;
+      if(recipientsObj[index].data().imageUrlThumb!=undefined)imageUrlThumb=recipientsObj[index].data().imageUrlThumb;
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{[`recipients.${recipient}.name`]:name},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{[`recipients.${recipient}.familyName`]:familyName},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+message),{[`recipients.${recipient}.imageUrlThumb`]:imageUrlThumb},{create:true});
+    });
 
     await batch.commit()
     if(receiverMessageObj.PERRINN!=undefined)await createMessageUtils.createMessageAFS(receiverMessageObj)

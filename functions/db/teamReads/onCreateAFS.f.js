@@ -7,8 +7,7 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{team}/reads/{
   return admin.firestore().doc('PERRINNMessages/'+context.params.message).set({
     reads:{
       [context.params.team]:data.data().timestamp[0]
-    },
-    emailNotifications:admin.firestore.FieldValue.arrayRemove(context.params.team)
+    }
   },{merge:true}).catch(error=>{
     console.log(error);
     emailUtils.sendErrorEmail(error);

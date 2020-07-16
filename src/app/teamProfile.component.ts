@@ -97,7 +97,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
         <div style="float:left;color:#777;font-size:10px;width:40px">{{message.payload.doc.data()?.recipientList.length}}</div>
         <img src="./../assets/App icons/eye.png" style="display:inline;margin-top:2px;margin-right:3px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(80);filter:brightness(80)">
         <div style="float:left;color:#777;font-size:10px;width:40px">{{objectToArray(message.payload.doc.data()?.reads)?.length}}</div>
-        <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.domainName}}</div>
+        <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.PERRINN?.domain?.name}}</div>
       </div>
       <div class="seperator"></div>
     </li>
@@ -119,7 +119,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
         <div style="float:left;color:#777;font-size:10px;width:40px">{{message.payload.doc.data()?.recipientList.length}}</div>
         <img src="./../assets/App icons/eye.png" style="display:inline;margin-top:2px;margin-right:3px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(80);filter:brightness(80)">
         <div style="float:left;color:#777;font-size:10px;width:40px">{{objectToArray(message.payload.doc.data()?.reads)?.length}}</div>
-        <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.domainName}}</div>
+        <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.PERRINN?.domain?.name}}</div>
       </div>
       <div class="seperator"></div>
       {{last?scrollToTop(message.key):''}}
@@ -159,7 +159,7 @@ export class TeamProfileComponent {
         this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
           .where('recipientList','array-contains',auth.uid)
           .where('lastMessage','==',true)
-          .orderBy('timestamp','desc')
+          .orderBy('serverTimestamp','desc')
           .limit(30)
         ).snapshotChanges();
       });
@@ -168,7 +168,7 @@ export class TeamProfileComponent {
       this.afAuth.user.subscribe((auth) => {
         this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
           .where('lastMessage','==',true)
-          .orderBy('timestamp','desc')
+          .orderBy('serverTimestamp','desc')
           .limit(30)
         ).snapshotChanges();
       });
@@ -177,13 +177,13 @@ export class TeamProfileComponent {
       this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
         .where('domain','==',this.UI.currentDomain)
         .where('lastMessage','==',true)
-        .orderBy('timestamp','desc')
+        .orderBy('serverTimestamp','desc')
         .limit(30)
       ).snapshotChanges();
       this.pinnedMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
         .where('domain','==',this.UI.currentDomain)
         .where('pin','==',true)
-        .orderBy('timestamp','desc')
+        .orderBy('serverTimestamp','desc')
         .limit(10)
       ).snapshotChanges();
     }

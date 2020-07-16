@@ -5,6 +5,7 @@ const functions = require('firebase-functions');
 const spawn = require('child-process-promise').spawn;
 const admin = require('firebase-admin');
 admin.initializeApp();
+admin.firestore().settings({ignoreUndefinedProperties:true});
 
 const files = glob.sync('./**/*.f.js', { cwd: __dirname, ignore: './node_modules/**' })
 for (let f = 0, fl = files.length; f < fl; f++) {

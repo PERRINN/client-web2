@@ -2,6 +2,10 @@ const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
 const functions = require('firebase-functions');
 
+const sgMail = require('@sendgrid/mail');
+const API_KEY=functions.config().sendgrid.key;
+sgMail.setApiKey(API_KEY);
+
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     host: 'smtp.gmail.com',
@@ -50,6 +54,26 @@ module.exports = {
     }).catch(error=>{
       console.log(error);
     });
+  },
+
+  sendNewMessageEmailSendGrid:async(dest)=>{
+    try{
+      const userRecord=await admin.auth().getUser(dest)
+      var email=userRecord.toJSON().email;
+      const msg = {
+        to:email,
+        from:'PERRINN <hello@perrinn.com>',
+        templateId:'d-deaed3c71d374faa8b3746cfb74c5097',
+        dynamic_template_data:{
+          messageCount:5,
+        }
+      }
+      return sgMail.send(msg)
+    }
+    catch(error){
+      console.log(error);
+      return error
+    }
   },
 
 }
