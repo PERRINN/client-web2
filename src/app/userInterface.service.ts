@@ -88,24 +88,15 @@ export class UserInterfaceService {
     text = text.replace(/(\r\n|\n|\r)/gm, '');
     if (text==''&&image=='') return null;
     const now = Date.now();
-    this.recipients[this.currentUser]={
-      name:this.currentUserObj.name,
-      familyName:this.currentUserObj.familyName,
-      imageUrlThumb:this.currentUserObj.imageUrlThumb
-    };
     this.refreshRecipientList();
     this.afs.collection('PERRINNMessages').add({
       timestamp: now,
       serverTimestamp:firebase.firestore.FieldValue.serverTimestamp(),
       chatSubject:this.chatSubject,
       chain:this.chain,
-      recipients:this.recipients,
       recipientList:this.recipientList,
       domain:this.currentDomain,
       user:this.currentUser,
-      name:this.currentUserObj.name,
-      familyName:this.currentUserObj.familyName,
-      imageUrlThumbUser:this.currentUserObj.imageUrlThumb,
       text:text,
       image:image,
       imageDownloadURL:imageDownloadURL,

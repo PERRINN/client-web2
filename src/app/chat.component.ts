@@ -74,11 +74,8 @@ import * as firebase from 'firebase/app';
           <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:70px 15px 15px 15px">
             <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{message.payload?.timestamp|date:'fullDate'}}</div>
           </div>
-          <li *ngFor="let recipient of objectToArray(message.payload?.recipients)" (click)="router.navigate(['team',recipient[0]])">
-            <div *ngIf="previousMessageRecipients[recipient[0]]==undefined" style="color:#777;margin:5px 5px 5px 70px">Added: {{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
-          </li>
-          <li *ngFor="let recipient of objectToArray(previousMessageRecipients)" (click)="router.navigate(['team',recipient[0]])">
-            <div *ngIf="message.payload?.recipients[recipient[0]]==undefined" style="color:#777;margin:5px 5px 5px 70px">Removed: {{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
+          <li *ngFor="let recipient of message.payload?.recipientList">
+            <div *ngIf="!previousMessageRecipientList.includes(recipient)" style="color:#777;margin:5px 5px 5px 70px">Added: {{message.payload?.recipients[recipient]?.name}} {{message.payload?.recipients[recipient]?.familyName}}</div>
           </li>
           <div *ngIf="message.payload?.chatSubject!=this.previousMessageSubject&&!first" style="margin:10px 10px 10px 70px">
             <div style="color:#777">Subject changed to: {{message.payload?.chatSubject}}</div>
@@ -248,7 +245,7 @@ export class ChatComponent {
   previousMessageTimestamp:number;
   previousMessageUser:string;
   previousMessageSubject:string;
-  previousMessageRecipients:{};
+  previousMessageRecipientList:[];
   isCurrentUserLeader:boolean;
   isCurrentUserMember:boolean;
   showDetails:{};
@@ -278,7 +275,7 @@ export class ChatComponent {
       this.previousMessageTimestamp=0;
       this.previousMessageUser='';
       this.previousMessageSubject='';
-      this.previousMessageRecipients={};
+      this.previousMessageRecipientList=[];
       this.draftMessageDB=false;
       this.draftImage='';
       this.draftImageDownloadURL='';
@@ -358,7 +355,7 @@ export class ChatComponent {
     this.previousMessageUser=message.user;
     this.previousMessageTimestamp=message.timestamp;
     this.previousMessageSubject=message.chatSubject;
-    this.previousMessageRecipients=message.recipients;
+    this.previousMessageRecipientList=message.recipientList;
   }
 
   isDraftMessageRecent(draftMessageTimestamp: any) {
