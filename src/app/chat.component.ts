@@ -71,6 +71,10 @@ import * as firebase from 'firebase/app';
     <div>
       <ul style="list-style:none;">
         <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
+          <div *ngIf="previousMessageRead&&!(message.payload?.reads||[])[UI.currentUser]&&message.payload?.timestamp<now">
+            <div style="margin:0 auto;text-align:center;margin-top:25px;color:#999;font-size:10px">Last read</div>
+            <div class="seperator" style="width:100%;margin-bottom:25px"></div>
+          </div>
           <div *ngIf="i<messageNumberDisplay" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''">
           <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:70px 15px 15px 15px">
             <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{message.payload?.timestamp|date:'fullDate'}}</div>
@@ -239,6 +243,7 @@ export class ChatComponent {
   scrollMessageTimestamp:number;
   previousMessageTimestamp:number;
   previousMessageUser:string;
+  previousMessageRead:boolean;
   previousMessageRecipientList:[];
   isCurrentUserLeader:boolean;
   isCurrentUserMember:boolean;
@@ -250,6 +255,7 @@ export class ChatComponent {
   autoMessage:boolean;
   chatSubjectEdit:string;
   pinNextMessage:boolean;
+  now:number;
 
   constructor(
     public db: AngularFireDatabase,
@@ -260,6 +266,7 @@ export class ChatComponent {
     private storage: AngularFireStorage,
   ) {
     this.UI.loading = true;
+    this.now = Date.now();
     this.reads=[];
     this.route.params.subscribe(params => {
       this.UI.chain=params.id;
@@ -268,6 +275,7 @@ export class ChatComponent {
       this.showDetails={};
       this.previousMessageTimestamp=0;
       this.previousMessageUser='';
+      this.previousMessageRead=false;
       this.previousMessageRecipientList=[];
       this.draftMessageDB=false;
       this.draftImage='';
@@ -348,6 +356,7 @@ export class ChatComponent {
     this.previousMessageUser=message.user;
     this.previousMessageTimestamp=message.timestamp;
     this.previousMessageRecipientList=message.recipientList;
+    this.previousMessageRead=(message.reads||[])[this.UI.currentUser];
   }
 
   isDraftMessageRecent(draftMessageTimestamp: any) {
