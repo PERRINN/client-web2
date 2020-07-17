@@ -92,7 +92,6 @@ export class UserInterfaceService {
     this.afs.collection('PERRINNMessages').add({
       timestamp: now,
       serverTimestamp:firebase.firestore.FieldValue.serverTimestamp(),
-      chatSubject:this.chatSubject,
       chain:this.chain,
       recipientList:this.recipientList,
       domain:this.currentDomain,

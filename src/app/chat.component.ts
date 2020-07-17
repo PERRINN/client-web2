@@ -20,7 +20,8 @@ import * as firebase from 'firebase/app';
       <div (click)="UI.showChatDetails=false" style="float:left;font-size:12px;line-height:20px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
-    <input [(ngModel)]="UI.chatSubject" style="margin:10px;border:0;background:none;box-shadow:none;border-radius: 0px" placeholder="Subject">
+    <input [(ngModel)]="chatSubjectEdit" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="Edit subject">
+    <div *ngIf="UI.chatSubject!=chatSubjectEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
       <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['team',recipient[0]])" style="cursor:pointer;float:left">
@@ -77,10 +78,6 @@ import * as firebase from 'firebase/app';
           <li *ngFor="let recipient of message.payload?.recipientList">
             <div *ngIf="!previousMessageRecipientList.includes(recipient)" style="color:#777;margin:5px 5px 5px 70px">Added: {{message.payload?.recipients[recipient]?.name}} {{message.payload?.recipients[recipient]?.familyName}}</div>
           </li>
-          <div *ngIf="message.payload?.chatSubject!=this.previousMessageSubject&&!first" style="margin:10px 10px 10px 70px">
-            <div style="color:#777">Subject changed to: {{message.payload?.chatSubject}}</div>
-            <div style="color:#777;font-size:10px">was: {{previousMessageSubject}}</div>
-          </div>
           <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
           <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first)" style="float:left;width:60px;min-height:10px">
             <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
@@ -104,10 +101,8 @@ import * as firebase from 'firebase/app';
                 <img [src]="message.payload?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
                 <div style="font-size:11px;padding:5px;">{{message.payload?.linkUserName}} {{message.payload?.linkuserFamilyName}}</div>
               </div>
-              <div *ngIf="message.payload?.PERRINN?.process?.inputsComplete" style="clear:both;margin:5px">
-                <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
-                  <span style="font-size:11px">{{message.payload?.PERRINN?.process?.result}}</span>
-                </div>
+              <div *ngIf="message.payload?.PERRINN?.process?.inputsComplete" style="margin:5px">
+                <div style="font-size:11px;color:#999">{{message.payload?.PERRINN?.process?.result}}</div>
               </div>
               <div *ngIf="message.payload?.PERRINN?.transactionOut?.amount>0" style="clear:both;margin:5px">
                 <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
@@ -244,7 +239,6 @@ export class ChatComponent {
   scrollMessageTimestamp:number;
   previousMessageTimestamp:number;
   previousMessageUser:string;
-  previousMessageSubject:string;
   previousMessageRecipientList:[];
   isCurrentUserLeader:boolean;
   isCurrentUserMember:boolean;
@@ -254,7 +248,7 @@ export class ChatComponent {
   searchFilter:string;
   reads:any[];
   autoMessage:boolean;
-  chatSubjectPreEditing:string;
+  chatSubjectEdit:string;
   pinNextMessage:boolean;
 
   constructor(
@@ -274,7 +268,6 @@ export class ChatComponent {
       this.showDetails={};
       this.previousMessageTimestamp=0;
       this.previousMessageUser='';
-      this.previousMessageSubject='';
       this.previousMessageRecipientList=[];
       this.draftMessageDB=false;
       this.draftImage='';
@@ -282,7 +275,7 @@ export class ChatComponent {
       this.draftMessage='';
       this.autoMessage=false;
       this.messageNumberDisplay = 15;
-      this.chatSubjectPreEditing='';
+      this.chatSubjectEdit='';
       this.pinNextMessage=false;
       this.refreshMessages();
     });
@@ -315,8 +308,8 @@ export class ChatComponent {
           if(c.payload.doc.data()['domain']!=undefined){
             this.UI.switchDomain(c.payload.doc.data()['domain']);
           }
-          if(this.chatSubjectPreEditing==''||this.chatSubjectPreEditing==this.UI.chatSubject) this.UI.chatSubject=c.payload.doc.data()['chatSubject'];
-          this.chatSubjectPreEditing=c.payload.doc.data()['chatSubject'];
+          this.UI.chatSubject=c.payload.doc.data()['chatSubject'];
+          this.chatSubjectEdit=c.payload.doc.data()['chatSubject'];
           this.UI.recipients=c.payload.doc.data()['recipients'];
         }
       });
@@ -354,7 +347,6 @@ export class ChatComponent {
   storeMessageValues(message) {
     this.previousMessageUser=message.user;
     this.previousMessageTimestamp=message.timestamp;
-    this.previousMessageSubject=message.chatSubject;
     this.previousMessageRecipientList=message.recipientList;
   }
 
@@ -368,6 +360,20 @@ export class ChatComponent {
       element.scrollTop = element.scrollHeight;
       this.scrollMessageTimestamp = scrollMessageTimestamp;
     }
+  }
+
+  newSubject() {
+    this.UI.process={
+      inputs:{
+        chatSubject:this.chatSubjectEdit
+      },
+      function:{
+        name:'newChatSubject'
+      },
+      inputsComplete:true
+    };
+    this.draftMessage='Changing chat subject to '+this.chatSubjectEdit+" (was: "+this.UI.chatSubject+")"
+    this.addMessage();
   }
 
   addMessage() {

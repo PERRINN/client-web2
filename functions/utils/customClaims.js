@@ -23,8 +23,7 @@ module.exports = {
               let sender='-L7jqFf8OuGlZrfEK6dT';
               let messageObj={
                 user:sender,
-                text:"You are now a Member of the PERRINN Team!",
-                chatSubject:'Membership activated',
+                text:"Mermbership activated. You are now a Member of the PERRINN Team!",
                 recipientList:[sender,'QYm5NATKa6MGD87UpNZCTl6IolX2',user]
               };
               return createMessageUtils.createMessageAFS(messageObj);
@@ -46,8 +45,7 @@ module.exports = {
               let sender='-L7jqFf8OuGlZrfEK6dT';
               let messageObj={
                 user:sender,
-                text:"You are no longer a Member of the PERRINN Team.",
-                chatSubject:'Membership de-activated',
+                text:"Membership de-activated. You are no longer a Member of the PERRINN Team.",
                 recipientList:[sender,'QYm5NATKa6MGD87UpNZCTl6IolX2',user]
               };
               return createMessageUtils.createMessageAFS(messageObj);

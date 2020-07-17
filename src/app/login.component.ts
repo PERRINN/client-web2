@@ -137,7 +137,6 @@ export class LoginComponent  {
               this.afs.collection('PERRINNMessages').add({
                 timestamp: now,
                 serverTimestamp:firebase.firestore.FieldValue.serverTimestamp(),
-                chatSubject:'New user',
                 chain:ref.id,
                 recipientList:this.UI.recipientList,
                 domain:auth.uid,

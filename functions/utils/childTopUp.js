@@ -19,7 +19,6 @@ module.exports = {
           user:sender,
           text:"Automatic top up: "+amount+" COINS.",
           domain:user,
-          chatSubject:'Automatic top up',
           recipientList:[sender,user],
           process:{
             inputs:{

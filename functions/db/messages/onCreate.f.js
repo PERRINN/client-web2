@@ -34,6 +34,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
   let inputs={none:'none'};
   let inputsComplete=false;
   let receiverMessageObj={};
+  let lastMessageObj={};
   var batch = admin.firestore().batch();
 
   try {
@@ -48,7 +49,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     //message chain data
     const userObj=await admin.firestore().doc('PERRINNTeams/'+user).get()
     const domainObj=await admin.firestore().doc('PERRINNTeams/'+messageData.domain).get()
-    const chainLastMessages=await admin.firestore().collection('PERRINNMessages').where('chain','==',messageData.chain).where('lastMessage','==',true).get()
+    const lastMessages=await admin.firestore().collection('PERRINNMessages').where('chain','==',messageData.chain).where('lastMessage','==',true).get()
     const costs=await admin.firestore().doc('appSettings/costs').get()
     let previousMessage='none';
     let index=1;
@@ -67,8 +68,9 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lock:admin.firestore.FieldValue.delete()||null},{create:true});
 
     //last message flag
-    chainLastMessages.forEach(message=>{
+    lastMessages.forEach(message=>{
       batch.update(admin.firestore().doc('PERRINNMessages/'+message.id),{lastMessage:false});
+      lastMessageObj=message;
     });
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{lastMessage:true});
 
@@ -233,6 +235,10 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
       batch.update(admin.firestore().doc('PERRINNMessages/'+message),{[`recipients.${recipient}.familyName`]:(recipientsObj[index].data()||{}).familyName||null},{create:true});
       batch.update(admin.firestore().doc('PERRINNMessages/'+message),{[`recipients.${recipient}.imageUrlThumb`]:(recipientsObj[index].data()||{}).imageUrlThumb||null},{create:true});
     });
+
+    //message chat Subject
+    if((functionObj||{}).name=='newChatSubject')batch.update(admin.firestore().doc('PERRINNMessages/'+message),{chatSubject:((process||{}).inputs||{}).chatSubject||null},{create:true})
+    else batch.update(admin.firestore().doc('PERRINNMessages/'+message),{chatSubject:(lastMessageObj.data()||{}).chatSubject||null},{create:true})
 
     await batch.commit()
     if(receiverMessageObj.PERRINN!=undefined)await createMessageUtils.createMessageAFS(receiverMessageObj)
