@@ -82,13 +82,13 @@ import * as firebase from 'firebase/app';
             <div style="color:#777;font-size:10px">was: {{previousMessageSubject}}</div>
           </div>
           <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
-          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="float:left;width:60px;min-height:10px">
+          <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first)" style="float:left;width:60px;min-height:10px">
             <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
           </div>
           <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:3px;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
             <div>
               <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
-              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:11px">{{message.payload?.timestamp | date:'HH:mm'}}</div>
+              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{message.payload?.timestamp | date:'HH:mm'}}</div>
               <img *ngIf="message.payload?.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
               <img *ngIf="message.payload?.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
               <img *ngIf="message.payload?.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
