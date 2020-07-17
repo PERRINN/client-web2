@@ -72,7 +72,7 @@ import * as firebase from 'firebase/app';
       <ul style="list-style:none;">
         <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
           <div *ngIf="previousMessageRead&&!(message.payload?.reads||[])[UI.currentUser]&&message.payload?.timestamp<now">
-            <div style="margin:0 auto;text-align:center;margin-top:25px;color:#999;font-size:10px">Last read</div>
+            <div style="margin:0 auto;text-align:center;margin-top:25px;color:#999;font-size:10px">Left here</div>
             <div class="seperator" style="width:100%;margin-bottom:25px"></div>
           </div>
           <div *ngIf="i<messageNumberDisplay" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''">
