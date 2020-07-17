@@ -302,9 +302,9 @@ export class ChatComponent {
       this.UI.loading = false;
       var batch = this.afs.firestore.batch();
       changes.forEach(c => {
-        if(!this.reads.includes(c.payload.doc.id))batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(c.payload.doc.id),{timestamp:firebase.firestore.FieldValue.arrayUnion(Date.now())},{merge:true});
-        this.reads.push(c.payload.doc.id);
         if(c.payload.doc.data()['lastMessage']){
+          if(!this.reads.includes(c.payload.doc.id))batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(c.payload.doc.id),{timestamp:firebase.firestore.FieldValue.arrayUnion(Date.now())},{merge:true});
+          this.reads.push(c.payload.doc.id);
           if(c.payload.doc.data()['domain']!=undefined){
             this.UI.switchDomain(c.payload.doc.data()['domain']);
           }
