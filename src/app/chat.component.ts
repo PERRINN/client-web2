@@ -381,7 +381,7 @@ export class ChatComponent {
       },
       inputsComplete:true
     };
-    this.draftMessage='Changing chat subject to '+this.chatSubjectEdit+" (was: "+this.UI.chatSubject+")"
+    this.draftMessage='Changing chat subject to: '+this.chatSubjectEdit+" (was: "+this.UI.chatSubject+")"
     this.addMessage();
   }
 
