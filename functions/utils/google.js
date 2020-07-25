@@ -21,23 +21,18 @@ module.exports = {
         version: 'directory_v1',
         jwt,
       });
-      return admin.firestore().doc('PERRINNTeams/'+user).update({
-        "apps.Google.enabled":true,
-        "apps.Google.timestamp":admin.firestore.FieldValue.serverTimestamp()
-      }).then(()=>{
-        return jwt.authorize().then(() => {
-          return googleAdmin.members.insert({
-            auth: jwt,
-            groupKey: "perrinn-google-group@perrinn.com",
-            requestBody:{
-              email:email,
-              role:'MEMBER'
-            }
-          }).then(()=>{
-              return 'done';
-          }).catch(error=>{
-            return error.message;
-          });
+      return jwt.authorize().then(() => {
+        return googleAdmin.members.insert({
+          auth: jwt,
+          groupKey: "perrinn-google-group@perrinn.com",
+          requestBody:{
+            email:email,
+            role:'MEMBER'
+          }
+        }).then(()=>{
+            return 'done';
+        }).catch(error=>{
+          return error.message;
         });
       });
     }).catch(error=>{

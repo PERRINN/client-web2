@@ -30,28 +30,23 @@ module.exports = {
           .digest('base64');
       var signature = 'On ' + accessKey + ':HmacSHA256:' + hmac;
       //require('request').debug = true;
-      return admin.firestore().doc('PERRINNTeams/'+user).update({
-        "apps.Onshape.enabled":true,
-        "apps.Onshape.timestamp":admin.firestore.FieldValue.serverTimestamp()
+      return request({
+        uri: url,
+        method:method,
+        headers: {
+          'Method':method,
+          'Content-type':contentType,
+          'Accept':'application/vnd.onshape.v1+json',
+          'Authorization':signature,
+          'Date':authDate,
+          'On-Nonce':nonce
+        },
+        json: true,
+        body: body
       }).then(()=>{
-        return request({
-          uri: url,
-          method:method,
-          headers: {
-            'Method':method,
-            'Content-type':contentType,
-            'Accept':'application/vnd.onshape.v1+json',
-            'Authorization':signature,
-            'Date':authDate,
-            'On-Nonce':nonce
-          },
-          json: true,
-          body: body
-        }).then(()=>{
-            return 'done';
-        }).catch(error=>{
-          return error.error.message;
-        });
+          return 'done';
+      }).catch(error=>{
+        return error.error.message;
       });
     }).catch(error=>{
       console.log(error);

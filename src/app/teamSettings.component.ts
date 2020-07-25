@@ -210,20 +210,12 @@ export class TeamSettingsComponent {
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
         this.UI.addRecipient(this.UI.currentDomain).then(()=>{
-          this.UI.chatSubject='';
-          this.UI.chain=ref.id;
-          this.UI.showChatDetails=false;
-          this.UI.process={
-            inputs:{
-              target:this.UI.currentDomain,
-              membershipCost:this.membershipCost
-            },
-            function:{
-              name:'updateTeamMembershipCost'
-            },
-            inputsComplete:true
-          };
-          this.UI.createMessageAFS('Updating membership cost to: '+this.membershipCost,'','',true,false);
+          this.UI.createMessage({
+            chain:ref.id,
+            text:'Updating membership cost to: '+this.membershipCost,
+            membershipCost:this.membershipCost,
+            auto:true
+          })
         });
       });
     });
@@ -236,16 +228,12 @@ export class TeamSettingsComponent {
     }).then(ref=>{
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.chatSubject='';
-        this.UI.chain=ref.id;
-        this.UI.showChatDetails=false;
-        this.UI.process={
-          function:{
-            name:'joinPERRINNOnshapeTeam'
-          },
-          inputsComplete:true
-        };
-        this.UI.createMessageAFS('joining PERRINN Onshape team','','',true,false);
+        this.UI.createMessage({
+          chain:ref.id,
+          text:'joining PERRINN Onshape team',
+          "apps.Onshape.enabled":true,
+          auto:true
+        })
       });
     });
   }
@@ -257,16 +245,12 @@ export class TeamSettingsComponent {
     }).then(ref=>{
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.chatSubject='';
-        this.UI.chain=ref.id;
-        this.UI.showChatDetails=false;
-        this.UI.process={
-          function:{
-            name:'joinPERRINNGoogleGroup'
-          },
-          inputsComplete:true
-        };
-        this.UI.createMessageAFS('joining PERRINN Google group','','',true,false);
+        this.UI.createMessage({
+          chain:ref.id,
+          text:'joining PERRINN Google group',
+          "apps.Google.enabled":true,
+          auto:true
+        })
       });
     });
   }
