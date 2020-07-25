@@ -144,21 +144,14 @@ export class TeamSettingsComponent {
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
         this.UI.addRecipient(this.UI.currentDomain).then(()=>{
-          this.UI.chatSubject='';
-          this.UI.chain=ref.id;
-          this.UI.showChatDetails=false;
-          this.UI.process={
-            inputs:{
-              target:this.UI.currentDomain,
-              name:this.currentDomainName,
-              familyName:this.currentDomainFamilyName
-            },
-            function:{
-              name:'updateTeamName'
-            },
-            inputsComplete:true
-          };
-          this.UI.createMessageAFS('Updating name to: '+this.currentDomainName+' '+this.currentDomainFamilyName,'','',true,false);
+          this.UI.createMessage({
+            chain:ref.id,
+            text:'Updating name to: '+this.currentDomainName+' '+this.currentDomainFamilyName,
+            domain:this.UI.currentDomain,
+            domainName:this.currentDomainName,
+            domainFamilyName:this.currentDomainFamilyName,
+            auto:true
+          })
         });
       });
     });
@@ -316,21 +309,16 @@ export class TeamSettingsComponent {
           this.UI.clearRecipient();
           this.UI.addRecipient(this.UI.currentUser).then(()=>{
             this.UI.addRecipient(this.UI.currentDomain).then(()=>{
-              this.UI.chatSubject='';
-              this.UI.chain=ref.id;
-              this.UI.showChatDetails=false;
-              this.UI.process={
-                inputs:{
-                  target:this.UI.currentDomain,
-                  imageTimestamp:draftImage,
-                  imageUrlOriginal:url
-                },
-                function:{
-                  name:'updateTeamImage'
-                },
-                inputsComplete:true
-              };
-              this.UI.createMessageAFS('updating profile picture',draftImage,url,true,false);
+              this.UI.createMessage({
+                chain:ref.id,
+                text:'updating profile picture',
+                image:draftImage,
+                imageDownloadURL:url,
+                domain:this.UI.currentDomain,
+                domainImageTimestamp:draftImage,
+                domainImageUrlOriginal:url,
+                auto:true
+              })
             });
           });
         });

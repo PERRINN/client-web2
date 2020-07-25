@@ -21,7 +21,7 @@ import * as firebase from 'firebase/app';
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
     <input [(ngModel)]="chatSubjectEdit" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="Edit subject">
-    <div *ngIf="UI.chatSubject!=chatSubjectEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="newSubject()">Save</div>
+    <div *ngIf="UI.chatSubject!=chatSubjectEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
       <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['team',recipient[0]])" style="cursor:pointer;float:left">
@@ -371,25 +371,24 @@ export class ChatComponent {
     }
   }
 
-  newSubject() {
-    this.UI.process={
-      inputs:{
-        chatSubject:this.chatSubjectEdit
-      },
-      function:{
-        name:'newChatSubject'
-      },
-      inputsComplete:true
-    };
-    this.draftMessage='Changing chat subject to: '+this.chatSubjectEdit+" (was: "+this.UI.chatSubject+")"
-    this.addMessage();
+  saveNewSubject() {
+    this.UI.createMessage({
+      text:'Changing chat subject to: '+this.chatSubjectEdit+" (was: "+this.UI.chatSubject+")",
+      chatSubject:this.chatSubjectEdit,
+    })
+    this.UI.showChatDetails=false;
   }
 
   addMessage() {
-    this.UI.createMessageAFS(this.draftMessage,this.draftImage,this.draftImageDownloadURL,this.autoMessage,this.pinNextMessage);
+    this.UI.createMessage({
+      text:this.draftMessage,
+      image:this.draftImage,
+      imageDownloadURL:this.draftImageDownloadURL,
+      chatSubject:this.chatSubjectEdit,
+      pin:this.pinNextMessage
+    })
     this.draftMessage = '';
     this.draftImage = '';
-    this.autoMessage=false;
     this.pinNextMessage=false;
     this.UI.showChatDetails=false;
   }

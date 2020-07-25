@@ -108,6 +108,23 @@ export class UserInterfaceService {
     });
   }
 
+  createMessage(messageObj){
+    messageObj.text=messageObj.text.replace(/(\r\n|\n|\r)/gm, '');
+    if (!messageObj.text&&!messageObj.image) return null;
+    this.refreshRecipientList();
+    messageObj.timestamp=Date.now();
+    messageObj.serverTimestamp=firebase.firestore.FieldValue.serverTimestamp();
+    messageObj.user=this.currentUser;
+    messageObj.recipientList=this.recipientList;
+    messageObj.domain=messageObj.domain||this.currentDomain||this.currentUser;
+    messageObj.chain=messageObj.chain||this.chain;
+    messageObj.process=this.process;
+    this.afs.collection('PERRINNMessages').add(messageObj).then(()=>{
+      this.process={};
+      return null;
+    });
+  }
+
   objectToArray(obj) {
     if (obj == null) { return []; }
     return Object.keys(obj).map(function(key) {
