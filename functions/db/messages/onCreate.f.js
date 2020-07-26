@@ -34,41 +34,36 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
   let inputs={none:'none'};
   let inputsComplete=false;
   let receiverMessageObj={};
-  let lastMessageData={};
+  let lastChainMessageData={};
+  let previousMessageData={};
   var batch = admin.firestore().batch();
 
   try {
-    await admin.firestore().runTransaction(async transaction => {
-      const chain=await transaction.get(admin.firestore().doc('PERRINNTeams/'+user))
-      if (chain.exists) {
-        if(chain.data().lock)return Promise.reject();
-      }
-      transaction.update(admin.firestore().doc('PERRINNTeams/'+user),{lock:true||null},{create:true});
-    })
 
     //message chain data
     const userObj=await admin.firestore().doc('PERRINNTeams/'+user).get()
     let userData=userObj.data()||{}
-    let previousMessage=userData.previousMessage||'none';
     let index=Number(userData.previousIndex)+1||1;
     const domainObj=await admin.firestore().doc('PERRINNTeams/'+messageData.domain).get()
     let domainData=domainObj.data()||{}
-    const lastMessages=await admin.firestore().collection('PERRINNMessages').where('chain','==',messageData.chain).where('lastMessage','==',true).get()
+    const lastChainMessages=await admin.firestore().collection('PERRINNMessages').where('chain','==',messageData.chain).where('lastMessage','==',true).get()
     const costs=await admin.firestore().doc('appSettings/costs').get()
-    if(previousMessage!='none')batch.update(admin.firestore().doc('PERRINNMessages/'+previousMessage),{"PERRINN.chain.nextMessage":message||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.currentMessage":message||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.previousMessage":previousMessage||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.nextMessage":'none'||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.index":index||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.timestamp":admin.firestore.FieldValue.serverTimestamp()||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousMessage:message||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousIndex:index||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lock:admin.firestore.FieldValue.delete()||null},{create:true});
 
+    //last user message
+    const lastUserMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',user).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+    lastUserMessages.forEach(message=>{
+      previousMessageData=message.data();
+    });
+
     //last message flag
-    lastMessages.forEach(message=>{
+    lastChainMessages.forEach(message=>{
       batch.update(admin.firestore().doc('PERRINNMessages/'+message.id),{lastMessage:false});
-      lastMessageData=message.data();
+      lastChainMessageData=message.data();
     });
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{lastMessage:true});
 
@@ -77,7 +72,6 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     amountMessaging=Math.round(Number(amountWrite)*100000)/100000;
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.amount":amountMessaging||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.amountWrite":amountWrite||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.messagingCost.timestamp":admin.firestore.FieldValue.serverTimestamp()||null},{create:true});
 
     //message process
     if(process!=undefined&&process!=null){
@@ -87,12 +81,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
         inputsComplete=process.inputsComplete;
       }
     }
-    const result=await processUtils.executeProcess(user,functionObj,inputs,message)
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.function":functionObj||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.inputs":inputs||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.inputsComplete":inputsComplete||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.result":result||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.timestamp":admin.firestore.FieldValue.serverTimestamp()||null},{create:true});
+    await processUtils.executeProcess(user,functionObj,inputs,message)
 
     //message transaction out
     if(process!=undefined&&process!=null){
@@ -116,9 +105,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiverImageUrlThumb":receiverImageUrlThumb||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.receiverMessage":receiverMessage||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.reference":referenceTransactionOut||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.timestamp":admin.firestore.FieldValue.serverTimestamp()||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionOut.inputCheck":inputCheckTransactionOut||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.process.result":'done'||null},{create:true});
 
     //message transaction in
     if(messageData.PERRINN!=undefined){
@@ -141,7 +128,6 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorFamilyName":donorFamilyName||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorImageUrlThumb":donorImageUrlThumb||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.reference":reference||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.timestamp":admin.firestore.FieldValue.serverTimestamp()||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.transactionIn.donorCheck":donorCheckTransactionIn||null},{create:true});
 
     //message wallet
@@ -165,7 +151,6 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.wallet.previousBalance":previousBalance||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.wallet.amount":Math.round((balance-previousBalance)*100000)/100000||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.wallet.balance":balance||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.wallet.timestamp":admin.firestore.FieldValue.serverTimestamp()||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lastMessageBalance:balance||null},{create:true});
 
     //email notifications
@@ -178,8 +163,8 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{name:messageData.name||userData.name||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{familyName:messageData.familyName||userData.familyName||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{imageUrlThumbUser:messageData.imageUrlThumbUser||userData.imageUrlThumb||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"apps.Google.enabled":((messageData.apps||{}).Google||{}).enabled||userData.apps.Google.enabled||false},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"apps.Onshape.enabled":((messageData.apps||{}).Onshape||{}).enabled||userData.apps.Onshape.enabled||false},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"apps.Google.enabled":((messageData.apps||{}).Google||{}).enabled||((userData.apps||{}).Google||{}).enabled||false},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"apps.Onshape.enabled":((messageData.apps||{}).Onshape||{}).enabled||((userData.apps||{}).Onshape||{}).enabled||false},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{name:messageData.name||userData.name||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{familyName:messageData.familyName||userData.familyName||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{imageUrlThumb:messageData.imageUrlThumbUser||userData.imageUrlThumb||null},{create:true});
@@ -187,10 +172,10 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{imageUrlOriginal:messageData.imageUrlOriginal||userData.imageUrlOriginal||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{createdTimestamp:userData.createdTimestamp||now},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{searchName:nameLowerCase},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{members:{[user]:{name:messageData.name||userData.name||null,familyName:messageData.familyName||userData.familyName||null,leader:true,timestamp:admin.firestore.FieldValue.serverTimestamp()}}},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{members:{[user]:{name:messageData.name||userData.name||null,familyName:messageData.familyName||userData.familyName||null,leader:true}}},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{isUser:true},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{"apps.Google.enabled":((messageData.apps||{}).Google||{}).enabled||userData.apps.Google.enabled||false},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{"apps.Onshape.enabled":((messageData.apps||{}).Onshape||{}).enabled||userData.apps.Onshape.enabled||false},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{"apps.Google.enabled":((messageData.apps||{}).Google||{}).enabled||((userData.apps||{}).Google||{}).enabled||false},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{"apps.Onshape.enabled":((messageData.apps||{}).Onshape||{}).enabled||((userData.apps||{}).Onshape||{}).enabled||false},{create:true});
     if (((messageData.apps||{}).Google||{}).enabled)googleUtils.joinPERRINNGoogleGroup(user)
     if (((messageData.apps||{}).Onshape||{}).enabled)onshapeUtils.joinPERRINNOnshapeTeam(user)
     if(userData.createdTimestamp==undefined){
@@ -257,7 +242,10 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     });
 
     //message chat Subject
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{chatSubject:messageData.chatSubject||lastMessageData.chatSubject||null},{create:true})
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{chatSubject:messageData.chatSubject||lastChainMessageData.chatSubject||null},{create:true})
+
+    //message verified
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{verified:true},{create:true})
 
     await batch.commit()
     if(receiverMessageObj.PERRINN!=undefined)await createMessageUtils.createMessageAFS(receiverMessageObj)
@@ -267,7 +255,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
   catch (error) {
     console.log(error);
     emailUtils.sendErrorEmail(error);
-    return admin.firestore().doc('PERRINNTeams/'+user).update({lock:admin.firestore.FieldValue.delete()});
+    return admin.firestore().doc('PERRINNMessages/'+message).update({verified:false})
   }
 });
 

@@ -84,7 +84,7 @@ import * as firebase from 'firebase/app';
           </li>
           <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
           <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first)" style="float:left;width:60px;min-height:10px">
-            <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:3px; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
+            <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:50%; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
           </div>
           <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:3px;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
             <div>
@@ -97,14 +97,6 @@ import * as firebase from 'firebase/app';
               <img *ngIf="message.payload?.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
               <img *ngIf="message.payload?.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
               <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
-              <div *ngIf="message.payload?.linkTeam" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['team',message.payload?.linkTeam])">
-                <img [src]="message.payload?.linkTeamImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:40px;border-radius:3px">
-                <div style="font-size:11px;padding:5px;">{{message.payload?.linkTeamName}}</div>
-              </div>
-              <div *ngIf="message.payload?.linkUser" style="float:left;cursor:pointer;margin:5px" (click)="router.navigate(['team',message.payload?.linkUser])">
-                <img [src]="message.payload?.linkUserImageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px">
-                <div style="font-size:11px;padding:5px;">{{message.payload?.linkUserName}} {{message.payload?.linkuserFamilyName}}</div>
-              </div>
               <div *ngIf="message.payload?.PERRINN?.process?.inputsComplete" style="margin:5px">
                 <div style="font-size:11px;color:#999">{{message.payload?.PERRINN?.process?.result}}</div>
               </div>
@@ -130,72 +122,12 @@ import * as firebase from 'firebase/app';
                 <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
               </div>
               <div *ngIf="showDetails[message.key]">
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
-                  <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MEMBERSHIP COST</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Count: {{message.payload?.PERRINN?.membershipCost?.counter}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.membershipCost?.amount|number:'1.3-3'}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.membershipCost?.timestamp}}</div>
-                </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
-                  <img src="./../assets/App icons/messaging.png" style="display:inline;float:right;height:25px;border-radius:25%">
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE COST</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.messagingCost?.amount|number:'1.3-3'}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Read: C{{message.payload?.PERRINN?.messagingCost?.amountRead|number:'1.3-3'}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount Write: C{{message.payload?.PERRINN?.messagingCost?.amountWrite|number:'1.3-3'}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message.payload?.PERRINN?.messagingCost?.receiver}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.messagingCost?.status=='rejected balance low'?'#fcebb8':''">Status: {{message.payload?.PERRINN?.messagingCost?.status}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.messagingCost?.timestamp}}</div>
-                </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
-                  <img src="./../assets/App icons/repeat.png" style="display:inline;float:right;height:25px;border-radius:25%">
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">PROCESS</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Function: {{message.payload?.PERRINN?.process?.function|json}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs complete: {{message.payload?.PERRINN?.process?.inputsComplete}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Inputs: {{message.payload?.PERRINN?.process?.inputs|json}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="(message.payload?.PERRINN?.process?.result!='none')?'#c7edcd':''">Result: {{message.payload?.PERRINN?.process?.result}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.process?.timestamp}}</div>
-                </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
-                  <img src="./../assets/App icons/out.png" style="display:inline;float:right;height:25px;border-radius:25%">
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION OUT</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.3-3'}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Receiver: {{message.payload?.PERRINN?.transactionOut?.receiver}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Message: {{message.payload?.PERRINN?.transactionOut?.receiverMessage}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.transactionOut?.status=='rejected balance low'?'#fcebb8':''">Status: {{message.payload?.PERRINN?.transactionOut?.status}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionOut?.timestamp}}</div>
-                </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
-                  <img src="./../assets/App icons/in.png" style="display:inline;float:right;height:25px;border-radius:25%">
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">TRANSACTION IN</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.3-3'}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Donor: {{message.payload?.PERRINN?.transactionIn?.donor}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.transactionIn?.timestamp}}</div>
-                </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
-                  <img src="./../assets/App icons/chain.png" style="display:inline;float:right;height:25px;border-radius:25%">
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">MESSAGE CHAIN</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Index:#{{message.payload?.PERRINN?.chain?.index}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.chain?.previousMessage!=undefined?'#c7edcd':''">Previous: {{message.payload?.PERRINN?.chain?.previousMessage}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Current: {{message.payload?.PERRINN?.chain?.currentMessage}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Next: {{message.payload?.PERRINN?.chain?.nextMessage}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.chain?.timestamp}}</div>
-                </div>
-                <div style="float:left;border-radius:3px;border-style:solid;border-width:1px;border-color:#aaa;padding:5px;margin:5px;width:200px;height:175px">
-                  <img src="./../assets/App icons/wallet.png" style="display:inline;float:right;height:25px;border-radius:25%">
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040">WALLET</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Previous balance: C{{message.payload?.PERRINN?.wallet?.previousBalance|number:'1.3-3'}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Amount: C{{message.payload?.PERRINN?.wallet?.amount|number:'1.3-3'}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#404040" [style.background-color]="message.payload?.PERRINN?.wallet?.balance!=undefined?'#c7edcd':''">Balance: C{{message.payload?.PERRINN?.wallet?.balance|number:'1.3-3'}}</div>
-                  <div style="font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">Timestamp: {{message.payload?.PERRINN?.wallet?.timestamp}}</div>
-                </div>
+                <div style="color:#666;font-size:10px">{{message.payload|json}}</div>
               </div>
             </div>
             <div class='messageFooter' style="cursor:pointer;clear:both;height:15px" (click)="switchShowDetails(message.key)">
               <div style="float:left;width:100px;text-align:right;line-height:10px">...</div>
-              <img *ngIf="message.payload?.PERRINN!=undefined" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
+              <img *ngIf="message.payload?.verified" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
               <div *ngIf="message.payload?.PERRINN?.chain?.nextMessage=='none'&&message.payload?.PERRINN?.wallet?.balance!=undefined" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">C{{message.payload?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
             </div>
           </div>
