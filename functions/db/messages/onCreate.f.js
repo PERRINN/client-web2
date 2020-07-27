@@ -40,32 +40,35 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
 
   try {
 
-    //message chain data
-    const userObj=await admin.firestore().doc('PERRINNTeams/'+user).get()
-    let userData=userObj.data()||{}
-    let index=Number(userData.previousIndex)+1||1;
-    const domainObj=await admin.firestore().doc('PERRINNTeams/'+messageData.domain).get()
-    let domainData=domainObj.data()||{}
-    const lastChainMessages=await admin.firestore().collection('PERRINNMessages').where('chain','==',messageData.chain).where('lastMessage','==',true).get()
-    const costs=await admin.firestore().doc('appSettings/costs').get()
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.currentMessage":message||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.nextMessage":'none'||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.index":index||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousIndex:index||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lock:admin.firestore.FieldValue.delete()||null},{create:true});
-
     //last user message
+    let previousMessage='none';
     const lastUserMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',user).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
     lastUserMessages.forEach(message=>{
+      previousMessage=message.id;
       previousMessageData=message.data();
     });
 
     //last message flag
+    const lastChainMessages=await admin.firestore().collection('PERRINNMessages').where('chain','==',messageData.chain).where('lastMessage','==',true).get()
     lastChainMessages.forEach(message=>{
       batch.update(admin.firestore().doc('PERRINNMessages/'+message.id),{lastMessage:false});
       lastChainMessageData=message.data();
     });
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{lastMessage:true});
+
+    //message chain data
+    const userObj=await admin.firestore().doc('PERRINNTeams/'+user).get()
+    let userData=userObj.data()||{}
+    let index=Number(userData.previousIndex)+1||1;
+    const costs=await admin.firestore().doc('appSettings/costs').get()
+    if(previousMessage!='none')batch.update(admin.firestore().doc('PERRINNMessages/'+previousMessage),{"PERRINN.chain.nextMessage":message||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.currentMessage":message||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.previousMessage":previousMessage||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.nextMessage":'none'},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+message),{"PERRINN.chain.index":index||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousMessage:message||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousIndex:index||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lock:admin.firestore.FieldValue.delete()||null},{create:true});
 
     //messaging cost
     amountWrite=costs.data().messageWrite;
@@ -191,6 +194,8 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     }
 
     //message domain data
+    const domainObj=await admin.firestore().doc('PERRINNTeams/'+messageData.domain).get()
+    let domainData=domainObj.data()||{}
     var nameLowerCase=(messageData.domainName||domainData.name||'').toLowerCase()+' '+(messageData.domainFamilyName||domainData.familyName||'').toLowerCase();
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{domainName:messageData.domainName||domainData.name||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+message),{domainFamilyName:messageData.domainFamilyName||domainData.familyName||null},{create:true});
