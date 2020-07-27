@@ -16,6 +16,7 @@ export class UserInterfaceService {
   currentUser:string;
   currentUserClaims:any;
   currentUserObj:any;
+  currentUserLastMessageObj:any;
   currentUserTeamsObj:any;
   process:any;
   recipients:any;
@@ -37,6 +38,9 @@ export class UserInterfaceService {
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser=auth.uid;
+        afs.collection<any>('PERRINNMessages',ref=>ref.where('user','==',this.currentUser).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1)).valueChanges().subscribe(snapshot=>{
+          this.currentUserLastMessageObj=snapshot[0];
+        });
         afs.doc<any>('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
           this.currentUserObj=snapshot;
         });

@@ -1,5 +1,4 @@
 const admin = require('firebase-admin')
-const processUtils = require('./process')
 const emailUtils = require('../utils/email')
 
 module.exports = {

@@ -37,8 +37,8 @@ import * as firebase from 'firebase/app';
       </label>
     </div>
     <div *ngIf="!editName" style="color:blue;cursor:pointer;margin:20px" (click)="editName=!editName">Edit name</div>
-    <input *ngIf="editName" [(ngModel)]="currentDomainName" placeholder="First name">
-    <input *ngIf="editName&&UI.currentDomainObj?.isUser" [(ngModel)]="currentDomainFamilyName" placeholder="Family name">
+    <input *ngIf="editName" [(ngModel)]="currentName" placeholder="First name">
+    <input *ngIf="editName&&UI.currentDomainObj?.isUser" [(ngModel)]="currentFamilyName" placeholder="Family name">
     <div *ngIf="editName" (click)="applyNewName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply update</div>
     <div *ngIf="!editMembershipCost" style="color:blue;cursor:pointer;margin:20px" (click)="editMembershipCost=!editMembershipCost">Edit membership cost</div>
     <input *ngIf="editMembershipCost" [(ngModel)]="membershipCost" placeholder="Membership cost">
@@ -99,8 +99,8 @@ export class TeamSettingsComponent {
   editMembershipCost:boolean;
   editMembers:boolean;
   editChildren:boolean;
-  currentDomainName:string;
-  currentDomainFamilyName:string;
+  currentName:string;
+  currentFamilyName:string;
   membershipCost:string;
   searchFilter:string;
   teams:Observable<any[]>;
@@ -119,11 +119,9 @@ export class TeamSettingsComponent {
       this.editMembershipCost=false;
       this.editMembers=false;
       this.editChildren=false;
-      this.currentDomainName=this.UI.currentDomainObj.name;
-      if(this.UI.currentDomainObj.membershipCost==undefined) this.membershipCost='';
-      else this.membershipCost=this.UI.currentDomainObj.membershipCost;
-      if(this.UI.currentDomainObj.familyName==undefined) this.currentDomainFamilyName='';
-      else this.currentDomainFamilyName=this.UI.currentDomainObj.familyName;
+      this.currentName=this.UI.currentDomainObj.name;
+      this.membershipCost=this.UI.currentDomainObj.membershipCost||'';
+      this.currentFamilyName=this.UI.currentUserObj.familyName;
     });
   }
 
@@ -133,7 +131,7 @@ export class TeamSettingsComponent {
   }
 
   applyNewName(){
-    if(this.currentDomainName==this.UI.currentDomainObj.name&&this.currentDomainFamilyName==this.UI.currentDomainObj.familyName||this.currentDomainName==''){
+    if(this.currentName==this.UI.currentDomainObj.name&&this.currentFamilyName==this.UI.currentUserObj.familyName||this.currentName==''){
       this.editName=false;
       return;
     }
@@ -146,10 +144,11 @@ export class TeamSettingsComponent {
         this.UI.addRecipient(this.UI.currentDomain).then(()=>{
           this.UI.createMessage({
             chain:ref.id,
-            text:'Updating name to: '+this.currentDomainName+' '+this.currentDomainFamilyName,
+            text:'Updating name to: '+this.currentName+' '+this.currentFamilyName,
             domain:this.UI.currentDomain,
-            domainName:this.currentDomainName,
-            domainFamilyName:this.currentDomainFamilyName,
+            name:(this.UI.currentUser==this.UI.currentDomain)?this.currentName:null,
+            familyName:(this.UI.currentUser==this.UI.currentDomain)?this.currentFamilyName:null,
+            domainName:this.currentName,
             auto:true
           })
         });
@@ -213,7 +212,7 @@ export class TeamSettingsComponent {
           this.UI.createMessage({
             chain:ref.id,
             text:'Updating membership cost to: '+this.membershipCost,
-            membershipCost:this.membershipCost,
+            domainMembershipCost:this.membershipCost,
             auto:true
           })
         });
@@ -299,6 +298,8 @@ export class TeamSettingsComponent {
                 image:draftImage,
                 imageDownloadURL:url,
                 domain:this.UI.currentDomain,
+                userImageTimestamp:(this.UI.currentUser==this.UI.currentDomain)?draftImage:null,
+                imageUrlOriginal:(this.UI.currentUser==this.UI.currentDomain)?url:null,
                 domainImageTimestamp:draftImage,
                 domainImageUrlOriginal:url,
                 auto:true

@@ -16,8 +16,8 @@ import { UserInterfaceService } from './userInterface.service';
     </div>
     <div style='padding-top:40px'>
       <div style="float:right;cursor:pointer" (click)="router.navigate(['team',UI.currentUser])">
-      <div style="float:right;margin:5px;font-size:10px">C{{(UI.currentUserObj?.lastMessageBalance?UI.currentUserObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
-        <img [src]="UI.currentUserObj?.imageUrlThumb" style="display:inline;float:right;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
+        <div style="float:right;margin:5px;font-size:10px">C{{(UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</div>
+        <img [src]="UI.currentUserLastMessageObj?.imageUrlThumbUser" style="display:inline;float:right;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
