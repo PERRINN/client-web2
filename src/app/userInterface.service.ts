@@ -116,7 +116,6 @@ export class UserInterfaceService {
     messageObj.text=messageObj.text.replace(/(\r\n|\n|\r)/gm, '');
     if (!messageObj.text&&!messageObj.image) return null;
     this.refreshRecipientList();
-    messageObj.timestamp=Date.now();
     messageObj.serverTimestamp=firebase.firestore.FieldValue.serverTimestamp();
     messageObj.user=this.currentUser;
     messageObj.recipientList=this.recipientList;

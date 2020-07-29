@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -71,25 +70,21 @@ import * as firebase from 'firebase/app';
     <div>
       <ul style="list-style:none;">
         <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
-          <div *ngIf="previousMessageRead&&!(message.payload?.reads||[])[UI.currentUser]&&message.payload?.timestamp<now">
+          <div *ngIf="previousMessageRead&&!(message.payload?.reads||[])[UI.currentUser]&&message.payload?.serverTimestamp?.seconds<nowSeconds">
             <div style="margin:0 auto;text-align:center;margin-top:25px;color:#999;font-size:10px">Left here</div>
             <div class="seperator" style="width:100%;margin-bottom:25px"></div>
           </div>
-          <div *ngIf="i<messageNumberDisplay" [style.background-color]="lastChatVisitTimestamp<message.payload?.timestamp?'#ffefd1':''">
-          <div *ngIf="isMessageNewTimeGroup(message.payload?.timestamp)||first" style="padding:70px 15px 15px 15px">
-            <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{message.payload?.timestamp|date:'fullDate'}}</div>
+          <div *ngIf="isMessageNewTimeGroup(message.payload?.serverTimestamp)||first" style="padding:70px 15px 15px 15px">
+            <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'fullDate'}}</div>
           </div>
-          <li *ngFor="let recipient of message.payload?.recipientList">
-            <div *ngIf="!previousMessageRecipientList.includes(recipient)" style="color:#777;margin:5px 5px 5px 70px">Added: {{message.payload?.recipients[recipient]?.name}} {{message.payload?.recipients[recipient]?.familyName}}</div>
-          </li>
-          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="clear:both;width:100%;height:15px"></div>
-          <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first)" style="float:left;width:60px;min-height:10px">
+          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="clear:both;width:100%;height:15px"></div>
+          <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first)" style="float:left;width:60px;min-height:10px">
             <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:50%; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
           </div>
           <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:3px;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
             <div>
-              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
-              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.timestamp)||first" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{message.payload?.timestamp | date:'HH:mm'}}</div>
+              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
+              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
               <img *ngIf="message.payload?.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
               <img *ngIf="message.payload?.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
               <img *ngIf="message.payload?.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
@@ -131,9 +126,8 @@ import * as firebase from 'firebase/app';
               <div *ngIf="message.payload?.PERRINN?.chain?.nextMessage=='none'&&message.payload?.PERRINN?.wallet?.balance!=undefined" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">C{{message.payload?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
             </div>
           </div>
-          </div>
           {{storeMessageValues(message.payload)}}
-          {{(last||i==(messageNumberDisplay-1))?scrollToBottom(message.payload?.timestamp):''}}
+          {{(last||i==(messageNumberDisplay-1))?scrollToBottom(message.payload?.serverTimestamp?.seconds):''}}
         </li>
       </ul>
       <div style="height:175px;width:100%"></div>
@@ -143,11 +137,6 @@ import * as firebase from 'firebase/app';
   <div class="sheet">
   <div class="fixed" style="bottom:0">
     <div class="seperator" style="width:100%"></div>
-    <ul style="list-style:none;float:left;">
-      <li *ngFor="let user of draftMessageUsers | async">
-      <div [hidden]="!user.values.draftMessage||user.key==UI.currentUser" *ngIf="isDraftMessageRecent(user.values.draftMessageTimestamp)" style="padding:5px 0 5px 15px;float:left;font-weight:bold">{{user.values?.name}}...</div>
-      </li>
-    </ul>
     <div style="clear:both;float:left;width:90%">
       <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;padding:9px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
     </div>
@@ -168,12 +157,10 @@ export class ChatComponent {
   draftMessage:string;
   draftImage:string;
   draftImageDownloadURL:string;
-  draftMessageDB:boolean;
-  draftMessageUsers:Observable<any[]>;
   messageNumberDisplay:number;
   lastChatVisitTimestamp:number;
   scrollMessageTimestamp:number;
-  previousMessageTimestamp:number;
+  previousMessageServerTimestamp:any;
   previousMessageUser:string;
   previousMessageRead:boolean;
   previousMessageRecipientList:[];
@@ -187,10 +174,9 @@ export class ChatComponent {
   autoMessage:boolean;
   chatSubjectEdit:string;
   pinNextMessage:boolean;
-  now:number;
+  nowSeconds:number;
 
   constructor(
-    public db: AngularFireDatabase,
     public afs: AngularFirestore,
     public router: Router,
     public UI: UserInterfaceService,
@@ -198,18 +184,17 @@ export class ChatComponent {
     private storage: AngularFireStorage,
   ) {
     this.UI.loading = true;
-    this.now = Date.now();
+    this.nowSeconds = Date.now()/1000;
     this.reads=[];
     this.route.params.subscribe(params => {
       this.UI.chain=params.id;
       this.isCurrentUserLeader=false;
       this.isCurrentUserMember=false;
       this.showDetails={};
-      this.previousMessageTimestamp=0;
+      this.previousMessageServerTimestamp={};
       this.previousMessageUser='';
       this.previousMessageRead=false;
       this.previousMessageRecipientList=[];
-      this.draftMessageDB=false;
       this.draftImage='';
       this.draftImageDownloadURL='';
       this.draftMessage='';
@@ -272,27 +257,23 @@ export class ChatComponent {
     fullScreenImage.style.visibility = 'visible';
   }
 
-  isMessageNewTimeGroup(messageTimestamp:any) {
+  isMessageNewTimeGroup(messageServerTimestamp:any) {
     let isMessageNewTimeGroup:boolean;
-    isMessageNewTimeGroup = Math.abs(messageTimestamp - this.previousMessageTimestamp) > 1000 * 60 * 60 * 4;
+    isMessageNewTimeGroup = Math.abs(messageServerTimestamp.seconds - this.previousMessageServerTimestamp.seconds) > 60 * 60 * 4;
     return isMessageNewTimeGroup;
   }
 
-  isMessageNewUserGroup(user: any, messageTimestamp: any) {
+  isMessageNewUserGroup(user: any, messageServerTimestamp: any) {
     let isMessageNewUserGroup:boolean;
-    isMessageNewUserGroup = Math.abs(messageTimestamp - this.previousMessageTimestamp) > 1000 * 60 * 5 || (user != this.previousMessageUser);
+    isMessageNewUserGroup = Math.abs(messageServerTimestamp.seconds - this.previousMessageServerTimestamp.seconds) > 60 * 5 || (user != this.previousMessageUser);
     return isMessageNewUserGroup;
   }
 
   storeMessageValues(message) {
     this.previousMessageUser=message.user;
-    this.previousMessageTimestamp=message.timestamp;
+    this.previousMessageServerTimestamp=message.serverTimestamp;
     this.previousMessageRecipientList=message.recipientList;
     this.previousMessageRead=(message.reads||[])[this.UI.currentUser];
-  }
-
-  isDraftMessageRecent(draftMessageTimestamp: any) {
-    return (Date.now() - draftMessageTimestamp) < 1000 * 60;
   }
 
   scrollToBottom(scrollMessageTimestamp: number) {
@@ -323,17 +304,6 @@ export class ChatComponent {
     this.draftImage = '';
     this.pinNextMessage=false;
     this.UI.showChatDetails=false;
-  }
-
-  updateDraftMessageDB() {
-    if ((this.draftMessage != '') != this.draftMessageDB) {
-      this.db.object('teamActivities/' + this.UI.currentTeam + '/draftMessages/' + this.UI.currentUser).update({
-        name: this.UI.currentUserObj.name,
-        draftMessage: this.draftMessage != '',
-        draftMessageTimestamp: firebase.database.ServerValue.TIMESTAMP,
-      });
-    }
-    this.draftMessageDB = (this.draftMessage != '');
   }
 
   onImageChange(event:any) {

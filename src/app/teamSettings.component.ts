@@ -230,7 +230,7 @@ export class TeamSettingsComponent {
         this.UI.createMessage({
           chain:ref.id,
           text:'joining PERRINN Onshape team',
-          "apps.Onshape.enabled":true,
+          apps:{Onshape:{enabled:true}},
           auto:true
         })
       });
@@ -247,7 +247,7 @@ export class TeamSettingsComponent {
         this.UI.createMessage({
           chain:ref.id,
           text:'joining PERRINN Google group',
-          "apps.Google.enabled":true,
+          apps:{Google:{enabled:true}},
           auto:true
         })
       });
