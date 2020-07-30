@@ -18,7 +18,6 @@ module.exports = {
         let messageObj={
           user:sender,
           text:"Automatic top up: "+amount+" COINS.",
-          domain:user,
           recipientList:[sender,user],
           process:{
             inputs:{

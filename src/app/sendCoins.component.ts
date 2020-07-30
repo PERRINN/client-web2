@@ -97,16 +97,18 @@ export class SendCoinsComponent  {
     if (!this.checkInputs())return null;
     this.UI.clearRecipient();
     this.UI.addRecipient(this.UI.currentUser).then(()=>{
-      this.UI.createMessage({
-        text:'sending '+this.amount+' COINS, reference: '+this.reference,
-        transactionOut:{
-          receiver:this.receiver,
-          amount:this.amount,
-          reference:this.reference
-        },
-        auto:true
-      })
-      this.UI.showChatDetails=false;
+      this.UI.addRecipient(this.receiver).then(()=>{
+        this.UI.createMessage({
+          text:'sending '+this.amount+' COINS, reference: '+this.reference,
+          transactionOut:{
+            receiver:this.receiver,
+            amount:this.amount,
+            reference:this.reference
+          },
+          auto:true
+        })
+        this.UI.showChatDetails=false;
+      });
     });
   }
 

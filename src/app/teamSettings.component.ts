@@ -141,17 +141,15 @@ export class TeamSettingsComponent {
     }).then(ref=>{
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.addRecipient(this.UI.currentDomain).then(()=>{
-          this.UI.createMessage({
-            chain:ref.id,
-            text:'Updating name to: '+this.currentName+' '+this.currentFamilyName,
-            domain:this.UI.currentDomain,
-            name:(this.UI.currentUser==this.UI.currentDomain)?this.currentName:null,
-            familyName:(this.UI.currentUser==this.UI.currentDomain)?this.currentFamilyName:null,
-            domainName:this.currentName,
-            auto:true
-          })
-        });
+        this.UI.createMessage({
+          chain:ref.id,
+          text:'Updating name to: '+this.currentName+' '+this.currentFamilyName,
+          domain:this.UI.currentDomain,
+          name:(this.UI.currentUser==this.UI.currentDomain)?this.currentName:null,
+          familyName:(this.UI.currentUser==this.UI.currentDomain)?this.currentFamilyName:null,
+          domainName:this.currentName,
+          auto:true
+        })
       });
     });
   }
@@ -163,35 +161,33 @@ export class TeamSettingsComponent {
     }).then(ref=>{
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.addRecipient(this.UI.currentDomain).then(()=>{
-          this.UI.addRecipient(team.key).then(()=>{
-            this.UI.chatSubject='New child';
-            this.UI.chain=ref.id;
-            this.UI.showChatDetails=false;
-            this.UI.process={
-              inputs:{
-                target:this.UI.currentDomain,
-                child:team.key,
-                childObj:{
-                  name:team.values.name,
-                  familyName:team.values.familyName,
-                  imageUrlThumb:team.values.imageUrlThumb,
-                  timestamp:firebase.firestore.FieldValue.serverTimestamp()
-                },
-                parentObj:{
-                  name:this.UI.currentDomainObj.name,
-                  familyName:this.UI.currentDomainObj.familyName,
-                  imageUrlThumb:this.UI.currentDomainObj.imageUrlThumb,
-                  timestamp:firebase.firestore.FieldValue.serverTimestamp()
-                }
+        this.UI.addRecipient(team.key).then(()=>{
+          this.UI.chatSubject='New child';
+          this.UI.chain=ref.id;
+          this.UI.showChatDetails=false;
+          this.UI.process={
+            inputs:{
+              target:this.UI.currentDomain,
+              child:team.key,
+              childObj:{
+                name:team.values.name,
+                familyName:team.values.familyName,
+                imageUrlThumb:team.values.imageUrlThumb,
+                timestamp:firebase.firestore.FieldValue.serverTimestamp()
               },
-              function:{
-                name:'addChild'
-              },
-              inputsComplete:true
-            };
-            this.UI.createMessageAFS('Adding child: '+team.values.name+' '+team.values.familyName,'','',true,false);
-          });
+              parentObj:{
+                name:this.UI.currentDomainObj.name,
+                familyName:this.UI.currentDomainObj.familyName,
+                imageUrlThumb:this.UI.currentDomainObj.imageUrlThumb,
+                timestamp:firebase.firestore.FieldValue.serverTimestamp()
+              }
+            },
+            function:{
+              name:'addChild'
+            },
+            inputsComplete:true
+          };
+          this.UI.createMessageAFS('Adding child: '+team.values.name+' '+team.values.familyName,'','',true,false);
         });
       });
     });
@@ -208,14 +204,12 @@ export class TeamSettingsComponent {
     }).then(ref=>{
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.addRecipient(this.UI.currentDomain).then(()=>{
-          this.UI.createMessage({
-            chain:ref.id,
-            text:'Updating membership cost to: '+this.membershipCost,
-            domainMembershipCost:this.membershipCost,
-            auto:true
-          })
-        });
+        this.UI.createMessage({
+          chain:ref.id,
+          text:'Updating membership cost to: '+this.membershipCost,
+          domainMembershipCost:this.membershipCost,
+          auto:true
+        })
       });
     });
   }
@@ -291,20 +285,18 @@ export class TeamSettingsComponent {
         }).then(ref=>{
           this.UI.clearRecipient();
           this.UI.addRecipient(this.UI.currentUser).then(()=>{
-            this.UI.addRecipient(this.UI.currentDomain).then(()=>{
-              this.UI.createMessage({
-                chain:ref.id,
-                text:'updating profile picture',
-                image:draftImage,
-                imageDownloadURL:url,
-                domain:this.UI.currentDomain,
-                userImageTimestamp:(this.UI.currentUser==this.UI.currentDomain)?draftImage:null,
-                imageUrlOriginal:(this.UI.currentUser==this.UI.currentDomain)?url:null,
-                domainImageTimestamp:draftImage,
-                domainImageUrlOriginal:url,
-                auto:true
-              })
-            });
+            this.UI.createMessage({
+              chain:ref.id,
+              text:'updating profile picture',
+              image:draftImage,
+              imageDownloadURL:url,
+              domain:this.UI.currentDomain,
+              userImageTimestamp:(this.UI.currentUser==this.UI.currentDomain)?draftImage:null,
+              imageUrlOriginal:(this.UI.currentUser==this.UI.currentDomain)?url:null,
+              domainImageTimestamp:draftImage,
+              domainImageUrlOriginal:url,
+              auto:true
+            })
           });
         });
       });
