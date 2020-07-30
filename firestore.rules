@@ -16,6 +16,7 @@ service cloud.firestore {
     }
     match /PERRINNMessages/{message} {
       allow create: if request.resource.data.user==request.auth.uid
+                    && request.resource.data.serverTimestamp==request.time
                     && request.resource.data.text.size()<=500;
     }
   }

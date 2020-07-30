@@ -95,24 +95,6 @@ import * as firebase from 'firebase/app';
               <div *ngIf="message.payload?.PERRINN?.process?.inputsComplete" style="margin:5px">
                 <div style="font-size:11px;color:#999">{{message.payload?.PERRINN?.process?.result}}</div>
               </div>
-              <div *ngIf="message.payload?.PERRINN?.transactionOut?.amount>0" style="clear:both;margin:5px">
-                <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
-                  <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionOut?.amount|number:'1.3-3'}}</span>
-                  <span style="font-size:11px"> have been sent to </span>
-                  <span style="font-size:11px">{{message.payload?.PERRINN?.transactionOut?.receiverName}}</span>
-                  <span style="font-size:11px"> {{message.payload?.PERRINN?.transactionOut?.receiverFamilyName}}</span>
-                  <span style="font-size:11px"> reference: {{message.payload?.PERRINN?.transactionOut?.reference}}</span>
-                </div>
-              </div>
-              <div *ngIf="message.payload?.PERRINN?.transactionIn?.amount>0" style="clear:both;margin:5px">
-                <div style="float:left;background-color:#c7edcd;padding:0 5px 0 5px">
-                  <span style="font-size:11px">C{{message.payload?.PERRINN?.transactionIn?.amount|number:'1.3-3'}}</span>
-                  <span style="font-size:11px"> have been received from </span>
-                  <span style="font-size:11px">{{message.payload?.PERRINN?.transactionIn?.donorName}}</span>
-                  <span style="font-size:11px"> {{message.payload?.PERRINN?.transactionIn?.donorFamilyName}}</span>
-                  <span style="font-size:11px"> reference: {{message.payload?.PERRINN?.transactionIn?.reference}}</span>
-                </div>
-              </div>
               <div style="clear:both;text-align:center">
                 <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
               </div>

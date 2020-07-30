@@ -95,32 +95,18 @@ export class SendCoinsComponent  {
 
   sendCoins(){
     if (!this.checkInputs())return null;
-    return this.afs.collection('IDs').add({
-      user:this.UI.currentUser,
-      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(ref=>{
-      this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.addRecipient(this.receiver).then(()=>{
-          this.UI.chatSubject='Send COINS';
-          this.UI.chain=ref.id;
-          this.UI.showChatDetails=false;
-          this.UI.process={
-            inputs:{
-              amount:this.amount,
-              receiver:this.receiver,
-              receiverName:this.receiverName,
-              receiverFamilyName:this.receiverFamilyName,
-              reference:this.reference
-            },
-            function:{
-              name:'transactionOut'
-            },
-            inputsComplete:true
-          };
-          this.UI.createMessageAFS('sending '+this.amount+' COINS','','',true,false);
-        });
-      });
+    this.UI.clearRecipient();
+    this.UI.addRecipient(this.UI.currentUser).then(()=>{
+      this.UI.createMessage({
+        text:'sending '+this.amount+' COINS, reference: '+this.reference,
+        transactionOut:{
+          receiver:this.receiver,
+          amount:this.amount,
+          reference:this.reference
+        },
+        auto:true
+      })
+      this.UI.showChatDetails=false;
     });
   }
 

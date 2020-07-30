@@ -10,31 +10,23 @@ const onshapeUtils = require('../../utils/onshape')
 
 exports=module.exports=functions.firestore.document('PERRINNMessages/{message}').onCreate(async(data,context)=>{
   const messageData=data.data();
-  const process=messageData.process;
   const user=messageData.user;
   const messageId=context.params.message;
-  let amountTransactionOut=0;
-  let amountTransactionIn=0;
   let amountMessaging=0;
   let amountRead=0;
   let amountWrite=0;
-  let donorCheckTransactionIn=false;
   let donor='none';
   let donorName='';
   let donorFamilyName='';
   let donorImageUrlThumb='';
-  let receiverTransactionOut='none';
   let reference='none';
-  let referenceTransactionOut='none';
   let receiverName='';
   let receiverFamilyName='';
   let receiverImageUrlThumb='';
   let receiverMessage='none';
-  let inputCheckTransactionOut=false;
   let functionObj={none:'none'};
   let inputs={none:'none'};
   let inputsComplete=false;
-  let receiverMessageObj={};
   let previousThreadMessageData={};
   var batch = admin.firestore().batch();
 
@@ -77,9 +69,10 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousIndex:index||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lock:admin.firestore.FieldValue.delete()||null},{create:true});
 
-    //message recipientList (add user, merge with previous thread list and remove duplicates)
-    messageData.recipientList=[user].concat(messageData.recipientList||[]).concat(previousThreadMessageData.recipientList||[])
+    //message recipientList (merge with user, trasnactionOut receiver, previous thread list and remove duplicates and remove undefined)
+    messageData.recipientList=[user].concat([(messageData.transactionOut||{}).receiver]||[]).concat(messageData.recipientList||[]).concat(previousThreadMessageData.recipientList||[])
     messageData.recipientList=messageData.recipientList.filter((item,pos)=>messageData.recipientList.indexOf(item)===pos)
+    //messageData.recipientList.splice(messageData.recipientList.indexOf('undefined'),1)
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{recipientList:messageData.recipientList||[]},{create:true});
 
     //message recipients data
@@ -101,65 +94,36 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.messagingCost.amount":amountMessaging||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.messagingCost.amountWrite":amountWrite||null},{create:true});
 
-    //message transaction out
-    if(process!=undefined&&process!=null){
-      if(process.function!=undefined&&process.function!=null){
-        if(process.function.name=='transactionOut'){
-          if(checkTransactionInputs(process.inputs)) {
-            amountTransactionOut=process.inputs.amount;
-            receiverTransactionOut=process.inputs.receiver;
-            receiverName=process.inputs.receiverName;
-            receiverFamilyName=process.inputs.receiverFamilyName;
-            referenceTransactionOut=process.inputs.reference;
-            inputCheckTransactionOut=true;
-          }
-        }
-      }
-    }
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionOut.amount":amountTransactionOut||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionOut.receiver":receiverTransactionOut||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionOut.receiverName":receiverName||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionOut.receiverFamilyName":receiverFamilyName||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionOut.receiverImageUrlThumb":receiverImageUrlThumb||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionOut.receiverMessage":receiverMessage||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionOut.reference":referenceTransactionOut||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionOut.inputCheck":inputCheckTransactionOut||null},{create:true});
+    //message transaction out receiver
+    let transactionOutReceiverLastMessageId='none';
+    let transactionOutReceiverLastMessageData={};
+    const transactionOutReceiverLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',(messageData.transactionOut||{}).receiver||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+    transactionOutReceiverLastMessages.forEach(message=>{
+      transactionOutReceiverLastMessageId=message.id;
+      transactionOutReceiverLastMessageData=message.data();
+    });
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.receiverName":transactionOutReceiverLastMessageData.name||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.receiverFamilyName":transactionOutReceiverLastMessageData.familyName||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.receiverImageUrlThumb":transactionOutReceiverLastMessageData.imageUrlThumbUser||null},{create:true});
 
-    //message transaction in
-    if(messageData.PERRINN!=undefined){
-      let transactionInObj=messageData.PERRINN.transactionIn;
-      if(transactionInObj!=undefined&&transactionInObj!=null){
-        if(transactionInObj.donor!=undefined&&transactionInObj.donor!=null){
-          donor=transactionInObj.donor;
-          donorName=transactionInObj.donorName;
-          donorFamilyName=transactionInObj.donorFamilyName;
-          donorImageUrlThumb=transactionInObj.donorImageUrlThumb;
-          amountTransactionIn=transactionInObj.amount;
-          reference=transactionInObj.reference;
-          donorCheckTransactionIn=true;
-        }
-      }
-    }
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionIn.amount":amountTransactionIn||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionIn.donor":donor||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionIn.donorName":donorName||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionIn.donorFamilyName":donorFamilyName||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionIn.donorImageUrlThumb":donorImageUrlThumb||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionIn.reference":reference||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.transactionIn.donorCheck":donorCheckTransactionIn||null},{create:true});
+    //message transaction in donor
+    let transactionInDonorLastMessageId='none';
+    let transactionInDonorLastMessageData={};
+    const transactionInDonorLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',(messageData.transactionIn||{}).donor||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+    transactionInDonorLastMessages.forEach(message=>{
+      transactionInDonorLastMessageId=message.id;
+      transactionInDonorLastMessageData=message.data();
+    });
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorName":transactionInDonorLastMessageData.name||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorFamilyName":transactionInDonorLastMessageData.familyName||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorImageUrlThumb":transactionInDonorLastMessageData.imageUrlThumbUser||null},{create:true});
 
     //message wallet
-    var previousBalance=((previousMessageData.PERRINN||{}).wallet||{}).balance||userData.lastMessageBalance||0;
+    var previousBalance=((previousMessageData.PERRINN||{}).wallet||{}).balance||0;
     var newBalance=previousBalance;
-    if(amountMessaging>0){
-      newBalance=Math.round((Number(newBalance)-Number(amountMessaging))*100000)/100000;
-    }
-    if(inputCheckTransactionOut){
-      newBalance=Math.round((Number(newBalance)-Number(amountTransactionOut))*100000)/100000;
-    }
-    if(donorCheckTransactionIn){
-      newBalance=Math.round((Number(newBalance)+Number(amountTransactionIn))*100000)/100000;
-    }
+    newBalance=Math.round((Number(newBalance)-Number(amountMessaging))*100000)/100000;
+    newBalance=Math.round((Number(newBalance)-Number((messageData.transactionOut||{}).amount||0))*100000)/100000;
+    newBalance=Math.round((Number(newBalance)+Number((messageData.transactionIn||{}).amount||0))*100000)/100000;
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.wallet.previousBalance":previousBalance||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.wallet.balance":newBalance||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lastMessageBalance:newBalance||null},{create:true});
@@ -222,26 +186,19 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.familyName`]:messageData.familyName||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.imageUrlThumb`]:messageData.imageUrlThumbUser||null},{create:true});
 
-    //message transaction receiver
-    if(amountTransactionOut>0){
-      receiverMessageObj={
+    //message transaction out receiver
+    if((messageData.transactionOut||{}).receiver){
+      createMessageUtils.createMessageAFS({
         domain:messageData.domain,
-        user:receiverTransactionOut,
-        text:amountTransactionOut+" COINS received, reference: "+referenceTransactionOut,
+        user:messageData.transactionOut.receiver,
+        text:((messageData.transactionOut||{}).amount||0)+" COINS received, reference: "+messageData.transactionOut.reference,
         chain:messageData.chain,
-        chatSubject:messageData.chatSubject,
-        recipientList:messageData.recipientList,
-        PERRINN:{
-          transactionIn:{
-            donor:user,
-            donorName:messageData.name,
-            donorFamilyName:messageData.familyName,
-            donorImageUrlThumb:messageData.imageUrlThumbUser,
-            amount:amountTransactionOut,
-            reference:referenceTransactionOut
-          }
+        transactionIn:{
+          donor:user,
+          amount:(messageData.transactionOut||{}).amount||0,
+          reference:messageData.transactionOut.reference
         }
-      };
+      })
     }
 
     //message chat Subject
@@ -249,10 +206,8 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
 
     //message verified
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{verified:true},{create:true})
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{serverTimestamp:admin.firestore.FieldValue.serverTimestamp()},{create:true});
 
     await batch.commit()
-    if(receiverMessageObj.PERRINN!=undefined)await createMessageUtils.createMessageAFS(receiverMessageObj)
     await childTopUpUtils.performChildTopUp(user)
     await customClaimsUtils.setCustomClaims(user)
   }
@@ -262,13 +217,3 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     return admin.firestore().doc('PERRINNMessages/'+messageId).update({verified:false})
   }
 });
-
-
-function checkTransactionInputs(inputs) {
-  if(inputs.amount>0&&inputs.amount<=100000){
-    if(inputs.reference!=''){
-      return true;
-    }
-  }
-  return false;
-}

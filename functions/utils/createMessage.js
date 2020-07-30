@@ -11,7 +11,6 @@ module.exports = {
       })
       if(messageObj.domain==undefined)messageObj.domain=messageObj.user;
       const userData=await admin.firestore().doc('PERRINNTeams/'+messageObj.user).get()
-      messageObj.timestamp=Date.now();
       messageObj.serverTimestamp=admin.firestore.FieldValue.serverTimestamp();
       if(messageObj.chatSubject==undefined)messageObj.chatSubject='';
       if(messageObj.chain==undefined)messageObj.chain=ref.id;

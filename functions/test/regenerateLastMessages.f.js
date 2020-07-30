@@ -8,7 +8,7 @@ exports=module.exports=functions.database.ref('/toto').onCreate(async(data,conte
     let count=0
     const listUsersResult=await admin.auth().listUsers()
     listUsersResult.users.forEach((userRecord)=>{
-      if (userRecord.uid=='g7jqKQ9XewXm9ZsXxJJpJrKdjc23')regerenerateLastMessage(userRecord.uid)
+      if (userRecord.uid=='-L7jqFf8OuGlZrfEK6dT')regerenerateLastMessage(userRecord.uid)
       count=count+1
     })
     console.log(count+' users found.');
