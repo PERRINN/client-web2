@@ -8,7 +8,7 @@ exports=module.exports=functions.database.ref('/toto').onCreate(async(data,conte
     let count=0
     const listUsersResult=await admin.auth().listUsers()
     listUsersResult.users.forEach((userRecord)=>{
-      if (userRecord.uid=='-L7jqFf8OuGlZrfEK6dT')regerenerateLastMessage(userRecord.uid)
+      if (userRecord.uid=='QYm5NATKa6MGD87UpNZCTl6IolX2')regerenerateLastMessage(userRecord.uid)
       count=count+1
     })
     console.log(count+' users found.');
@@ -27,6 +27,7 @@ async function regerenerateLastMessage(user){
     lastUserMessages.forEach(message=>{
       messageRef=message.ref
       messageData=message.data()
+      messageData.reads[user]=admin.firestore.FieldValue.serverTimestamp()
       messageData.verified=false
     });
     await messageRef.delete()

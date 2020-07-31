@@ -163,7 +163,6 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
       let sender='-L7jqFf8OuGlZrfEK6dT';
       let messageObj={
         user:sender,
-        domain:user,
         text:"Welcome to PERRINN, we are happy to have you here with us! If you have any question please ask here. We will be happy to help.",
         chatSubject:'Welcome to PERRINN',
         recipientList:[sender,'QYm5NATKa6MGD87UpNZCTl6IolX2',user]

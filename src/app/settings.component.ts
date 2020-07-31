@@ -9,13 +9,9 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import * as firebase from 'firebase/app';
 
 @Component({
-  selector: 'teamSettings',
+  selector: 'settings',
   template: `
   <div class="sheet" style="background-color:#f5f5f5">
-  <div style="float:left;padding:10px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0;font-size:14px;font-family:sans-serif;background:#f4f7fc" (click)="router.navigate(['team',UI.currentDomain])">
-    <div style="font-size:14px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
-  </div>
-  <div class="seperator" style="width:100%;margin:0px"></div>
   <img class="imageWithZoom" [src]="UI.currentDomainObj?.imageUrlMedium?UI.currentDomainObj?.imageUrlMedium:UI.currentDomainObj?.imageUrlThumb" style="object-fit:cover;margin:10px;border-radius:5px;max-height:150px;width:50%" (click)="showFullScreenImage(UI.currentDomainObj?.imageUrlOriginal)"
   onerror="this.onerror=null;this.src='https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2F1585144867972Screen%20Shot%202018-03-16%20at%2015.05.10_180x180.png?GoogleAccessId=firebase-adminsdk-rh8x2%40perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=I3Kem9n6zYjSNijnKOx%2FAOUAg65GN3xf8OD1qD4uo%2BayOFblFIgfn81uPWRTzhGg14lJdyhz3Yx%2BiCXuYCIdYnduqMZcIjtHE6WR%2BPo74ckemuxIKx3N24tlBJ6DgkfgqwmIkw%2F%2FKotm8Cz%2Fq%2FbIZm%2FvAOi2dpBHqrHiIFXYb8AVYnhP1osUhVvyzapgYJEBZJcHur7v6uqrSKwQ4DfeHHinbJpvkX3wjM6Nxabi3kVABdGcGqMoAPGCTZJMzNj8xddAXuECbptQprd9LlnQOuL4tuDfLMAOUXTHmJVhJEBrquxQi8iPRjnLOvnqF8s2We0SOxprqEuwbZyxSgH05Q%3D%3D'">
   <br/>
@@ -47,7 +43,7 @@ import * as firebase from 'firebase/app';
     <div style="font-size:14px;margin:20px;color:#444">Members</div>
     <div style="font-size:10px;margin:20px;color:#777">Members can communicate, write messages here. Leaders can modify the team.</div>
     <ul style="color:#333;margin:20px">
-      <li *ngFor="let child of objectToArray(UI.currentDomainObj?.members)" (click)="router.navigate(['team',child[0]])" style="cursor:pointer">
+      <li *ngFor="let child of objectToArray(UI.currentDomainObj?.members)" (click)="router.navigate(['profile','user',child[0]])" style="cursor:pointer">
         <img [src]="child[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px"
         onerror="this.onerror=null;this.src='https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2F1585144867972Screen%20Shot%202018-03-16%20at%2015.05.10_180x180.png?GoogleAccessId=firebase-adminsdk-rh8x2%40perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=I3Kem9n6zYjSNijnKOx%2FAOUAg65GN3xf8OD1qD4uo%2BayOFblFIgfn81uPWRTzhGg14lJdyhz3Yx%2BiCXuYCIdYnduqMZcIjtHE6WR%2BPo74ckemuxIKx3N24tlBJ6DgkfgqwmIkw%2F%2FKotm8Cz%2Fq%2FbIZm%2FvAOi2dpBHqrHiIFXYb8AVYnhP1osUhVvyzapgYJEBZJcHur7v6uqrSKwQ4DfeHHinbJpvkX3wjM6Nxabi3kVABdGcGqMoAPGCTZJMzNj8xddAXuECbptQprd9LlnQOuL4tuDfLMAOUXTHmJVhJEBrquxQi8iPRjnLOvnqF8s2We0SOxprqEuwbZyxSgH05Q%3D%3D'">
         <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{child[1]?.name}} {{child[1]?.familyName}} {{child[1]?.leader?'(Leader)':''}}</div>
@@ -58,7 +54,7 @@ import * as firebase from 'firebase/app';
     <div style="font-size:14px;margin:20px;color:#444">Children</div>
     <div style="font-size:10px;margin:20px;color:#777">COINS from your wallet will automatically be used to keep your children's COIN balance positive.</div>
     <ul style="color:#333;margin:20px">
-      <li *ngFor="let child of objectToArray(UI.currentDomainObj?.children)" (click)="router.navigate(['team',child[0]])" style="cursor:pointer">
+      <li *ngFor="let child of objectToArray(UI.currentDomainObj?.children)" (click)="router.navigate(['profile','user',child[0]])" style="cursor:pointer">
         <img [src]="child[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px"
         onerror="this.onerror=null;this.src='https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2F1585144867972Screen%20Shot%202018-03-16%20at%2015.05.10_180x180.png?GoogleAccessId=firebase-adminsdk-rh8x2%40perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=I3Kem9n6zYjSNijnKOx%2FAOUAg65GN3xf8OD1qD4uo%2BayOFblFIgfn81uPWRTzhGg14lJdyhz3Yx%2BiCXuYCIdYnduqMZcIjtHE6WR%2BPo74ckemuxIKx3N24tlBJ6DgkfgqwmIkw%2F%2FKotm8Cz%2Fq%2FbIZm%2FvAOi2dpBHqrHiIFXYb8AVYnhP1osUhVvyzapgYJEBZJcHur7v6uqrSKwQ4DfeHHinbJpvkX3wjM6Nxabi3kVABdGcGqMoAPGCTZJMzNj8xddAXuECbptQprd9LlnQOuL4tuDfLMAOUXTHmJVhJEBrquxQi8iPRjnLOvnqF8s2We0SOxprqEuwbZyxSgH05Q%3D%3D'">
         <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{child[1]?.name}} {{child[1]?.familyName}}</div>
@@ -94,7 +90,7 @@ import * as firebase from 'firebase/app';
   <div class="seperator" style="width:100%;margin-bottom:250px"></div>
   `,
 })
-export class TeamSettingsComponent {
+export class SettingsComponent {
   editName:boolean;
   editMembershipCost:boolean;
   editMembers:boolean;
@@ -162,8 +158,6 @@ export class TeamSettingsComponent {
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
         this.UI.addRecipient(team.key).then(()=>{
-          this.UI.chatSubject='New child';
-          this.UI.chain=ref.id;
           this.UI.showChatDetails=false;
           this.UI.process={
             inputs:{

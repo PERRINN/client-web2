@@ -13,17 +13,14 @@ import * as firebase from 'firebase/app';
 
   <div class="sheet" *ngIf="UI.showChatDetails">
     <div style="background:#f2f2f2">
-    <div style="float:left;padding:10px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0;font-size:14px;font-family:sans-serif;background:#f4f7fc" (click)="router.navigate(['team',UI.currentDomain])">
-      <div style="font-size:14px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
-    </div>
       <div (click)="UI.showChatDetails=false" style="float:left;font-size:12px;line-height:20px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
     <input [(ngModel)]="chatSubjectEdit" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="Edit subject">
-    <div *ngIf="UI.chatSubject!=chatSubjectEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
+    <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubjectEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
-      <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['team',recipient[0]])" style="cursor:pointer;float:left">
+      <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['profile','user',recipient[0]])" style="cursor:pointer;float:left">
         <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
         <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
       </li>
@@ -41,23 +38,19 @@ import * as firebase from 'firebase/app';
         </div>
       </li>
     </ul>
-    <div *ngIf="!searchFilter" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="addAllMembers()">Add all members</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
       <div *ngIf="!pinNextMessage" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="pinNextMessage=true">Pin next message</div>
       <div *ngIf="pinNextMessage" style="float:left;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#777;">Next message will be pinned</div>
       <div *ngIf="pinNextMessage" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="pinNextMessage=false">Cancel</div>
-      <div *ngIf="UI.currentDomain==UI.currentUser" style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
+      <div style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
 
 
   <div class="sheet" id="chat_window" style="overflow-y:auto;height:100%" *ngIf="!UI.showChatDetails" scrollable (scrollPosition)="scrollHandler($event)">
     <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
-      <div style="float:left;padding:10px;cursor:pointer;border-color:#ddd;border-style:solid;border-width:0 1px 0 0;background:#f4f7fc" (click)="router.navigate(['team',UI.currentDomain])">
-        <div style="float:right;font-size:14px;font-family:sans-serif">{{UI.currentDomainObj?.name}}</div>
-      </div>
-      <div style="float:left;margin:0 5px 0 10px">
-        <div style="font-weight:bold">{{UI.chatSubject}}</div>
+      <div style="float:left;margin:0 5px 0 10px;min-height:40px">
+        <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
         <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1]?.name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
@@ -79,7 +72,7 @@ import * as firebase from 'firebase/app';
           </div>
           <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="clear:both;width:100%;height:15px"></div>
           <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first)" style="float:left;width:60px;min-height:10px">
-            <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:50%; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['team',message.payload?.user])">
+            <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:50%; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['profile','user',message.payload?.user])">
           </div>
           <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:3px;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
             <div>
@@ -157,6 +150,7 @@ export class ChatComponent {
   chatSubjectEdit:string;
   pinNextMessage:boolean;
   nowSeconds:number;
+  chatLastMessageObj:any;
 
   constructor(
     public afs: AngularFirestore,
@@ -169,10 +163,10 @@ export class ChatComponent {
     this.nowSeconds = Date.now()/1000;
     this.reads=[];
     this.route.params.subscribe(params => {
-      this.UI.chain=params.id;
       this.isCurrentUserLeader=false;
       this.isCurrentUserMember=false;
       this.showDetails={};
+      this.chatLastMessageObj={};
       this.previousMessageServerTimestamp={};
       this.previousMessageUser='';
       this.previousMessageRead=false;
@@ -184,7 +178,7 @@ export class ChatComponent {
       this.messageNumberDisplay = 15;
       this.chatSubjectEdit='';
       this.pinNextMessage=false;
-      this.refreshMessages();
+      this.refreshMessages(params.id);
     });
   }
 
@@ -196,13 +190,13 @@ export class ChatComponent {
     if (e === 'top') {
       this.UI.loading = true;
       this.messageNumberDisplay += 15;
-      this.refreshMessages();
+      this.refreshMessages(this.chatLastMessageObj.chain);
     }
   }
 
-  refreshMessages() {
+  refreshMessages(chain) {
     this.messages=this.afs.collection('PERRINNMessages',ref=>ref
-      .where('chain','==',this.UI.chain)
+      .where('chain','==',chain)
       .orderBy('serverTimestamp','desc')
       .limit(this.messageNumberDisplay)
     ).snapshotChanges().pipe(map(changes => {
@@ -212,10 +206,7 @@ export class ChatComponent {
         if(c.payload.doc.data()['lastMessage']){
           if(!this.reads.includes(c.payload.doc.id))batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(c.payload.doc.id),{timestamp:firebase.firestore.FieldValue.arrayUnion(Date.now())},{merge:true});
           this.reads.push(c.payload.doc.id);
-          if(c.payload.doc.data()['domain']!=undefined){
-            this.UI.switchDomain(c.payload.doc.data()['domain']);
-          }
-          this.UI.chatSubject=c.payload.doc.data()['chatSubject'];
+          this.chatLastMessageObj=c.payload.doc.data();
           this.chatSubjectEdit=c.payload.doc.data()['chatSubject'];
           this.UI.recipients=c.payload.doc.data()['recipients'];
         }
@@ -268,7 +259,8 @@ export class ChatComponent {
 
   saveNewSubject() {
     this.UI.createMessage({
-      text:'Changing chat subject to: '+this.chatSubjectEdit+" (was: "+this.UI.chatSubject+")",
+      text:'Changing chat subject to: '+this.chatSubjectEdit+" (was: "+this.chatLastMessageObj.chatSubject+")",
+      chain:this.chatLastMessageObj.chain,
       chatSubject:this.chatSubjectEdit,
     })
     this.UI.showChatDetails=false;
@@ -277,6 +269,7 @@ export class ChatComponent {
   addMessage() {
     this.UI.createMessage({
       text:this.draftMessage,
+      chain:this.chatLastMessageObj.chain,
       image:this.draftImage,
       imageDownloadURL:this.draftImageDownloadURL,
       chatSubject:this.chatSubjectEdit,
@@ -323,13 +316,6 @@ export class ChatComponent {
     if (obj == null) { return []; }
     return Object.keys(obj).map(function(key) {
       return [key, obj[key]];
-    });
-  }
-
-  addAllMembers(){
-    let members=this.objectToArray(this.UI.currentDomainObj.members);
-    members.forEach(member=>{
-      this.UI.addRecipient(member[0]);
     });
   }
 

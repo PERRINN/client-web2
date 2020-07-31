@@ -8,8 +8,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { ChatComponent }  from './chat.component';
 import { ChatModalComponent }  from './chatModal.component';
 import { LoginComponent }  from './login.component';
-import { TeamProfileComponent }  from './teamProfile.component';
-import { TeamSettingsComponent }  from './teamSettings.component';
+import { ProfileComponent }  from './profile.component';
+import { SettingsComponent }  from './settings.component';
 import { SearchComponent }  from './search.component';
 import { SendCoinsComponent }  from './sendCoins.component';
 import { BuyCoinsComponent }  from './buyCoins.component';
@@ -42,8 +42,8 @@ export const firebaseConfig = {
     ChatComponent,
     ChatModalComponent,
     LoginComponent,
-    TeamProfileComponent,
-    TeamSettingsComponent,
+    ProfileComponent,
+    SettingsComponent,
     SearchComponent,
     SendCoinsComponent,
     BuyCoinsComponent,

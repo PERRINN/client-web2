@@ -3,16 +3,16 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login.component';
 import { ChatComponent } from './chat.component';
 import { ChatModalComponent } from './chatModal.component';
-import { TeamProfileComponent } from './teamProfile.component';
-import { TeamSettingsComponent } from './teamSettings.component';
+import { ProfileComponent } from './profile.component';
+import { SettingsComponent } from './settings.component';
 import { SearchComponent } from './search.component';
 import { SendCoinsComponent } from './sendCoins.component';
 import { BuyCoinsComponent } from './buyCoins.component';
 
 const appRoutes: Routes = [
   { path: 'chat/:id', component: ChatComponent },
-  { path: 'team/:id', component: TeamProfileComponent },
-  { path: 'teamSettings/:id', component: TeamSettingsComponent },
+  { path: 'profile/:mode/:id', component: ProfileComponent },
+  { path: 'settings/:id', component: SettingsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'search', component: SearchComponent },
   { path: 'sendCoins', component: SendCoinsComponent },

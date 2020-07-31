@@ -10,9 +10,7 @@ export class UserInterfaceService {
   loading:boolean;
   currentDomain:string;
   currentDomainObj:any;
-  currentTeam:string;
-  currentTeamObj:any;
-  currentTeamObjKey:string;
+  currentDomainLastMessageObj:any;
   currentUser:string;
   currentUserClaims:any;
   currentUserObj:any;
@@ -21,8 +19,6 @@ export class UserInterfaceService {
   process:any;
   recipients:any;
   recipientList:any;
-  chain:string;
-  chatSubject:string;
   showChatDetails:boolean;
 
   constructor(
@@ -30,11 +26,9 @@ export class UserInterfaceService {
     public afs: AngularFirestore
   ) {
     this.showChatDetails=false;
-    this.chatSubject='';
     this.process={};
     this.recipients={};
     this.recipientList=[];
-    this.chain='';
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser=auth.uid;
@@ -47,11 +41,9 @@ export class UserInterfaceService {
         firebase.auth().currentUser.getIdTokenResult().then(result=>{
           this.currentUserClaims=result.claims;
         });
-        if(this.currentDomain==null)this.switchDomain(auth.uid)
       } else {
         this.currentUser=null;
         this.currentDomain=null;
-        this.currentTeam=null;
       }
     });
   }
@@ -59,9 +51,12 @@ export class UserInterfaceService {
   switchDomain(domain){
     if(domain==this.currentDomain)return;
     this.currentDomain=domain;
-    return this.afs.doc<any>('PERRINNTeams/'+this.currentDomain).valueChanges().subscribe(snapshot=>{
+    this.afs.doc<any>('PERRINNTeams/'+this.currentDomain).valueChanges().subscribe(snapshot=>{
       this.currentDomainObj=snapshot;
-    });
+    })
+    this.afs.collection<any>('PERRINNMessages',ref=>ref.where('domain','==',this.currentDomain).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1)).valueChanges().subscribe(snapshot=>{
+      this.currentDomainLastMessageObj=snapshot[0];
+    })
   }
 
   addRecipient(user){
@@ -96,7 +91,6 @@ export class UserInterfaceService {
     this.afs.collection('PERRINNMessages').add({
       timestamp: now,
       serverTimestamp:firebase.firestore.FieldValue.serverTimestamp(),
-      chain:this.chain,
       recipientList:this.recipientList,
       domain:this.currentDomain,
       user:this.currentUser,
@@ -120,7 +114,6 @@ export class UserInterfaceService {
     messageObj.user=this.currentUser;
     messageObj.recipientList=this.recipientList;
     messageObj.domain=messageObj.domain||this.currentDomain||this.currentUser;
-    messageObj.chain=messageObj.chain||this.chain;
     messageObj.process=this.process;
     this.afs.collection('PERRINNMessages').add(messageObj).then(()=>{
       this.process={};
