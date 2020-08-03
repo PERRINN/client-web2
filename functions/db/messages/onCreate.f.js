@@ -2,8 +2,6 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
 const createMessageUtils = require('../../utils/createMessage')
-const customClaimsUtils = require('../../utils/customClaims')
-const childTopUpUtils = require('../../utils/childTopUp')
 const emailUtils = require('../../utils/email')
 const googleUtils = require('../../utils/google')
 const onshapeUtils = require('../../utils/onshape')
@@ -12,6 +10,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
   const messageData=data.data();
   const user=messageData.user;
   const messageId=context.params.message;
+  const now=Date.now();
   let amountMessaging=0;
   let amountRead=0;
   let amountWrite=0;
@@ -119,21 +118,18 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorImageUrlThumb":transactionInDonorLastMessageData.imageUrlThumbUser||null},{create:true});
 
     //message wallet
-    var previousBalance=((previousMessageData.PERRINN||{}).wallet||{}).balance||0;
-    var newBalance=previousBalance;
-    newBalance=Math.round((Number(newBalance)-Number(amountMessaging))*100000)/100000;
-    newBalance=Math.round((Number(newBalance)-Number((messageData.transactionOut||{}).amount||0))*100000)/100000;
-    newBalance=Math.round((Number(newBalance)+Number((messageData.transactionIn||{}).amount||0))*100000)/100000;
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.wallet.previousBalance":previousBalance||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.wallet.balance":newBalance||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lastMessageBalance:newBalance||null},{create:true});
+    let wallet={}
+    wallet.previousBalance=((previousMessageData.PERRINN||{}).wallet||{}).balance||0;
+    wallet.balance=wallet.previousBalance;
+    wallet.balance=Math.round((Number(wallet.balance)-Number(amountMessaging))*100000)/100000;
+    wallet.balance=Math.round((Number(wallet.balance)-Number((messageData.transactionOut||{}).amount||0))*100000)/100000;
+    wallet.balance=Math.round((Number(wallet.balance)+Number((messageData.transactionIn||{}).amount||0))*100000)/100000;
 
     //email notifications
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.emailNotifications":messageData.recipientList||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{enableEmailNotifications:true||null},{create:true});
 
     //user data
-    const now=Date.now();
     var nameLowerCase=(messageData.name||previousMessageData.name||userData.name||'').toLowerCase()+' '+(messageData.familyName||previousMessageData.familyName||userData.familyName||'').toLowerCase();
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{name:messageData.name||previousMessageData.name||userData.name||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{familyName:messageData.familyName||previousMessageData.familyName||userData.familyName||null},{create:true});
@@ -200,15 +196,64 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
       })
     }
 
+    //PERRINN membership
+    let membership={}
+    membership.dailyCost=costs.data().membershipDay;
+    membership.days=previousMessageData.serverTimestamp!=undefined?now/1000/3600/24-previousMessageData.serverTimestamp.seconds/3600/24:0
+    membership.daysTotal=((previousMessageData.membership||{}).daysTotal||0)+membership.days
+    membership.amount=membership.days*membership.dailyCost
+    wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount))*100000)/100000;
+    membership.previousState=((messageData.PERRINN||{}).wallet||{}).balance>0||((previousMessageData.PERRINN||{}).wallet||{}).balance>0||false
+    membership.changeState=(wallet.balance>0)!=membership.previousState
+    if (membership.changeState){
+      if(user!='-L7jqFf8OuGlZrfEK6dT'){
+        await admin.auth().setCustomUserClaims(user,{member:wallet.balance>0||false})
+        await admin.auth().revokeRefreshTokens(user)
+        createMessageUtils.createMessageAFS({
+          user:'-L7jqFf8OuGlZrfEK6dT',
+          text:wallet.balance>0?"Mermbership activated. You are now a Member of the PERRINN Team!":"Membership de-activated. You are no longer a Member of the PERRINN Team.",
+          recipientList:['QYm5NATKa6MGD87UpNZCTl6IolX2',user]
+        })
+      }
+    }
+
     //message chat Subject
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{chatSubject:messageData.chatSubject||previousThreadMessageData.chatSubject||null},{create:true})
+
+    //child topup
+//    if(userObj.data().lastMessageBalance<1&&(userObj.data().parents!={})){
+//      let parents=toolsUtils.objectToArray(userObj.data().parents);
+//      let sender=parents[0][0];
+//      let amount=5-userObj.data().lastMessageBalance;
+//      let messageObj={
+//        user:sender,
+//        text:"Automatic top up: "+amount+" COINS.",
+//        recipientList:[sender,user],
+//        process:{
+//          inputs:{
+//            amount:amount,
+//            receiver:user,
+//            receiverName:userObj.data().name,
+//            receiverFamilyName:userObj.data().familyName,
+//            reference:'automatic top up'
+//          },
+//          function:{
+//            name:'transactionOut'
+//          },
+//          inputsComplete:true
+//        }
+//      };
+//      createMessageUtils.createMessageAFS(messageObj);
+
+
+    //message objects
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{membership:membership},{create:true})
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.wallet":wallet},{create:true})
 
     //message verified
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{verified:true},{create:true})
 
     await batch.commit()
-    await childTopUpUtils.performChildTopUp(user)
-    await customClaimsUtils.setCustomClaims(user)
   }
   catch(error){
     console.log(error);

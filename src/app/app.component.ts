@@ -15,13 +15,16 @@ import { UserInterfaceService } from './userInterface.service';
       </div>
     </div>
     <div style='padding-top:40px'>
-      <div style="float:right;cursor:pointer;border-style:solid;border-width:0 0 0 1px;border-color:#ddd" (click)="router.navigate(['profile','user',UI.currentUser])">
-        <div *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="float:right;margin:5px;font-size:10px">C{{UI.currentUserLastMessageObj.PERRINN.wallet.balance|number:'1.2-2'}}</div>
-        <img *ngIf="UI.currentUserLastMessageObj?.imageUrlThumbUser" [src]="UI.currentUserLastMessageObj.imageUrlThumbUser" style="display:inline;float:right;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
-      </div>
-      <div style="float:right;cursor:pointer;border-style:solid;border-width:0 0 0 1px;border-color:#ddd" (click)="router.navigate(['profile','domain',UI.currentDomain])">
-        <div *ngIf="UI.currentDomainLastMessageObj?.domainName" style="float:right;margin:5px;font-size:10px">{{UI.currentDomainLastMessageObj.domainName}}</div>
-        <img *ngIf="UI.currentDomainLastMessageObj?.domainImageUrlThumb" [src]="UI.currentDomainLastMessageObj.domainImageUrlThumb" style="display:inline;float:right;margin:4px;object-fit:cover;width:25px;height:25px">
+      <div style="max-width:800px;margin:0 auto">
+        <div style="float:left;width:150px;height:33px;cursor:pointer;border-style:solid;border-width:0 1px 0 0;border-color:#ddd" (click)="router.navigate(['profile','user',UI.currentUser])">
+          <img *ngIf="UI.currentUserLastMessageObj?.imageUrlThumbUser" [src]="UI.currentUserLastMessageObj.imageUrlThumbUser" style="display:inline;float:left;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
+          <div *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="float:left;margin:5px;font-size:10px">C{{UI.currentUserLastMessageObj.PERRINN.wallet.balance|number:'1.2-2'}}</div>
+        </div>
+        <div style="float:left;width:150px;height:33px;cursor:pointer;border-style:solid;border-width:0 1px 0 0;border-color:#ddd" (click)="router.navigate(['profile','domain',UI.currentDomain])">
+          <img *ngIf="UI.currentDomainLastMessageObj?.domainImageUrlThumb" [src]="UI.currentDomainLastMessageObj.domainImageUrlThumb" style="display:inline;float:left;margin:4px;object-fit:cover;width:25px;height:25px">
+          <div *ngIf="UI.currentDomainLastMessageObj?.domainName" style="float:left;margin:5px;font-size:10px">{{UI.currentDomainLastMessageObj.domainName}}</div>
+        </div>
+        <div style="float:left;width:150px;text-align:center;height:33px;cursor:pointer;line-height:31px;font-size:12px;color:#267cb5;border-style:solid;border-width:0 1px 0 0;border-color:#ddd">New message</div>
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>

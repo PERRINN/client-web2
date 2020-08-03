@@ -15,7 +15,6 @@ export class UserInterfaceService {
   currentUserClaims:any;
   currentUserObj:any;
   currentUserLastMessageObj:any;
-  currentUserTeamsObj:any;
   process:any;
   recipients:any;
   recipientList:any;
