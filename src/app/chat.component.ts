@@ -204,7 +204,7 @@ export class ChatComponent {
       var batch = this.afs.firestore.batch();
       changes.forEach(c => {
         if(c.payload.doc.data()['lastMessage']){
-          if(!this.reads.includes(c.payload.doc.id))batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(c.payload.doc.id),{timestamp:firebase.firestore.FieldValue.arrayUnion(Date.now())},{merge:true});
+          if(!this.reads.includes(c.payload.doc.id))batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(c.payload.doc.id),{serverTimestamp:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
           this.reads.push(c.payload.doc.id);
           this.chatLastMessageObj=c.payload.doc.data();
           this.chatSubjectEdit=c.payload.doc.data()['chatSubject'];

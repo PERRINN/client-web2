@@ -58,15 +58,12 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     //message chain data
     const userObj=await admin.firestore().doc('PERRINNTeams/'+user).get()
     let userData=userObj.data()||{}
-    let index=((previousMessageData.PERRINN||{}).chain||{}).index+1||userData.previousIndex+1||1;
+    let index=((previousMessageData.PERRINN||{}).chain||{}).index+1||1;
     if(previousMessageId!='none')batch.update(admin.firestore().doc('PERRINNMessages/'+previousMessageId),{"PERRINN.chain.nextMessage":messageId||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.currentMessage":messageId||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.previousMessage":previousMessageId||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.nextMessage":'none'},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.index":index||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousMessage:messageId||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{previousIndex:index||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{lock:admin.firestore.FieldValue.delete()||null},{create:true});
 
     //message recipientList (merge with user, trasnactionOut receiver, previous thread list and remove duplicates and remove undefined)
     messageData.recipientList=[user].concat([(messageData.transactionOut||{}).receiver]||[]).concat(messageData.recipientList||[]).concat(previousThreadMessageData.recipientList||[])
@@ -141,18 +138,6 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{searchName:nameLowerCase},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"apps.Google.enabled":((messageData.apps||{}).Google||{}).enabled||((userData.apps||{}).Google||{}).enabled||false},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"apps.Onshape.enabled":((messageData.apps||{}).Onshape||{}).enabled||((userData.apps||{}).Onshape||{}).enabled||false},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{name:messageData.name||userData.name||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{familyName:messageData.familyName||userData.familyName||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{imageTimestamp:messageData.userImageTimestamp||previousMessageData.userImageTimestamp||userData.imageTimestamp||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{imageUrlThumb:messageData.imageUrlThumbUser||userData.imageUrlThumb||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{imageUrlMedium:messageData.imageUrlMedium||userData.imageUrlMedium||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{imageUrlOriginal:messageData.imageUrlOriginal||userData.imageUrlOriginal||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{createdTimestamp:userData.createdTimestamp||now},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{searchName:nameLowerCase},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{members:{[user]:{name:messageData.name||userData.name||null,familyName:messageData.familyName||userData.familyName||null,leader:true}}},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{isUser:true},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{"apps.Google.enabled":((messageData.apps||{}).Google||{}).enabled||((userData.apps||{}).Google||{}).enabled||false},{create:true});
-    batch.update(admin.firestore().doc('PERRINNTeams/'+user),{"apps.Onshape.enabled":((messageData.apps||{}).Onshape||{}).enabled||((userData.apps||{}).Onshape||{}).enabled||false},{create:true});
     if (((messageData.apps||{}).Google||{}).enabled)googleUtils.joinPERRINNGoogleGroup(user)
     if (((messageData.apps||{}).Onshape||{}).enabled)onshapeUtils.joinPERRINNOnshapeTeam(user)
     if(userData.createdTimestamp==undefined){
@@ -211,7 +196,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
         await admin.auth().revokeRefreshTokens(user)
         createMessageUtils.createMessageAFS({
           user:'-L7jqFf8OuGlZrfEK6dT',
-          text:wallet.balance>0?"Mermbership activated. You are now a Member of the PERRINN Team!":"Membership de-activated. You are no longer a Member of the PERRINN Team.",
+          text:wallet.balance>0?"Membership activated. You are now a Member of the PERRINN Team!":"Membership de-activated. You are no longer a Member of the PERRINN Team.",
           recipientList:['QYm5NATKa6MGD87UpNZCTl6IolX2',user]
         })
       }

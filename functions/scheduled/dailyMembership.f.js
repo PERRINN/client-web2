@@ -7,34 +7,38 @@ exports=module.exports=functions.pubsub.schedule('every 24 hours').onRun(async(c
   try{
     let count=0
     const listUsersResult=await admin.auth().listUsers()
-    listUsersResult.users.forEach((userRecord)=>{
-      if (userRecord.uid=='QYm5NATKa6MGD87UpNZCTl6IolX2')regerenerateLastMessage(userRecord.uid)
+    for(const userRecord of listUsersResult.users){
+      let messageRef=''
+      let messageData={}
+      let lastUserMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',userRecord.uid).orderBy('serverTimestamp','desc').limit(1).get()
+      lastUserMessages.forEach(message=>{
+        messageRef=message.ref
+        messageData=message.data()
+        if(messageData.reads==undefined)messageData.reads={}
+        messageData.reads[userRecord.uid]=admin.firestore.FieldValue.serverTimestamp()
+        messageData.verified=false
+      });
+      if(messageRef==''){
+        const ref=await admin.firestore().collection('IDs').add({
+          user:userRecord.uid,
+          serverTimestamp: admin.firestore.FieldValue.serverTimestamp()
+        })
+        messageData.serverTimestamp=admin.firestore.FieldValue.serverTimestamp()
+        messageData.chain=ref.id
+        messageData.auto=true
+        messageData.user=userRecord.uid
+        messageData.text='An automatic message to refresh user profile.'
+        messageData.reads={}
+        messageData.reads[userRecord.uid]=admin.firestore.FieldValue.serverTimestamp()
+      }
+      if(messageRef!='')await messageRef.delete()
+      await admin.firestore().collection('PERRINNMessages').add(messageData)
       count=count+1
-    })
-    console.log(count+' users found.');
+    }
+    console.log(count+' users processed.');
   }
   catch(error){
     console.log(error)
     emailUtils.sendErrorEmail(error)
   }
-});
-
-async function regerenerateLastMessage(user){
-  try{
-    let messageRef=''
-    let messageData={}
-    const lastUserMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',user).orderBy('serverTimestamp','desc').limit(1).get()
-    lastUserMessages.forEach(message=>{
-      messageRef=message.ref
-      messageData=message.data()
-      messageData.reads[user]=admin.firestore.FieldValue.serverTimestamp()
-      messageData.verified=false
-    });
-    await messageRef.delete()
-    await admin.firestore().collection('PERRINNMessages').add(messageData)
-  }
-  catch(error){
-    console.log(error)
-    emailUtils.sendErrorEmail(error)
-  }
-}
+})

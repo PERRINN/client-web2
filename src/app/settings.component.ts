@@ -194,7 +194,7 @@ export class SettingsComponent {
     }
     return this.afs.collection('IDs').add({
       user:this.UI.currentUser,
-      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+      serverTimestamp:firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
