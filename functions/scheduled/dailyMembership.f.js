@@ -3,7 +3,9 @@ const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
 const emailUtils = require('../utils/email')
 
-exports=module.exports=functions.pubsub.schedule('every 24 hours').onRun(async(context) => {
+const runtimeOpts={timeoutSeconds:540}
+
+exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 hours').onRun(async(context) => {
   try{
     let count=0
     const listUsersResult=await admin.auth().listUsers()
