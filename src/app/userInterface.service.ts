@@ -114,6 +114,8 @@ export class UserInterfaceService {
     messageObj.recipientList=this.recipientList;
     messageObj.domain=messageObj.domain||this.currentDomain||this.currentUser;
     messageObj.process=this.process;
+    messageObj.PERRINN={};
+    messageObj.PERRINN.emailNotifications=[];
     this.afs.collection('PERRINNMessages').add(messageObj).then(()=>{
       this.process={};
       return null;

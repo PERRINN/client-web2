@@ -14,7 +14,7 @@ exports=module.exports=functions.pubsub.schedule('every 10 minutes').onRun(async
     lastMessages.forEach(message=>{
       var reads={};
       if(message.data().reads!=undefined)reads=message.data().reads;
-      message.data().PERRINN.emailNotifications.forEach(notification=>{
+      (message.data().PERRINN.emailNotifications||[]).forEach(notification=>{
         teams.forEach(team=>{
           if(team.id==notification&&!notifications.includes(notification)&&reads[team.id]==undefined)notifications.push(notification);
         })

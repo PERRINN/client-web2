@@ -12,6 +12,7 @@ module.exports = {
       messageObj.serverTimestamp=admin.firestore.FieldValue.serverTimestamp();
       messageObj.chain=messageObj.chain||ref.id;
       messageObj.auto=true;
+      messageObj.PERRINN.emailNotifications=[];
       return admin.firestore().collection('PERRINNMessages').add(messageObj);
     }
     catch(error){
