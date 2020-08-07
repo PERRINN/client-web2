@@ -7,7 +7,7 @@ module.exports = {
     try{
       const ref=await admin.firestore().collection('IDs').add({
         user:messageObj.user,
-        serverTimestamp: admin.firestore.FieldValue.serverTimestamp()
+        serverTimestamp:admin.firestore.FieldValue.serverTimestamp()
       })
       messageObj.serverTimestamp=admin.firestore.FieldValue.serverTimestamp();
       messageObj.chain=messageObj.chain||ref.id;

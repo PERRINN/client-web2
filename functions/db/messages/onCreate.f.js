@@ -183,13 +183,14 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
 
     //PERRINN membership
     let membership={}
-    membership.dailyCost=costs.data().membershipDay;
-    membership.days=previousMessageData.serverTimestamp!=undefined?now/1000/3600/24-previousMessageData.serverTimestamp.seconds/3600/24:0
+    membership.dailyCost=costs.data().membershipDay
+    membership.days=(now/1000/3600/24-((previousMessageData.membership||{}).serverTimestamp||{}).seconds/3600/24)||0
     membership.daysTotal=((previousMessageData.membership||{}).daysTotal||0)+membership.days
     membership.amount=membership.days*membership.dailyCost
     wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount))*100000)/100000;
     membership.previousState=((messageData.PERRINN||{}).wallet||{}).balance>0||((previousMessageData.PERRINN||{}).wallet||{}).balance>0||false
     membership.changeState=(wallet.balance>0)!=membership.previousState
+    membership.serverTimestamp=admin.firestore.FieldValue.serverTimestamp()
     if (membership.changeState){
       if(user!='-L7jqFf8OuGlZrfEK6dT'){
         await admin.auth().setCustomUserClaims(user,{member:wallet.balance>0||false})
