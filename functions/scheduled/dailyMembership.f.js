@@ -18,7 +18,6 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
         messageRef=message.ref
         messageData=message.data()
         messageData.verified=false
-        delete (messageData.PERRINN||{}).emailNotifications
       });
       if(messageRef==''){
         console.log('no message for user: '+userRecord.uid)
@@ -31,7 +30,6 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
         messageData.auto=true
         messageData.user=userRecord.uid
         messageData.text='An automatic message to refresh user profile.'
-        delete (messageData.PERRINN||{}).emailNotifications
       }
       if(messageRef!='')await messageRef.delete()
       await admin.firestore().collection('PERRINNMessages').add(messageData)
