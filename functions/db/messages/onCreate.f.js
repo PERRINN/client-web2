@@ -56,9 +56,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{lastMessage:lastThreadMessage});
 
     //message chain data
-    const userObj=await admin.firestore().doc('PERRINNTeams/'+user).get()
-    let userData=userObj.data()||{}
-    let index=((previousMessageData.PERRINN||{}).chain||{}).index+1||1;
+    let index=(((previousMessageData.PERRINN||{}).chain||{}).index+1)||1;
     if(previousMessageId!='none')batch.update(admin.firestore().doc('PERRINNMessages/'+previousMessageId),{"PERRINN.chain.nextMessage":messageId||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.currentMessage":messageId||null},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.previousMessage":previousMessageId||null},{create:true});
@@ -127,20 +125,20 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNTeams/'+user),{enableEmailNotifications:true||null},{create:true});
 
     //user data
-    var nameLowerCase=(messageData.name||previousMessageData.name||userData.name||'').toLowerCase()+' '+(messageData.familyName||previousMessageData.familyName||userData.familyName||'').toLowerCase();
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{name:messageData.name||previousMessageData.name||userData.name||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{familyName:messageData.familyName||previousMessageData.familyName||userData.familyName||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userImageTimestamp:messageData.userImageTimestamp||previousMessageData.userImageTimestamp||userData.imageTimestamp||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlThumbUser:messageData.imageUrlThumbUser||previousMessageData.imageUrlThumbUser||userData.imageUrlThumb||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlMedium:messageData.imageUrlMedium||previousMessageData.imageUrlMedium||userData.imageUrlMedium||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlOriginal:messageData.imageUrlOriginal||previousMessageData.imageUrlOriginal||userData.imageUrlOriginal||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{createdTimestamp:previousMessageData.createdTimestamp||userData.createdTimestamp||now},{create:true});
+    var nameLowerCase=(messageData.name||previousMessageData.name||'').toLowerCase()+' '+(messageData.familyName||previousMessageData.familyName||'').toLowerCase();
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{name:messageData.name||previousMessageData.name||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{familyName:messageData.familyName||previousMessageData.familyName||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userImageTimestamp:messageData.userImageTimestamp||previousMessageData.userImageTimestamp||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlThumbUser:messageData.imageUrlThumbUser||previousMessageData.imageUrlThumbUser||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlMedium:messageData.imageUrlMedium||previousMessageData.imageUrlMedium||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlOriginal:messageData.imageUrlOriginal||previousMessageData.imageUrlOriginal||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{createdTimestamp:previousMessageData.createdTimestamp||now},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{searchName:nameLowerCase},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"apps.Google.enabled":((messageData.apps||{}).Google||{}).enabled||((userData.apps||{}).Google||{}).enabled||false},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"apps.Onshape.enabled":((messageData.apps||{}).Onshape||{}).enabled||((userData.apps||{}).Onshape||{}).enabled||false},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"apps.Google.enabled":((messageData.apps||{}).Google||{}).enabled||((previousMessageData.apps||{}).Google||{}).enabled||false},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"apps.Onshape.enabled":((messageData.apps||{}).Onshape||{}).enabled||((previousMessageData.apps||{}).Onshape||{}).enabled||false},{create:true});
     if (((messageData.apps||{}).Google||{}).enabled)googleUtils.joinPERRINNGoogleGroup(user)
     if (((messageData.apps||{}).Onshape||{}).enabled)onshapeUtils.joinPERRINNOnshapeTeam(user)
-    if(userData.createdTimestamp==undefined){
+    if(index==1){
       let sender='-L7jqFf8OuGlZrfEK6dT';
       let messageObj={
         user:sender,
