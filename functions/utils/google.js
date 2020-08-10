@@ -31,12 +31,10 @@ module.exports = {
           }
         }).then(()=>{
             return 'done';
-        }).catch(error=>{
-          return error.message;
         });
       });
     }).catch(error=>{
-      console.log(error);
+      console.log('user '+user+' error '+error);
       emailUtils.sendErrorEmail(error);
       return error;
     });

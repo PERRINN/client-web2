@@ -45,11 +45,9 @@ module.exports = {
         body: body
       }).then(()=>{
           return 'done';
-      }).catch(error=>{
-        return error.error.message;
       });
     }).catch(error=>{
-      console.log(error);
+      console.log('user '+user+' error '+error);
       emailUtils.sendErrorEmail(error);
       return error;
     });
