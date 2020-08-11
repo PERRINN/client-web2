@@ -52,7 +52,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
           <div *ngIf="mode=='user'" style="clear:both">
             <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(focusUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</div>
             <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
-            <div style="clear:both;float:left;font-size:10px;color:#999">Created {{(mode=='user'?focusUserLastMessageObj?.createdTimestamp:UI.currentDomainObj?.createdTimestamp)|date:'MMMM yyyy'}}, {{mode=='user'?focusUserLastMessageObj?.PERRINN?.chain?.index:0}} Messages, {{(mode=='user'?focusUserLastMessageObj?.membership?.daysTotal:0)|number:'1.1-1'}} Membership days</div>
+            <div style="clear:both;float:left;font-size:10px;color:#999">Created {{(mode=='user'?focusUserLastMessageObj?.createdTimestamp:UI.currentDomainObj?.createdTimestamp)|date:'MMMM yyyy'}}, {{mode=='user'?focusUserLastMessageObj?.userChain?.index:0}} Messages, {{(mode=='user'?focusUserLastMessageObj?.membership?.daysTotal:0)|number:'1.1-1'}} Membership days</div>
           </div>
         </div>
         <div class="seperator" style="width:100%;margin:0px"></div>
@@ -217,18 +217,6 @@ export class ProfileComponent {
 
   unpinMessage(message){
     event.stopPropagation();
-    this.UI.showChatDetails=false;
-    this.UI.recipients=message.recipients;
-    this.UI.process={
-      inputs:{
-        target:message.PERRINN.chain.currentMessage
-      },
-      function:{
-        name:'unpinMessage'
-      },
-      inputsComplete:true
-    };
-    this.UI.createMessageAFS('Unpinning message: '+message.text,'','',true,false);
   }
 
   logout() {

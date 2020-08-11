@@ -55,13 +55,18 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     });
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{lastMessage:lastThreadMessage});
 
-    //message chain data
-    let index=(((previousMessageData.PERRINN||{}).chain||{}).index+1)||1;
+    //message user chain data
+    let userChain={}
+    userChain.currentMessage=messageId
+    userChain.previousMessage=previousMessageId||null
+    userChain.nextMessage=null
+    userChain.index=((previousMessageData.userChain||{}).index+1)||(((previousMessageData.PERRINN||{}).chain||{}).index+1)||1
     if(previousMessageId!='none')batch.update(admin.firestore().doc('PERRINNMessages/'+previousMessageId),{"PERRINN.chain.nextMessage":messageId||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.currentMessage":messageId||null},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.previousMessage":previousMessageId||null},{create:true});
+    if(previousMessageId!='none')batch.update(admin.firestore().doc('PERRINNMessages/'+previousMessageId),{"userChain.nextMessage":messageId||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.currentMessage":userChain.currentMessage},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.previousMessage":userChain.previousMessage},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.nextMessage":'none'},{create:true});
-    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.index":index||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.index":userChain.index},{create:true});
 
     //message recipientList (merge with user, trasnactionOut receiver, previous thread list and remove duplicates and remove undefined)
     messageData.recipientList=[user].concat([(messageData.transactionOut||{}).receiver]||[]).concat(messageData.recipientList||[]).concat(previousThreadMessageData.recipientList||[])
@@ -232,6 +237,7 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
 
 
     //message objects
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userChain:userChain},{create:true})
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{membership:membership},{create:true})
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.wallet":wallet},{create:true})
 
