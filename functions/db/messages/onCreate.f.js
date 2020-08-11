@@ -142,8 +142,8 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{searchName:messageData.searchName},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"apps.Google.enabled":((messageData.apps||{}).Google||{}).enabled||((previousMessageData.apps||{}).Google||{}).enabled||false},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"apps.Onshape.enabled":((messageData.apps||{}).Onshape||{}).enabled||((previousMessageData.apps||{}).Onshape||{}).enabled||false},{create:true});
-    if (((messageData.apps||{}).Google||{}).enabled&&!((previousMessageData.apps||{}).Google||{}).enabled)googleUtils.joinPERRINNGoogleGroup(user)
-    if (((messageData.apps||{}).Onshape||{}).enabled&&!((previousMessageData.apps||{}).Onshape||{}).enabled)onshapeUtils.joinPERRINNOnshapeTeam(user)
+    if (((messageData.apps||{}).Google||{}).enabled&&!((previousMessageData.apps||{}).Google||{}).enabled&&userChain.index>1)googleUtils.joinPERRINNGoogleGroup(user)
+    if (((messageData.apps||{}).Onshape||{}).enabled&&!((previousMessageData.apps||{}).Onshape||{}).enabled&&userChain.index>1)onshapeUtils.joinPERRINNOnshapeTeam(user)
     if(messageData.createdTimestamp==now){
       let sender='-L7jqFf8OuGlZrfEK6dT';
       let messageObj={
