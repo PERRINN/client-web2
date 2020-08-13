@@ -91,7 +91,14 @@ import * as firebase from 'firebase/app';
               <div style="clear:both;text-align:center">
                 <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
               </div>
-              <div *ngIf="showDetails[message.key]">
+              <div *ngIf="showDetails[message.key]" style="margin:5px">
+                <div class="seperator" style="width:100%"></div>
+                <div style="color:#666;font-size:10px">userChain: {{message.payload?.userChain|json}}</div>
+                <div class="seperator" style="width:100%"></div>
+                <div style="color:#666;font-size:10px">membership: {{message.payload?.membership|json}}</div>
+                <div class="seperator" style="width:100%"></div>
+                <div style="color:#666;font-size:10px">wallet: {{message.payload?.PERRINN?.wallet|json}}</div>
+                <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">{{message.payload|json}}</div>
               </div>
             </div>
@@ -151,6 +158,7 @@ export class ChatComponent {
   pinNextMessage:boolean;
   nowSeconds:number;
   chatLastMessageObj:any;
+  chatChain:string;
 
   constructor(
     public afs: AngularFirestore,
@@ -163,6 +171,7 @@ export class ChatComponent {
     this.nowSeconds = Date.now()/1000;
     this.reads=[];
     this.route.params.subscribe(params => {
+      this.chatChain=params.id
       this.isCurrentUserLeader=false;
       this.isCurrentUserMember=false;
       this.showDetails={};
@@ -190,7 +199,7 @@ export class ChatComponent {
     if (e === 'top') {
       this.UI.loading = true;
       this.messageNumberDisplay += 15;
-      this.refreshMessages(this.chatLastMessageObj.chain);
+      this.refreshMessages(this.chatLastMessageObj.chain||this.chatChain);
     }
   }
 
@@ -260,7 +269,7 @@ export class ChatComponent {
   saveNewSubject() {
     this.UI.createMessage({
       text:'Changing chat subject to: '+this.chatSubjectEdit+" (was: "+this.chatLastMessageObj.chatSubject+")",
-      chain:this.chatLastMessageObj.chain,
+      chain:this.chatLastMessageObj.chain||this.chatChain,
       chatSubject:this.chatSubjectEdit,
     })
     this.UI.showChatDetails=false;
@@ -269,7 +278,7 @@ export class ChatComponent {
   addMessage() {
     this.UI.createMessage({
       text:this.draftMessage,
-      chain:this.chatLastMessageObj.chain,
+      chain:this.chatLastMessageObj.chain||this.chatChain,
       image:this.draftImage,
       imageDownloadURL:this.draftImageDownloadURL,
       chatSubject:this.chatSubjectEdit,

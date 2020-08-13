@@ -71,19 +71,20 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     //message recipientList (merge with user, trasnactionOut receiver, previous thread list and remove duplicates and remove undefined)
     messageData.recipientList=[user].concat([(messageData.transactionOut||{}).receiver]||[]).concat(messageData.recipientList||[]).concat(previousThreadMessageData.recipientList||[])
     messageData.recipientList=messageData.recipientList.filter((item,pos)=>messageData.recipientList.indexOf(item)===pos)
-    //messageData.recipientList.splice(messageData.recipientList.indexOf('undefined'),1)
+    messageData.recipientList.indexOf('undefined')!=-1&&messageData.recipientList.splice(messageData.recipientList.indexOf('undefined'),1)
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{recipientList:messageData.recipientList||[]},{create:true});
 
     //message recipients data
     var reads=[];
     messageData.recipientList.forEach(recipient=>{
-      reads.push(admin.firestore().doc('PERRINNTeams/'+recipient).get());
+      if(recipient!=user)reads.push(admin.firestore().doc('PERRINNTeams/'+recipient).get());
+      //reads.push(admin.firestore().collection('PERRINNMessages').where('user','==',recipient||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get())
     });
     const recipientsObj=await Promise.all(reads)
-    messageData.recipientList.forEach((recipient,index)=>{
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient}.name`]:(recipientsObj[index].data()||{}).name||null},{create:true});
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient}.familyName`]:(recipientsObj[index].data()||{}).familyName||null},{create:true});
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient}.imageUrlThumb`]:(recipientsObj[index].data()||{}).imageUrlThumb||null},{create:true});
+    recipientsObj.forEach((recipient)=>{
+      if(recipient.id!=undefined&&recipient.id!='undefined')batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient.id}.name`]:(recipient.data()||{}).name||null},{create:true});
+      if(recipient.id!=undefined&&recipient.id!='undefined')batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient.id}.familyName`]:(recipient.data()||{}).familyName||null},{create:true});
+      if(recipient.id!=undefined&&recipient.id!='undefined')batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient.id}.imageUrlThumb`]:(recipient.data()||{}).imageUrlThumb||null},{create:true});
     });
 
     //messaging cost
@@ -142,6 +143,9 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{searchName:messageData.searchName},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"apps.Google.enabled":((messageData.apps||{}).Google||{}).enabled||((previousMessageData.apps||{}).Google||{}).enabled||false},{create:true});
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"apps.Onshape.enabled":((messageData.apps||{}).Onshape||{}).enabled||((previousMessageData.apps||{}).Onshape||{}).enabled||false},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.name`]:messageData.name||previousMessageData.name||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.familyName`]:messageData.familyName||previousMessageData.familyName||null},{create:true});
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.imageUrlThumb`]:messageData.imageUrlThumbUser||previousMessageData.imageUrlThumbUser||null},{create:true});
     if (((messageData.apps||{}).Google||{}).enabled&&!((previousMessageData.apps||{}).Google||{}).enabled&&userChain.index>1)googleUtils.joinPERRINNGoogleGroup(user)
     if (((messageData.apps||{}).Onshape||{}).enabled&&!((previousMessageData.apps||{}).Onshape||{}).enabled&&userChain.index>1)onshapeUtils.joinPERRINNOnshapeTeam(user)
     if(messageData.createdTimestamp==now){
@@ -194,7 +198,6 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
     wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount))*100000)/100000;
     membership.previousState=((messageData.PERRINN||{}).wallet||{}).balance>0||((previousMessageData.PERRINN||{}).wallet||{}).balance>0||false
     membership.changeState=(wallet.balance>0)!=membership.previousState
-    membership.serverTimestamp=admin.firestore.FieldValue.serverTimestamp()
     if (membership.changeState){
       if(user!='-L7jqFf8OuGlZrfEK6dT'){
         await admin.auth().setCustomUserClaims(user,{member:wallet.balance>0||false})
@@ -243,11 +246,12 @@ exports=module.exports=functions.firestore.document('PERRINNMessages/{message}')
 
     //message verified
     batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{verified:true},{create:true})
+    batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{verifiedTimestamp:admin.firestore.FieldValue.serverTimestamp()},{create:true})
 
     await batch.commit()
   }
   catch(error){
-    console.log(error);
+    console.log('user '+user+' error '+error);
     emailUtils.sendErrorEmail(error);
     return admin.firestore().doc('PERRINNMessages/'+messageId).update({verified:false})
   }

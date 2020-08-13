@@ -62,11 +62,6 @@ export class AppComponent {
     }).then(ref=>{
       this.UI.clearRecipient();
       this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.createMessage({
-          chain:ref.id,
-          text:'new chat'
-        })
-      }).then(()=>{
         this.router.navigate(['chat',ref.id]);
       });
     });
