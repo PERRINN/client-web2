@@ -6,11 +6,12 @@ const verifyMessageUtils = require('../utils/verifyMessage')
 
 const runtimeOpts={timeoutSeconds:540}
 
-exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 hours').onRun(async(context) => {
+exports=module.exports=functions.database.ref('/toto').onCreate(async(data,context)=>{
   try{
     let count=0
     const listUsersResult=await admin.auth().listUsers()
     for(const userRecord of listUsersResult.users){
+      if(userRecord.uid!='wUov0oJRqZOY3bx1gudnJleFDT13')continue
       let messageRef=''
       let messageData={}
       let lastUserMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',userRecord.uid).orderBy('serverTimestamp','desc').limit(1).get()
