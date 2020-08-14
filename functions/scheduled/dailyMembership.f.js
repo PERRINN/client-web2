@@ -4,7 +4,7 @@ try { admin.initializeApp() } catch (e) {}
 const emailUtils = require('../utils/email')
 const verifyMessageUtils = require('../utils/verifyMessage')
 
-const runtimeOpts={timeoutSeconds:540}
+const runtimeOpts={timeoutSeconds:540,memory:'1GB'}
 
 exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 hours').onRun(async(context) => {
   try{
@@ -13,10 +13,8 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     for(const userRecord of listUsersResult.users){
       let messageRef=''
       let messageData={}
-      let lastUserMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',userRecord.uid).orderBy('serverTimestamp','desc').limit(1).get()
-      lastUserMessages.forEach(message=>{
-        verifyMessageUtils.verifyMessage(message.id,message.data())
-      });
+      let lastUserMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',userRecord.uid).orderBy('serverTimestamp','desc').limit(1).get()
+      await verifyMessageUtils.verifyMessage(lastUserMessage.docs[0].id,lastUserMessage.docs[0].data())
       count=count+1
     }
     console.log(count+' users processed.');
