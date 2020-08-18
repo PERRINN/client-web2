@@ -10,22 +10,6 @@ module.exports = {
 
     const user=messageData.user;
     const now=Date.now();
-    let amountMessaging=0;
-    let amountRead=0;
-    let amountWrite=0;
-    let donor='none';
-    let donorName='';
-    let donorFamilyName='';
-    let donorImageUrlThumb='';
-    let reference='none';
-    let receiverName='';
-    let receiverFamilyName='';
-    let receiverImageUrlThumb='';
-    let receiverMessage='none';
-    let functionObj={none:'none'};
-    let inputs={none:'none'};
-    let inputsComplete=false;
-    let previousThreadMessageData={};
     var batch = admin.firestore().batch();
 
     try{
@@ -42,6 +26,7 @@ module.exports = {
       });
 
       //last message flag
+      let previousThreadMessageData={};
       const previousThreadMessages=await admin.firestore().collection('PERRINNMessages').where('chain','==',messageData.chain).where('lastMessage','==',true).get()
       let lastThreadMessage=true;
       previousThreadMessages.forEach(message=>{
@@ -60,12 +45,7 @@ module.exports = {
       userChain.previousMessage=previousMessageId||null
       userChain.nextMessage='none'
       userChain.index=((previousMessageData.userChain||{}).index+1)||(((previousMessageData.PERRINN||{}).chain||{}).index+1)||1
-      if(previousMessageId!='none')batch.update(admin.firestore().doc('PERRINNMessages/'+previousMessageId),{"PERRINN.chain.nextMessage":messageId||null},{create:true});
       if(previousMessageId!='none')batch.update(admin.firestore().doc('PERRINNMessages/'+previousMessageId),{"userChain.nextMessage":messageId||null},{create:true});
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.currentMessage":userChain.currentMessage},{create:true});
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.previousMessage":userChain.previousMessage},{create:true});
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.nextMessage":userChain.nextMessage},{create:true});
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.chain.index":userChain.index},{create:true});
 
       //message recipientList (merge with user, trasnactionOut receiver, previous thread list and remove duplicates and remove undefined)
       messageData.recipientList=[user].concat([(messageData.transactionOut||{}).receiver]||[]).concat(messageData.recipientList||[]).concat(previousThreadMessageData.recipientList||[])
@@ -87,10 +67,10 @@ module.exports = {
 
       //messaging cost
       const costs=await admin.firestore().doc('appSettings/costs').get()
-      amountWrite=costs.data().messageWrite;
-      amountMessaging=Math.round(Number(amountWrite)*100000)/100000;
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.messagingCost.amount":amountMessaging||null},{create:true});
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.messagingCost.amountWrite":amountWrite||null},{create:true});
+      let amountWrite=costs.data().messageWrite;
+      let amountMessaging=Math.round(Number(amountWrite)*100000)/100000;
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"messagingCost.amount":amountMessaging||null},{create:true});
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"messagingCost.amountWrite":amountWrite||null},{create:true});
 
       //message transaction out receiver
       let transactionOutReceiverLastMessageId='none';
@@ -190,7 +170,7 @@ module.exports = {
       //PERRINN membership
       let membership={}
       membership.dailyCost=costs.data().membershipDay
-      membership.days=(now/1000/3600/24-((previousMessageData.membership||{}).serverTimestamp||{}).seconds/3600/24)||0
+      membership.days=(now/1000/3600/24-(previousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
       membership.daysTotal=((previousMessageData.membership||{}).daysTotal||0)+membership.days
       membership.amount=membership.days*membership.dailyCost
       wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount))*100000)/100000;
