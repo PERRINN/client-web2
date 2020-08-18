@@ -12,17 +12,16 @@ import * as firebase from 'firebase/app';
   <div class="sheet">
   <input id="searchInput" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Search">
   <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshSearchByCOINLists()">COIN holders' list</div>
-  <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshSearchDomainsList()">Domains list</div>
   <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   <div class='sheet'>
   <ul class="listLight">
-    <li *ngFor="let team of teams | async" style="padding:5px">
-      <div style="float:left;width:250px" (click)="router.navigate(['profile','user',team.key])">
-        <img [src]="team?.values.imageUrlThumb" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
-        <span>{{team.values?.name}}</span>
-        <span style="font-size:10px"> {{team.values?.familyName}}</span>
-        <div style="font-size:12px;color:#999">C{{(team.values?.lastMessageBalance?team.values?.lastMessageBalance:0)|number:'1.2-2'}}</div>
+    <li *ngFor="let message of messages | async" style="padding:5px">
+      <div style="float:left;width:250px" (click)="router.navigate(['profile','user',message.values.user])">
+        <img [src]="message?.values.imageUrlThumbUser" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
+        <span>{{message.values?.name}}</span>
+        <span style="font-size:10px"> {{message.values?.familyName}}</span>
+        <div style="font-size:12px;color:#999">C{{(message.values?.PERRINN?.wallet?.balance?message.values?.PERRINN?.wallet?.balance:0)|number:'1.2-2'}}</div>
       </div>
     </li>
   </ul>
@@ -33,7 +32,7 @@ import * as firebase from 'firebase/app';
 
 export class SearchComponent  {
 
-  teams: Observable<any[]>;
+  messages: Observable<any[]>;
   searchFilter: string;
 
   constructor(
@@ -52,8 +51,9 @@ export class SearchComponent  {
   refreshSearchLists() {
     if (this.searchFilter) {
       if (this.searchFilter.length > 1) {
-        this.teams = this.afs.collection('PERRINNTeams', ref => ref
-        .where('isUser','==',true)
+        this.messages = this.afs.collection('PERRINNMessages', ref => ref
+        .where('userChain.nextMessage','==','none')
+        .where('verified','==',true)
         .where('searchName','>=',this.searchFilter.toLowerCase())
         .where('searchName','<=',this.searchFilter.toLowerCase()+'\uf8ff')
         .orderBy('searchName')
@@ -66,26 +66,15 @@ export class SearchComponent  {
         }));
       }
     } else {
-      this.teams = null;
+      this.messages = null;
     }
   }
 
   refreshSearchByCOINLists() {
-    this.teams = this.afs.collection('PERRINNTeams', ref => ref
-    .where('isUser','==',true)
-    .orderBy('lastMessageBalance',"desc")
-    .limit(20))
-    .snapshotChanges().pipe(map(changes => {
-      return changes.map(c => ({
-        key: c.payload.doc.id,
-        values: c.payload.doc.data(),
-      }));
-    }));
-  }
-
-  refreshSearchDomainsList() {
-    this.teams = this.afs.collection('PERRINNTeams', ref => ref
-    .where('isDomain','==',true)
+    this.messages = this.afs.collection('PERRINNMessages', ref => ref
+    .where('userChain.nextMessage','==','none')
+    .where('verified','==',true)
+    .orderBy('PERRINN.wallet.balance',"desc")
     .limit(20))
     .snapshotChanges().pipe(map(changes => {
       return changes.map(c => ({

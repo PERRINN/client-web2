@@ -85,7 +85,6 @@ import * as firebase from 'firebase/app';
       <span style="font-size:10px;margin-left:5px">(your PERRINN email must match your Onshape email)</span>
     </div>
   <div class="seperator" style="width:100%;margin:0px"></div>
-  <div *ngIf="UI.currentDomainObj?.isUser" style="color:#555;margin:20px">Email notifications: {{(UI.currentDomainObj?.enableEmailNotifications)?'ON':'OFF'}}</div>
   <div *ngIf="UI.currentDomain==UI.currentUser" class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div class="seperator" style="width:100%;margin-bottom:250px"></div>
   `,

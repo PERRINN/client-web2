@@ -106,7 +106,6 @@ module.exports = {
 
       //email notifications
       if((messageData.PERRINN||{}).emailNotifications)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.emailNotifications":messageData.recipientList},{create:true});
-      batch.update(admin.firestore().doc('PERRINNTeams/'+user),{enableEmailNotifications:true||null},{create:true});
 
       //user data
       messageData.searchName=(messageData.name||previousMessageData.name||'').toLowerCase()+' '+(messageData.familyName||previousMessageData.familyName||'').toLowerCase();

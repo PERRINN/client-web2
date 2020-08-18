@@ -22,7 +22,6 @@ exports=module.exports=functions.storage.object().onFinalize(async(data,context)
     await new Promise(resolve => setTimeout(resolve, 5000))
     const messagesUser=await admin.firestore().collection('PERRINNMessages').where('userImageTimestamp','==',imageID).get()
     const messagesDomain=await admin.firestore().collection('PERRINNMessages').where('domainImageTimestamp','==',imageID).get()
-    const teams=await admin.firestore().collection('PERRINNTeams').where('imageTimestamp','==',imageID).get()
     var batch = admin.firestore().batch();
     messagesUser.forEach(message=>{
       if(fileName.substring(0,fileName.lastIndexOf('.')).endsWith('_180x180'))batch.update(admin.firestore().collection('PERRINNMessages').doc(message.id),{imageUrlThumbUser:url[0]});
@@ -31,10 +30,6 @@ exports=module.exports=functions.storage.object().onFinalize(async(data,context)
     messagesDomain.forEach(message=>{
       if(fileName.substring(0,fileName.lastIndexOf('.')).endsWith('_180x180'))batch.update(admin.firestore().collection('PERRINNMessages').doc(message.id),{domainImageUrlThumb:url[0]});
       if(fileName.substring(0,fileName.lastIndexOf('.')).endsWith('_540x540'))batch.update(admin.firestore().collection('PERRINNMessages').doc(message.id),{domainImageUrlMedium:url[0]});
-    });
-    teams.forEach(team=>{
-      if(fileName.substring(0,fileName.lastIndexOf('.')).endsWith('_180x180'))batch.update(admin.firestore().collection('PERRINNTeams').doc(team.id),{imageUrlThumb:url[0]});
-      if(fileName.substring(0,fileName.lastIndexOf('.')).endsWith('_540x540'))batch.update(admin.firestore().collection('PERRINNTeams').doc(team.id),{imageUrlMedium:url[0]});
     });
     await batch.commit();
   }
