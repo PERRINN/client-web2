@@ -60,10 +60,9 @@ export class AppComponent {
     return this.afs.collection('IDs').add({
       user:this.UI.currentUser
     }).then(ref=>{
-      this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.router.navigate(['chat',ref.id]);
-      });
+      this.UI.clearRecipient()
+      this.UI.addRecipient(this.UI.currentUserLastMessageObj)
+      this.router.navigate(['chat',ref.id])
     });
   }
 

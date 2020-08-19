@@ -30,11 +30,11 @@ import * as firebase from 'firebase/app';
       <li *ngFor="let team of teams | async" >
         <div *ngIf="!UI.recipients[team.key]" style="padding:5px">
           <div style="float:left;width:175px">
-            <img [src]="team?.values?.imageUrlThumb" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+            <img [src]="team?.values?.imageUrlThumbUser" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
             <span>{{team.values?.name}}</span>
             <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
-          <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white;border-style:none" (click)="UI.addRecipient(team.key)">Add</div>
+          <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white;border-style:none" (click)="UI.addRecipient(team.values)">Add</div>
         </div>
       </li>
     </ul>
@@ -331,8 +331,9 @@ export class ChatComponent {
   refreshSearchLists() {
     if (this.searchFilter) {
       if (this.searchFilter.length > 1) {
-        this.teams = this.afs.collection('PERRINNTeams', ref => ref
-        .where('isUser','==',true)
+        this.teams = this.afs.collection('PERRINNMessages', ref => ref
+        .where('userChain.nextMessage','==','none')
+        .where('verified','==',true)
         .where('searchName','>=',this.searchFilter.toLowerCase())
         .where('searchName','<=',this.searchFilter.toLowerCase()+'\uf8ff')
         .orderBy('searchName')
@@ -348,6 +349,5 @@ export class ChatComponent {
       this.teams = null;
     }
   }
-
 
 }

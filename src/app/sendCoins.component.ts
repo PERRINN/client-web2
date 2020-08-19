@@ -17,7 +17,7 @@ import * as firebase from 'firebase/app';
     <span>{{receiverName}}</span>
     <span style="font-size:10px"> {{receiverFamilyName}}</span>
   </div>
-  <div style="float:right;margin:15px;font-size:12px">Balance available: C{{(UI.currentDomainObj?.lastMessageBalance?UI.currentDomainObj?.lastMessageBalance:0)|number:'1.2-2'}}</div>
+  <div style="float:right;margin:15px;font-size:12px">Balance available: C{{(UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</div>
   <div class="buttonDiv" [style.color]="inputsValid?'#267cb5':'#bbb'" style="clear:both;margin:15px;width:150px;font-size:11px" (click)="sendCoins()">Send COINS</div>
   <input maxlength="500" (keyup)="inputsValid=checkInputs()" [(ngModel)]="amount" placeholder="Amount">
   <input maxlength="500" (keyup)="inputsValid=checkInputs()" [(ngModel)]="reference" placeholder="Reference">
@@ -26,11 +26,11 @@ import * as firebase from 'firebase/app';
     <li *ngFor="let team of teams | async" >
       <div style="padding:5px">
         <div style="float:left;width:175px">
-          <img [src]="team?.values.imageUrlThumb" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+          <img [src]="team?.values.imageUrlThumbUser" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
           <span>{{team.values?.name}}</span>
           <span style="font-size:10px"> {{team.values?.familyName}}</span>
         </div>
-        <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white;border-style:none" (click)="receiver=team.key;receiverName=team.values.name;receiverFamilyName=team.values.familyName;receiverImageUrlThumb=team.values.imageUrlThumb;inputsValid=checkInputs()">Select</div>
+        <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white;border-style:none" (click)="receiver=team.values.user;receiverName=team.values.name;receiverFamilyName=team.values.familyName;receiverImageUrlThumb=team.values.imageUrlThumbUser;inputsValid=checkInputs()">Select</div>
       </div>
     </li>
   </ul>
@@ -67,7 +67,9 @@ export class SendCoinsComponent  {
   refreshSearchLists() {
     if (this.searchFilter) {
       if (this.searchFilter.length > 1) {
-        this.teams = this.afs.collection('PERRINNTeams', ref => ref
+        this.teams = this.afs.collection('PERRINNMessages', ref => ref
+        .where('userChain.nextMessage','==','none')
+        .where('verified','==',true)
         .where('searchName','>=',this.searchFilter.toLowerCase())
         .where('searchName','<=',this.searchFilter.toLowerCase()+'\uf8ff')
         .orderBy('searchName')
@@ -89,7 +91,7 @@ export class SendCoinsComponent  {
     if(this.reference=='')return false;
     if(isNaN(this.amount))return false;
     if(Number(this.amount)<=0)return false;
-    if(Number(this.amount)>Number(this.UI.currentDomainObj.lastMessageBalance))return false;
+    if(Number(this.amount)>Number(this.UI.currentUserLastMessageObj.PERRINN.wallet.balance))return false;
     return true;
   }
 
@@ -100,21 +102,19 @@ export class SendCoinsComponent  {
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
       this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUser).then(()=>{
-        this.UI.addRecipient(this.receiver).then(()=>{
-          this.UI.createMessage({
-            text:'sending '+this.amount+' COINS, reference: '+this.reference,
-            chain:ref.id,
-            transactionOut:{
-              receiver:this.receiver,
-              amount:this.amount,
-              reference:this.reference
-            },
-            auto:true
-          })
-          this.UI.showChatDetails=false;
-        });
-      });
+      this.UI.addRecipient(this.UI.currentUserLastMessageObj)
+      this.UI.addRecipient({user:this.receiver,name:this.receiverName,familyName:this.receiverFamilyName,imageUrlThumbUser:this.receiverImageUrlThumb})
+      this.UI.createMessage({
+        text:'sending '+this.amount+' COINS, reference: '+this.reference,
+        chain:ref.id,
+        transactionOut:{
+          receiver:this.receiver,
+          amount:this.amount,
+          reference:this.reference
+        },
+        auto:true
+      })
+      this.UI.showChatDetails=false;
     });
   }
 

@@ -13,7 +13,6 @@ export class UserInterfaceService {
   currentDomainLastMessageObj:any;
   currentUser:string;
   currentUserClaims:any;
-  currentUserObj:any;
   currentUserLastMessageObj:any;
   process:any;
   recipients:any;
@@ -33,9 +32,6 @@ export class UserInterfaceService {
         this.currentUser=auth.uid;
         afs.collection<any>('PERRINNMessages',ref=>ref.where('user','==',this.currentUser).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1)).valueChanges().subscribe(snapshot=>{
           this.currentUserLastMessageObj=snapshot[0];
-        });
-        afs.doc<any>('PERRINNTeams/'+this.currentUser).valueChanges().subscribe(snapshot=>{
-          this.currentUserObj=snapshot;
         });
         firebase.auth().currentUser.getIdTokenResult().then(result=>{
           this.currentUserClaims=result.claims;
@@ -58,16 +54,14 @@ export class UserInterfaceService {
     })
   }
 
-  addRecipient(user){
-    return this.afs.doc('PERRINNTeams/'+user).ref.get().then(snapshot=>{
-      this.recipients[user]=
-      {
-        name:snapshot.data().name,
-        familyName:snapshot.data().familyName,
-        imageUrlThumb:snapshot.data().imageUrlThumb
-      }
-      this.refreshRecipientList();
-    });
+  addRecipient(messageData){
+    this.recipients[messageData.user]=
+    {
+      name:messageData.name,
+      familyName:messageData.familyName,
+      imageUrlThumb:messageData.imageUrlThumbUser
+    }
+    this.refreshRecipientList();
   }
 
   clearRecipient(){
