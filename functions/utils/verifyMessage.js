@@ -63,7 +63,7 @@ module.exports = {
         }
       })
 
-      //message recipientList (merge with user, trasnactionOut receiver, previous thread list and remove duplicates and remove undefined)
+      //message recipientList (merge with user, trasnactionOut receiver, previous chat list and remove duplicates and remove undefined)
       messageData.recipientList=[user].concat([(messageData.transactionOut||{}).receiver]||[]).concat(messageData.recipientList||[]).concat(chatPreviousMessageData.recipientList||[])
       messageData.recipientList=messageData.recipientList.filter((item,pos)=>messageData.recipientList.indexOf(item)===pos)
       messageData.recipientList.indexOf('undefined')!=-1&&messageData.recipientList.splice(messageData.recipientList.indexOf('undefined'),1)

@@ -134,8 +134,6 @@ export class SettingsComponent {
       user:this.UI.currentUser,
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
-      this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUserLastMessageObj)
       this.UI.createMessage({
         chain:ref.id,
         text:'Updating name to: '+this.currentName+' '+this.currentFamilyName,
@@ -160,8 +158,6 @@ export class SettingsComponent {
       user:this.UI.currentUser,
       serverTimestamp:firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
-      this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUserLastMessageObj)
       this.UI.createMessage({
         chain:ref.id,
         text:'Updating membership cost to: '+this.membershipCost,
@@ -176,8 +172,6 @@ export class SettingsComponent {
       user:this.UI.currentUser,
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
-      this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUserLastMessageObj)
       this.UI.createMessage({
         chain:ref.id,
         text:'joining PERRINN Onshape team',
@@ -192,8 +186,6 @@ export class SettingsComponent {
       user:this.UI.currentUser,
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
-      this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUserLastMessageObj)
       this.UI.createMessage({
         chain:ref.id,
         text:'joining PERRINN Google group',
@@ -238,8 +230,6 @@ export class SettingsComponent {
           user:this.UI.currentUser,
           serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(ref=>{
-          this.UI.clearRecipient();
-          this.UI.addRecipient(this.UI.currentUserLastMessageObj)
           this.UI.createMessage({
             chain:ref.id,
             text:'updating profile picture',

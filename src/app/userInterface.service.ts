@@ -14,9 +14,6 @@ export class UserInterfaceService {
   currentUser:string;
   currentUserClaims:any;
   currentUserLastMessageObj:any;
-  process:any;
-  recipients:any;
-  recipientList:any;
   showChatDetails:boolean;
 
   constructor(
@@ -24,9 +21,6 @@ export class UserInterfaceService {
     public afs: AngularFirestore
   ) {
     this.showChatDetails=false;
-    this.process={};
-    this.recipients={};
-    this.recipientList=[];
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
         this.currentUser=auth.uid;
@@ -54,66 +48,14 @@ export class UserInterfaceService {
     })
   }
 
-  addRecipient(messageData){
-    this.recipients[messageData.user]=
-    {
-      name:messageData.name,
-      familyName:messageData.familyName,
-      imageUrlThumb:messageData.imageUrlThumbUser
-    }
-    this.refreshRecipientList();
-  }
-
-  clearRecipient(){
-    this.recipients={};
-  }
-
-  refreshRecipientList(){
-    let recipientArray=[];
-    Object.keys(this.recipients).forEach(key=>{
-      recipientArray.push(key);
-    });
-    this.recipientList=recipientArray;
-  }
-
-  createMessageAFS(text,image,imageDownloadURL,auto,pin){
-    text = text.replace(/(\r\n|\n|\r)/gm, '');
-    if (text==''&&image=='') return null;
-    const now = Date.now();
-    this.refreshRecipientList();
-    this.afs.collection('PERRINNMessages').add({
-      timestamp: now,
-      serverTimestamp:firebase.firestore.FieldValue.serverTimestamp(),
-      recipientList:this.recipientList,
-      domain:this.currentDomain,
-      user:this.currentUser,
-      text:text,
-      image:image,
-      imageDownloadURL:imageDownloadURL,
-      process:this.process,
-      auto:auto,
-      pin:pin
-    }).then(()=>{
-      this.process={};
-      return null;
-    });
-  }
-
   createMessage(messageObj){
     messageObj.text=messageObj.text.replace(/(\r\n|\n|\r)/gm, '');
     if (!messageObj.text&&!messageObj.image) return null;
-    this.refreshRecipientList();
     messageObj.serverTimestamp=firebase.firestore.FieldValue.serverTimestamp();
     messageObj.user=this.currentUser;
-    messageObj.recipientList=this.recipientList;
-    messageObj.domain=messageObj.domain||this.currentDomain||this.currentUser;
-    messageObj.process=this.process;
     messageObj.PERRINN={};
     messageObj.PERRINN.emailNotifications=[];
-    this.afs.collection('PERRINNMessages').add(messageObj).then(()=>{
-      this.process={};
-      return null;
-    });
+    return this.afs.collection('PERRINNMessages').add(messageObj)
   }
 
   objectToArray(obj) {

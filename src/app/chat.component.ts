@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Router, ActivatedRoute } from '@angular/router';
-import { UserInterfaceService } from './userInterface.service';
-import { AngularFireStorage } from '@angular/fire/storage';
-import * as firebase from 'firebase/app';
+import { Component } from '@angular/core'
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
+import { Router, ActivatedRoute } from '@angular/router'
+import { UserInterfaceService } from './userInterface.service'
+import { AngularFireStorage } from '@angular/fire/storage'
+import * as firebase from 'firebase/app'
 
 @Component({
   selector: 'chat',
@@ -20,7 +20,7 @@ import * as firebase from 'firebase/app';
     <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubjectEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
-      <li *ngFor="let recipient of objectToArray(UI.recipients)" (click)="router.navigate(['profile','user',recipient[0]])" style="cursor:pointer;float:left">
+      <li *ngFor="let recipient of objectToArray(recipients)" (click)="router.navigate(['profile','user',recipient[0]])" style="cursor:pointer;float:left">
         <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
         <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
       </li>
@@ -28,13 +28,13 @@ import * as firebase from 'firebase/app';
     </ul>
     <ul class="listLight">
       <li *ngFor="let team of teams | async" >
-        <div *ngIf="!UI.recipients[team.key]" style="padding:5px">
+        <div *ngIf="!recipients[team.key]" style="padding:5px">
           <div style="float:left;width:175px">
             <img [src]="team?.values?.imageUrlThumbUser" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
             <span>{{team.values?.name}}</span>
             <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
-          <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white;border-style:none" (click)="UI.addRecipient(team.values)">Add</div>
+          <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white;border-style:none" (click)="addRecipient(team)">Add</div>
         </div>
       </li>
     </ul>
@@ -51,7 +51,7 @@ import * as firebase from 'firebase/app';
     <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
       <div style="float:left;margin:0 5px 0 10px;min-height:40px">
         <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
-        <span *ngFor="let recipient of objectToArray(UI.recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1]?.name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
+        <span *ngFor="let recipient of objectToArray(recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1]?.name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
@@ -78,16 +78,7 @@ import * as firebase from 'firebase/app';
             <div>
               <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
               <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
-              <img *ngIf="message.payload?.action=='transaction'" src="./../assets/App icons/icon_share_03.svg" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-              <img *ngIf="message.payload?.action=='confirmation'" src="./../assets/App icons/tick.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-              <img *ngIf="message.payload?.action=='warning'" src="./../assets/App icons/warning.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-              <img *ngIf="message.payload?.action=='process'" src="./../assets/App icons/repeat.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-              <img *ngIf="message.payload?.action=='add'" src="./../assets/App icons/add.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
-              <img *ngIf="message.payload?.action=='remove'" src="./../assets/App icons/remove.png" style="display:inline;float:left;margin:0 5px 0 5px;height:20px;">
               <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
-              <div *ngIf="message.payload?.PERRINN?.process?.inputsComplete" style="margin:5px">
-                <div style="font-size:11px;color:#999">{{message.payload?.PERRINN?.process?.result}}</div>
-              </div>
               <div style="clear:both;text-align:center">
                 <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
               </div>
@@ -138,29 +129,30 @@ import * as firebase from 'firebase/app';
     `
 })
 export class ChatComponent {
-  draftMessage:string;
-  draftImage:string;
-  draftImageDownloadURL:string;
-  messageNumberDisplay:number;
-  lastChatVisitTimestamp:number;
-  scrollMessageTimestamp:number;
-  previousMessageServerTimestamp:any;
-  previousMessageUser:string;
-  previousMessageRead:boolean;
-  previousMessageRecipientList:[];
-  isCurrentUserLeader:boolean;
-  isCurrentUserMember:boolean;
-  showDetails:{};
-  messages:Observable<any[]>;
-  teams:Observable<any[]>;
-  searchFilter:string;
-  reads:any[];
-  autoMessage:boolean;
-  chatSubjectEdit:string;
-  pinNextMessage:boolean;
-  nowSeconds:number;
-  chatLastMessageObj:any;
-  chatChain:string;
+  draftMessage:string
+  draftImage:string
+  draftImageDownloadURL:string
+  messageNumberDisplay:number
+  lastChatVisitTimestamp:number
+  scrollMessageTimestamp:number
+  previousMessageServerTimestamp:any
+  previousMessageUser:string
+  previousMessageRead:boolean
+  previousMessageRecipientList:[]
+  isCurrentUserLeader:boolean
+  isCurrentUserMember:boolean
+  showDetails:{}
+  messages:Observable<any[]>
+  teams:Observable<any[]>
+  searchFilter:string
+  reads:any[]
+  autoMessage:boolean
+  chatSubjectEdit:string
+  pinNextMessage:boolean
+  nowSeconds:number
+  chatLastMessageObj:any
+  chatChain:string
+  recipients:{}
 
   constructor(
     public afs: AngularFirestore,
@@ -169,39 +161,40 @@ export class ChatComponent {
     private route: ActivatedRoute,
     private storage: AngularFireStorage,
   ) {
-    this.UI.loading = true;
-    this.nowSeconds = Date.now()/1000;
-    this.reads=[];
-    this.route.params.subscribe(params => {
+    this.UI.loading=true
+    this.recipients={}
+    this.nowSeconds=Date.now()/1000
+    this.reads=[]
+    this.route.params.subscribe(params=>{
       this.chatChain=params.id
-      this.isCurrentUserLeader=false;
-      this.isCurrentUserMember=false;
-      this.showDetails={};
-      this.chatLastMessageObj={};
-      this.previousMessageServerTimestamp={};
-      this.previousMessageUser='';
-      this.previousMessageRead=false;
-      this.previousMessageRecipientList=[];
-      this.draftImage='';
-      this.draftImageDownloadURL='';
-      this.draftMessage='';
-      this.autoMessage=false;
-      this.messageNumberDisplay = 15;
-      this.chatSubjectEdit='';
-      this.pinNextMessage=false;
-      this.refreshMessages(params.id);
-    });
+      this.isCurrentUserLeader=false
+      this.isCurrentUserMember=false
+      this.showDetails={}
+      this.chatLastMessageObj={}
+      this.previousMessageServerTimestamp={}
+      this.previousMessageUser=''
+      this.previousMessageRead=false
+      this.previousMessageRecipientList=[]
+      this.draftImage=''
+      this.draftImageDownloadURL=''
+      this.draftMessage=''
+      this.autoMessage=false
+      this.messageNumberDisplay=15
+      this.chatSubjectEdit=''
+      this.pinNextMessage=false
+      this.refreshMessages(params.id)
+    })
   }
 
   ngOnInit() {
-    this.refreshSearchLists();
+    this.refreshSearchLists()
   }
 
   scrollHandler(e: string) {
     if (e === 'top') {
-      this.UI.loading = true;
-      this.messageNumberDisplay += 15;
-      this.refreshMessages(this.chatLastMessageObj.chain||this.chatChain);
+      this.UI.loading=true
+      this.messageNumberDisplay+=15
+      this.refreshMessages(this.chatLastMessageObj.chain||this.chatChain)
     }
   }
 
@@ -210,61 +203,61 @@ export class ChatComponent {
       .where('chain','==',chain)
       .orderBy('serverTimestamp','desc')
       .limit(this.messageNumberDisplay)
-    ).snapshotChanges().pipe(map(changes => {
-      this.UI.loading = false;
-      var batch = this.afs.firestore.batch();
-      changes.forEach(c => {
+    ).snapshotChanges().pipe(map(changes=>{
+      this.UI.loading=false
+      var batch=this.afs.firestore.batch()
+      changes.forEach(c=>{
         if(c.payload.doc.data()['lastMessage']){
-          if(!this.reads.includes(c.payload.doc.id))batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(c.payload.doc.id),{serverTimestamp:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-          this.reads.push(c.payload.doc.id);
-          this.chatLastMessageObj=c.payload.doc.data();
-          this.chatSubjectEdit=c.payload.doc.data()['chatSubject'];
-          this.UI.recipients=c.payload.doc.data()['recipients'];
+          if(!this.reads.includes(c.payload.doc.id))batch.set(this.afs.firestore.collection('PERRINNTeams').doc(this.UI.currentUser).collection('reads').doc(c.payload.doc.id),{serverTimestamp:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})
+          this.reads.push(c.payload.doc.id)
+          this.chatLastMessageObj=c.payload.doc.data()
+          this.chatSubjectEdit=c.payload.doc.data()['chatSubject']
+          this.recipients=c.payload.doc.data()['recipients']
         }
-      });
-      batch.commit();
-      return changes.reverse().map(c => ({payload: c.payload.doc.data()}));
-    }));
+      })
+      batch.commit()
+      return changes.reverse().map(c=>({payload: c.payload.doc.data()}))
+    }))
   }
 
   switchShowDetails(message) {
     if (this.showDetails[message] == undefined) {
-      this.showDetails[message] = true;
+      this.showDetails[message]=true
     } else {
-      this.showDetails[message] = !this.showDetails[message];
+      this.showDetails[message]=!this.showDetails[message]
     }
   }
 
   showFullScreenImage(src) {
-    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
-    fullScreenImage.src = src;
-    fullScreenImage.style.visibility = 'visible';
+    const fullScreenImage=document.getElementById('fullScreenImage') as HTMLImageElement
+    fullScreenImage.src=src
+    fullScreenImage.style.visibility='visible'
   }
 
   isMessageNewTimeGroup(messageServerTimestamp:any) {
-    let isMessageNewTimeGroup:boolean;
-    isMessageNewTimeGroup = Math.abs(messageServerTimestamp.seconds - this.previousMessageServerTimestamp.seconds) > 60 * 60 * 4;
-    return isMessageNewTimeGroup;
+    let isMessageNewTimeGroup:boolean
+    isMessageNewTimeGroup=Math.abs(messageServerTimestamp.seconds - this.previousMessageServerTimestamp.seconds) > 60 * 60 * 4
+    return isMessageNewTimeGroup
   }
 
   isMessageNewUserGroup(user: any, messageServerTimestamp: any) {
-    let isMessageNewUserGroup:boolean;
-    isMessageNewUserGroup = Math.abs(messageServerTimestamp.seconds - this.previousMessageServerTimestamp.seconds) > 60 * 5 || (user != this.previousMessageUser);
-    return isMessageNewUserGroup;
+    let isMessageNewUserGroup:boolean
+    isMessageNewUserGroup=Math.abs(messageServerTimestamp.seconds - this.previousMessageServerTimestamp.seconds) > 60 * 5 || (user != this.previousMessageUser)
+    return isMessageNewUserGroup
   }
 
   storeMessageValues(message) {
-    this.previousMessageUser=message.user;
-    this.previousMessageServerTimestamp=message.serverTimestamp;
-    this.previousMessageRecipientList=message.recipientList;
-    this.previousMessageRead=(message.reads||[])[this.UI.currentUser];
+    this.previousMessageUser=message.user
+    this.previousMessageServerTimestamp=message.serverTimestamp
+    this.previousMessageRecipientList=message.recipientList
+    this.previousMessageRead=(message.reads||[])[this.UI.currentUser]
   }
 
   scrollToBottom(scrollMessageTimestamp: number) {
     if (scrollMessageTimestamp != this.scrollMessageTimestamp) {
-      const element = document.getElementById('chat_window');
-      element.scrollTop = element.scrollHeight;
-      this.scrollMessageTimestamp = scrollMessageTimestamp;
+      const element=document.getElementById('chat_window')
+      element.scrollTop=element.scrollHeight
+      this.scrollMessageTimestamp=scrollMessageTimestamp
     }
   }
 
@@ -274,7 +267,7 @@ export class ChatComponent {
       chain:this.chatLastMessageObj.chain||this.chatChain,
       chatSubject:this.chatSubjectEdit,
     })
-    this.UI.showChatDetails=false;
+    this.UI.showChatDetails=false
   }
 
   addMessage() {
@@ -286,69 +279,83 @@ export class ChatComponent {
       chatSubject:this.chatSubjectEdit,
       pin:this.pinNextMessage
     })
-    this.draftMessage = '';
-    this.draftImage = '';
-    this.pinNextMessage=false;
-    this.UI.showChatDetails=false;
+    this.draftMessage=''
+    this.draftImage=''
+    this.pinNextMessage=false
+    this.UI.showChatDetails=false
+  }
+
+  addRecipient(recipientObj) {
+    this.UI.createMessage({
+      text:'adding new recipient: '+recipientObj.values.name+' '+recipientObj.values.familyName,
+      chain:this.chatLastMessageObj.chain||this.chatChain,
+      recipientList:[recipientObj.values.user]
+    })
+    this.searchFilter=''
+    this.teams=null
+    this.draftMessage=''
+    this.draftImage=''
+    this.pinNextMessage=false
+    this.UI.showChatDetails=false
   }
 
   onImageChange(event:any) {
-    const image = event.target.files[0];
-    const uploader = document.getElementById('uploader') as HTMLInputElement;
-    const storageRef = this.storage.ref('images/' + Date.now() + image.name);
-    const task = storageRef.put(image);
+    const image=event.target.files[0]
+    const uploader=document.getElementById('uploader') as HTMLInputElement
+    const storageRef=this.storage.ref('images/' + Date.now() + image.name)
+    const task=storageRef.put(image)
 
-    task.snapshotChanges().subscribe((snapshot) => {
-      document.getElementById('buttonFile').style.visibility = 'hidden';
-      document.getElementById('uploader').style.visibility = 'visible';
+    task.snapshotChanges().subscribe((snapshot)=>{
+      document.getElementById('buttonFile').style.visibility='hidden'
+      document.getElementById('uploader').style.visibility='visible'
 
-      const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      uploader.value = percentage.toString();
+      const percentage=(snapshot.bytesTransferred / snapshot.totalBytes) * 100
+      uploader.value=percentage.toString()
     },
-    (err:any) => {
-      document.getElementById('buttonFile').style.visibility = 'visible';
-      document.getElementById('uploader').style.visibility = 'hidden';
-      uploader.value = '0';
+    (err:any)=>{
+      document.getElementById('buttonFile').style.visibility='visible'
+      document.getElementById('uploader').style.visibility='hidden'
+      uploader.value='0'
     },
-    () => {
-      uploader.value = '0';
-      document.getElementById('buttonFile').style.visibility = 'visible';
-      document.getElementById('uploader').style.visibility = 'hidden';
-      this.draftImage = task.task.snapshot.ref.name.substring(0, 13);
-      storageRef.getDownloadURL().subscribe(url => {
-        this.draftImageDownloadURL = url;
-        this.addMessage();
-        event.target.value = '';
-      });
-    });
+    ()=>{
+      uploader.value='0'
+      document.getElementById('buttonFile').style.visibility='visible'
+      document.getElementById('uploader').style.visibility='hidden'
+      this.draftImage=task.task.snapshot.ref.name.substring(0, 13)
+      storageRef.getDownloadURL().subscribe(url=>{
+        this.draftImageDownloadURL=url
+        this.addMessage()
+        event.target.value=''
+      })
+    })
   }
 
   objectToArray(obj) {
-    if (obj == null) { return []; }
+    if (obj == null) { return [] }
     return Object.keys(obj).map(function(key) {
-      return [key, obj[key]];
-    });
+      return [key, obj[key]]
+    })
   }
 
   refreshSearchLists() {
     if (this.searchFilter) {
       if (this.searchFilter.length > 1) {
-        this.teams = this.afs.collection('PERRINNMessages', ref => ref
+        this.teams=this.afs.collection('PERRINNMessages', ref=>ref
         .where('userChain.nextMessage','==','none')
         .where('verified','==',true)
         .where('searchName','>=',this.searchFilter.toLowerCase())
         .where('searchName','<=',this.searchFilter.toLowerCase()+'\uf8ff')
         .orderBy('searchName')
         .limit(10))
-        .snapshotChanges().pipe(map(changes => {
-          return changes.map(c => ({
+        .snapshotChanges().pipe(map(changes=>{
+          return changes.map(c=>({
             key: c.payload.doc.id,
             values: c.payload.doc.data(),
-          }));
-        }));
+          }))
+        }))
       }
     } else {
-      this.teams = null;
+      this.teams=null
     }
   }
 

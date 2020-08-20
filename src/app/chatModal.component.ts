@@ -24,7 +24,6 @@ import * as firebase from 'firebase/app';
             <div style="padding:3px">
               <span style="color:#777;font-size:12px">{{message.payload?.chatSubject}} </span>
               <span style="color:#404040;font-size:12px" [innerHTML]="message.payload?.text | linky"></span>
-              <span style="font-size:11px;color:green"> {{message.payload?.PERRINN?.process?.result}}</span>
             </div>
             <div class="seperator" style="width:100%;margin:0px"></div>
             {{showOverlay()}}

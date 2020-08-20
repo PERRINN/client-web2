@@ -101,9 +101,6 @@ export class SendCoinsComponent  {
       user:this.UI.currentUser,
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(ref=>{
-      this.UI.clearRecipient();
-      this.UI.addRecipient(this.UI.currentUserLastMessageObj)
-      this.UI.addRecipient({user:this.receiver,name:this.receiverName,familyName:this.receiverFamilyName,imageUrlThumbUser:this.receiverImageUrlThumb})
       this.UI.createMessage({
         text:'sending '+this.amount+' COINS, reference: '+this.reference,
         chain:ref.id,
