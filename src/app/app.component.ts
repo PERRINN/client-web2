@@ -23,9 +23,10 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
         </div>
         <div style="float:left;width:150px;height:33px;cursor:pointer;border-style:solid;border-width:0 1px 0 0;border-color:#ddd" (click)="router.navigate(['profile','domain',UI.currentDomain])">
           <img *ngIf="UI.currentDomainLastMessageObj?.domainImageUrlThumb" [src]="UI.currentDomainLastMessageObj.domainImageUrlThumb" style="display:inline;float:left;margin:4px;object-fit:cover;width:25px;height:25px">
-          <div *ngIf="UI.currentDomainLastMessageObj?.domainName" style="float:left;margin:5px;font-size:10px">{{UI.currentDomainLastMessageObj.domainName}}</div>
+          <div *ngIf="UI.currentDomainLastMessageObj?.domain" style="float:left;margin:5px;font-size:10px">{{UI.currentDomainLastMessageObj.domain}}</div>
         </div>
         <div style="float:left;width:150px;text-align:center;height:33px;cursor:pointer;line-height:31px;font-size:12px;color:#267cb5;border-style:solid;border-width:0 1px 0 0;border-color:#ddd" (click)="newMessage()">New message</div>
+        <img class='editButton' style="float:right;width:20px" (click)="router.navigate(['settings'])" src="./../assets/App icons/settings.png">
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>

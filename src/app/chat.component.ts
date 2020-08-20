@@ -14,10 +14,13 @@ import * as firebase from 'firebase/app'
   <div class="sheet" *ngIf="UI.showChatDetails">
     <div style="background:#f2f2f2">
       <div (click)="UI.showChatDetails=false" style="float:left;font-size:12px;line-height:20px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
-      <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
     <input [(ngModel)]="chatSubjectEdit" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="Edit subject">
     <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubjectEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
+    <input [(ngModel)]="domainEdit" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="Edit domain name">
+    <div *ngIf="chatLastMessageObj?.domain!=domainEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="saveNewDomain()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
       <li *ngFor="let recipient of objectToArray(recipients)" (click)="router.navigate(['profile','user',recipient[0]])" style="cursor:pointer;float:left">
@@ -148,6 +151,7 @@ export class ChatComponent {
   reads:any[]
   autoMessage:boolean
   chatSubjectEdit:string
+  domainEdit:string
   pinNextMessage:boolean
   nowSeconds:number
   chatLastMessageObj:any
@@ -181,6 +185,7 @@ export class ChatComponent {
       this.autoMessage=false
       this.messageNumberDisplay=15
       this.chatSubjectEdit=''
+      this.domainEdit=''
       this.pinNextMessage=false
       this.refreshMessages(params.id)
     })
@@ -212,7 +217,10 @@ export class ChatComponent {
           this.reads.push(c.payload.doc.id)
           this.chatLastMessageObj=c.payload.doc.data()
           this.chatSubjectEdit=c.payload.doc.data()['chatSubject']
+          this.domainEdit=c.payload.doc.data()['domain']
           this.recipients=c.payload.doc.data()['recipients']
+          this.UI.currentDomainLastMessageObj=c.payload.doc.data()
+          this.UI.currentDomain=c.payload.doc.data()['domain']
         }
       })
       batch.commit()
@@ -270,13 +278,21 @@ export class ChatComponent {
     this.UI.showChatDetails=false
   }
 
+  saveNewDomain() {
+    this.UI.createMessage({
+      text:'Changing domain name to: '+this.domainEdit+" (was: "+this.chatLastMessageObj.domain+")",
+      chain:this.chatLastMessageObj.chain||this.chatChain,
+      domain:this.domainEdit,
+    })
+    this.UI.showChatDetails=false
+  }
+
   addMessage() {
     this.UI.createMessage({
       text:this.draftMessage,
       chain:this.chatLastMessageObj.chain||this.chatChain,
       image:this.draftImage,
       imageDownloadURL:this.draftImageDownloadURL,
-      chatSubject:this.chatSubjectEdit,
       pin:this.pinNextMessage
     })
     this.draftMessage=''

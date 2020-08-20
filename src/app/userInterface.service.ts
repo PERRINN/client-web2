@@ -9,7 +9,6 @@ export class UserInterfaceService {
   globalChatActivity:boolean;
   loading:boolean;
   currentDomain:string;
-  currentDomainObj:any;
   currentDomainLastMessageObj:any;
   currentUser:string;
   currentUserClaims:any;
@@ -40,9 +39,6 @@ export class UserInterfaceService {
   switchDomain(domain){
     if(domain==this.currentDomain)return
     this.currentDomain=domain
-    this.afs.doc<any>('PERRINNTeams/'+this.currentDomain).valueChanges().subscribe(snapshot=>{
-      this.currentDomainObj=snapshot
-    })
     this.afs.collection<any>('PERRINNMessages',ref=>ref.where('domain','==',this.currentDomain).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1)).valueChanges().subscribe(snapshot=>{
       this.currentDomainLastMessageObj=snapshot[0];
     })

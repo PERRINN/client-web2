@@ -35,40 +35,26 @@ import { AngularFireAuth } from '@angular/fire/auth';
     <div *ngIf="(mode=='user')||!(UI.currentDomain=='all')">
       <div style="clear:both;background-color:#f4f7fc">
         <div style="float:left">
-          <img [style.border-radius]="UI.currentDomainObj?.isUser?'50%':'3%'" [src]="(mode=='user')?focusUserLastMessageObj?.imageUrlMedium:UI.currentDomainObj?.imageUrlMedium" [style.border-radius]="(mode=='user')?'50%':'0'" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px">
+          <img [style.border-radius]="mode=='user'?'50%':'3%'" [src]="(mode=='user')?focusUserLastMessageObj?.imageUrlMedium:UI.currentDomainLastMessageObj?.domainImageUrlMedium" [style.border-radius]="(mode=='user')?'50%':'0'" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px">
         </div>
         <div style="padding:10px">
           <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
             <div style="float:left">
-              <span >{{mode=='user'?focusUserLastMessageObj?.name:UI.currentDomainObj.name}}</span>
+              <span >{{mode=='user'?focusUserLastMessageObj?.name:UI.currentDomainLastMessageObj.domain}}</span>
               <span style="font-size:10px"> {{mode=='user'?focusUserLastMessageObj?.familyName:''}}</span>
               <span *ngIf="mode=='user'&&focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
               <span *ngIf="mode=='domain'" style="color:white;background-color:#b38300;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
             </div>
-            <img *ngIf="mode=='user'&&focusUserLastMessageObj?.apps?.Google?.enabled" [style.cursor]="UI.currentDomainObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="float:left;width:15px;margin:5px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
-            <img *ngIf="mode=='user'&&focusUserLastMessageObj?.apps?.Onshape?.enabled" [style.cursor]="UI.currentDomainObj?.apps?.Onshape?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Onshape?.enabled?'auto':'none'" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:15px;margin:5px" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
+            <img *ngIf="mode=='user'&&focusUserLastMessageObj?.apps?.Google?.enabled" src="./../assets/App icons/driveLogo.png" style="float:left;width:15px;margin:5px;cursor:pointer" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
+            <img *ngIf="mode=='user'&&focusUserLastMessageObj?.apps?.Onshape?.enabled" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:15px;margin:5px;cursor:pointer" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
           </div>
-          <img class='editButton' style="float:right;width:20px" (click)="router.navigate(['settings',mode,id])" src="./../assets/App icons/settings.png">
           <div *ngIf="mode=='user'" style="clear:both">
             <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(focusUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</div>
             <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
-            <div style="clear:both;float:left;font-size:10px;color:#999">Created {{(mode=='user'?focusUserLastMessageObj?.createdTimestamp:UI.currentDomainObj?.createdTimestamp)|date:'MMMM yyyy'}}, {{mode=='user'?focusUserLastMessageObj?.userChain?.index:0}} Messages, {{(mode=='user'?focusUserLastMessageObj?.membership?.daysTotal:0)|number:'1.1-1'}} Membership days, Verified {{((nowSeconds-focusUserLastMessageObj?.verifiedTimestamp?.seconds)/3600/24)|number:'1.2-2'}} days ago</div>
+            <div style="clear:both;float:left;font-size:10px;color:#999">Created {{focusUserLastMessageObj?.createdTimestamp|date:'MMMM yyyy'}}, {{focusUserLastMessageObj?.userChain?.index}} Messages, {{focusUserLastMessageObj?.membership?.daysTotal|number:'1.1-1'}} Membership days, Verified {{((nowSeconds-focusUserLastMessageObj?.verifiedTimestamp?.seconds)/3600/24)|number:'1.2-2'}} days ago</div>
           </div>
         </div>
         <div class="seperator" style="width:100%;margin:0px"></div>
-        <div *ngIf="mode=='domain'">
-          <span style="margin:10px;font-size:10px;color:#999">{{objectToArray(UI.currentDomainObj?.members).length}} {{objectToArray(UI.currentDomainObj?.members).length>1?'members':'member'}}</span>
-          <span (click)="router.navigate(['profile','user',member[0]])" style="font-size:10px;cursor:pointer" *ngFor="let member of objectToArray(UI.currentDomainObj?.members);let last=last">{{member[0]==UI.currentUser?'You':member[1]?.name}}{{member[0]==UI.currentUser?'':member[1]?.familyName!=undefinied?' '+member[1]?.familyName:''}}{{member[1]?.leader?' (Leader)':''}}{{last?"":", "}}</span>
-          <div *ngIf="objectToArray(UI.currentDomainObj?.children).length>0">
-            <span style="margin:10px;font-size:10px;color:#999">{{objectToArray(UI.currentDomainObj?.children).length}} {{objectToArray(UI.currentDomainObj?.children).length>1?'children':'child'}}</span>
-            <span (click)="router.navigate(['profile','user',member[0]])" style="font-size:10px;cursor:pointer" *ngFor="let member of objectToArray(UI.currentDomainObj?.children);let last=last">{{member[0]==UI.currentUser?'You':member[1]?.name}}{{member[0]==UI.currentUser?'':member[1]?.familyName!=undefinied?' '+member[1]?.familyName:''}}{{member[1]?.leader?' (Leader)':''}}{{last?"":", "}}</span>
-          </div>
-          <div *ngIf="objectToArray(UI.currentDomainObj?.parents).length>0">
-            <span style="margin:10px;font-size:10px;color:#999">{{objectToArray(UI.currentDomainObj?.parents).length}} {{objectToArray(UI.currentDomainObj?.parents).length>1?'parents':'parent'}}</span>
-            <span (click)="router.navigate(['profile','user',member[0]])" style="font-size:10px;cursor:pointer" *ngFor="let member of objectToArray(UI.currentDomainObj?.parents);let last=last">{{member[0]==UI.currentUser?'You':member[1]?.name}}{{member[0]==UI.currentUser?'':member[1]?.familyName!=undefinied?' '+member[1]?.familyName:''}}{{member[1]?.leader?' (Leader)':''}}{{last?"":", "}}</span>
-          </div>
-          <div class="seperator" style="width:100%;margin:0px"></div>
-        </div>
       </div>
     </div>
     <div class="spinner" *ngIf="UI.loading">
@@ -93,7 +79,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
           <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}{{(message.payload.doc.data()?.image!=''&&message.payload.doc.data()?.image!=undefined)?' (image)':''}}</div>
           <img src="./../assets/App icons/people.jpg" style="display:inline;margin-top:2px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(30);filter:brightness(30)">
           <div style="float:left;color:#777;font-size:10px;width:40px">{{message.payload.doc.data()?.recipientList.length}}</div>
-          <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.domainName}}</div>
+          <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.domain}}</div>
         </div>
         <div class="seperator"></div>
       </li>
@@ -113,7 +99,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
           <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}{{(message.payload.doc.data()?.image!=''&&message.payload.doc.data()?.image!=undefined)?' (image)':''}}</div>
           <img src="./../assets/App icons/people.jpg" style="display:inline;margin-top:2px;float:left;object-fit:cover;height:15px;width:15px;-webkit-filter:brightness(30);filter:brightness(30)">
           <div style="float:left;color:#777;font-size:10px;width:40px">{{message.payload.doc.data()?.recipientList.length}}</div>
-          <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.domainName}}</div>
+          <div style="float:left;font-size:10px;font-family:sans-serif;color:#777">{{message.payload.doc.data()?.domain}}</div>
         </div>
         <div class="seperator"></div>
         {{last?scrollToTop(message.key):''}}

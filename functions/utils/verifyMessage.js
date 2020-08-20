@@ -130,8 +130,8 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.familyName`]:messageData.familyName||userPreviousMessageData.familyName||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.imageUrlThumb`]:messageData.imageUrlThumbUser||userPreviousMessageData.imageUrlThumbUser||null},{create:true})
       if((messageData.imageUrlThumbUser||userPreviousMessageData.imageUrlThumbUser||'').length>50)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlThumbUserLong:messageData.imageUrlThumbUser||userPreviousMessageData.imageUrlThumbUser||null},{create:true})
-      if((messageData.imageUrlMedium||userPreviousMessageData.imageUrlMedium||'').length>50)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlMediumLong:messageData.imageUrlMedium||userPreviousMessageData.imageUrlMedium||null},{create:true})
-      if((messageData.imageUrlOriginal||userPreviousMessageData.imageUrlOriginal||'').length>50)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlOriginalLong:messageData.imageUrlOriginal||userPreviousMessageData.imageUrlOriginal||null},{create:true})
+//      if((messageData.imageUrlMedium||userPreviousMessageData.imageUrlMedium||'').length>50)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlMediumLong:messageData.imageUrlMedium||userPreviousMessageData.imageUrlMedium||null},{create:true})
+//      if((messageData.imageUrlOriginal||userPreviousMessageData.imageUrlOriginal||'').length>50)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlOriginalLong:messageData.imageUrlOriginal||userPreviousMessageData.imageUrlOriginal||null},{create:true})
       if (((messageData.apps||{}).Google||{}).enabled&&!((userPreviousMessageData.apps||{}).Google||{}).enabled&&userChain.index>1)googleUtils.joinPERRINNGoogleGroup(user)
       if (((messageData.apps||{}).Onshape||{}).enabled&&!((userPreviousMessageData.apps||{}).Onshape||{}).enabled&&userChain.index>1)onshapeUtils.joinPERRINNOnshapeTeam(user)
       if(messageData.createdTimestamp==now){
@@ -146,17 +146,13 @@ module.exports = {
       }
 
       //domain data
-      var nameLowerCase=(messageData.domainName||domainPreviousMessageData.domainName||'').toLowerCase()
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainName:messageData.domainName||domainPreviousMessageData.domainName||null},{create:true})
+      var nameLowerCase=(messageData.domain||domainPreviousMessageData.domain||'').toLowerCase()
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domain:messageData.domain||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainImageTimestamp:messageData.domainImageTimestamp||domainPreviousMessageData.domainImageTimestamp||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainImageUrlThumb:messageData.domainImageUrlThumb||domainPreviousMessageData.domainImageUrlThumb||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainImageUrlMedium:messageData.domainImageUrlMedium||domainPreviousMessageData.domainImageUrlMedium||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainImageUrlOriginal:messageData.domainImageUrlOriginal||domainPreviousMessageData.domainImageUrlOriginal||null},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainMembershipCost:messageData.domainMembershipCost||domainPreviousMessageData.domainMembershipCost||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainSearchName:nameLowerCase},{create:true})
-      batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.name`]:messageData.name||null},{create:true})
-      batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.familyName`]:messageData.familyName||null},{create:true})
-      batch.update(admin.firestore().doc('PERRINNTeams/'+messageData.domain),{[`members.${messageData.user}.imageUrlThumb`]:messageData.imageUrlThumbUser||null},{create:true})
 
       //message transaction out receiver
       if((messageData.transactionOut||{}).receiver){
@@ -225,7 +221,7 @@ module.exports = {
 
       //message objects
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userChain:userChain},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainChain:userChain},{create:true})
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainChain:domainChain},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{membership:membership},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.wallet":wallet},{create:true})
 
