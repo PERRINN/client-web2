@@ -42,7 +42,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
             <div style="float:left">
               <span >{{mode=='user'?focusUserLastMessageObj?.name:UI.currentDomainObj.name}}</span>
               <span style="font-size:10px"> {{mode=='user'?focusUserLastMessageObj?.familyName:''}}</span>
-              <span *ngIf="mode=='user'&&focusUserLastMessageObj?.member" style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
+              <span *ngIf="mode=='user'&&focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
               <span *ngIf="mode=='domain'" style="color:white;background-color:#b38300;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Domain</span>
             </div>
             <img *ngIf="mode=='user'&&focusUserLastMessageObj?.apps?.Google?.enabled" [style.cursor]="UI.currentDomainObj?.apps?.Google?.enabled?'pointer':'default'" [style.pointer-events]="UI.currentDomainObj?.apps?.Google?.enabled?'auto':'none'" src="./../assets/App icons/driveLogo.png" style="float:left;width:15px;margin:5px" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
