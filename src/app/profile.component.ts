@@ -65,13 +65,13 @@ import { AngularFireAuth } from '@angular/fire/auth';
     <ul class="listLight" *ngIf="UI.currentDomain!='all'">
       <li *ngFor="let message of pinnedMessages|async;let last=last"
         (click)="UI.chain=message.payload.doc.data()?.chain;UI.showChatDetails=false;router.navigate(['chat',message.payload.doc.data()?.chain])">
-        <div style="float:left">
-          <img [src]="message.payload.doc.data()?.imageUrlThumbUser" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:40px;border-radius:20px">
+        <div style="float:left;min-width:60px;min-height:40px">
+          <img *ngIf="message.payload.doc.data().user!=UI.currentUser" [src]="message.payload.doc.data()?.imageUrlThumbUser" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:40px;border-radius:20px">
         </div>
         <div>
           <div style="float:left;color:green;font-size:10px">Pinned Message</div>
           <div *ngIf="message.payload.doc.data()?.user==UI.currentUser" style="float:left;width:80px;text-align:center;font-size:10px;color:green;cursor:pointer;text-decoration:underline" (click)="unpinMessage(message.payload.doc.data())">unpin</div>
-          <div style="clear:both;float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
+          <div style="clear:both;float:left;margin-top:5px;color:#111;font-size:14px">{{(message.payload.doc.data().user==UI.currentUser)?'You':message.payload.doc.data()?.name}}</div>
           <div *ngIf="(nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)>43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'d MMM yyyy'}}</div>
           <div *ngIf="(nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)<=43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
           <div style="float:right;margin:9px 15px 0 0;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]" [style.background-color]="message.payload.doc.data()?.recipients[UI.currentUser]==undefined?'lightblue':'red'"></div>
@@ -87,11 +87,11 @@ import { AngularFireAuth } from '@angular/fire/auth';
     <ul class="listLight">
       <li *ngFor="let message of lastMessages|async;let last=last"
         (click)="UI.chain=message.payload.doc.data()?.chain;UI.showChatDetails=false;router.navigate(['chat',message.payload.doc.data()?.chain])">
-        <div style="float:left">
-          <img [src]="message.payload.doc.data()?.imageUrlThumbUser" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:40px;border-radius:20px">
+        <div style="float:left;min-width:60px;min-height:40px">
+          <img *ngIf="message.payload.doc.data().user!=UI.currentUser" [src]="message.payload.doc.data()?.imageUrlThumbUser" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:40px;border-radius:20px">
         </div>
         <div>
-          <div style="float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
+          <div style="clear:both;float:left;margin-top:5px;color:#111;font-size:14px">{{(message.payload.doc.data().user==UI.currentUser)?'You':message.payload.doc.data()?.name}}</div>
           <div *ngIf="(nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)>43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'d MMM yyyy'}}</div>
           <div *ngIf="(nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)<=43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
           <div style="float:right;margin:9px 15px 0 0;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]" [style.background-color]="message.payload.doc.data()?.recipients?(message.payload.doc.data()?.recipients[UI.currentUser]==undefined?'lightblue':'red'):'lightblue'"></div>

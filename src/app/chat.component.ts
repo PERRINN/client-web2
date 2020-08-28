@@ -74,12 +74,12 @@ import * as firebase from 'firebase/app'
             <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'fullDate'}}</div>
           </div>
           <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="clear:both;width:100%;height:15px"></div>
-          <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first)" style="float:left;width:60px;min-height:10px">
+          <div *ngIf="message.payload.user!=UI.currentUser&&message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first)" style="float:left;width:60px;min-height:10px">
             <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:50%; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['profile','user',message.payload?.user])">
           </div>
           <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:3px;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
             <div>
-              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
+              <div *ngIf="message.payload.user!=UI.currentUser&&isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
               <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
               <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
               <div style="clear:both;text-align:center">
