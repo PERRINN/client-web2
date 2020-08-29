@@ -33,8 +33,13 @@ import * as firebase from 'firebase/app';
     <div *ngIf="!editName" style="color:blue;cursor:pointer;margin:20px" (click)="editName=!editName">Edit name</div>
     <input *ngIf="editName" [(ngModel)]="currentName" placeholder="First name">
     <input *ngIf="editName" [(ngModel)]="currentFamilyName" placeholder="Family name">
-    <div *ngIf="editName" (click)="applyNewName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Apply update</div>
-  <div class="seperator" style="width:100%;margin:0px"></div>
+    <div *ngIf="editName" (click)="updateName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update name</div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
+    <div style="font-size:14px;margin:20px;color:#444">Your PERRINN email</div>
+    <div style="font-size:10px;margin:20px;color:#777">This email is visible by all other PERRINN members. Use this email to sign into PERRINN.com, receive notifications, connect to other PERRINN apps like Onshape, Google Drive and Google Meet (calendar events and meetings). This email can be the one you used to register on PERRINN.com or any other email.</div>
+    <input [(ngModel)]="currentEmail" placeholder="Enter your PERRINN email">
+    <div (click)="updateEmail()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update email</div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
     <div style="font-size:14px;margin:20px;color:#444">Children</div>
     <div style="font-size:10px;margin:20px;color:#777">COINS from your wallet will automatically be used to keep your children's COIN balance positive.</div>
     <ul style="color:#333;margin:20px">
@@ -79,6 +84,7 @@ export class SettingsComponent {
   editChildren:boolean;
   currentName:string;
   currentFamilyName:string;
+  currentEmail:string;
   searchFilter:string;
   teams:Observable<any[]>;
 
@@ -94,6 +100,7 @@ export class SettingsComponent {
     this.editChildren=false;
     this.currentName=this.UI.currentUserLastMessageObj.name;
     this.currentFamilyName=this.UI.currentUserLastMessageObj.familyName;
+    this.currentEmail=this.UI.currentUserLastMessageObj.userEmail||null;
   }
 
   logout() {
@@ -101,7 +108,7 @@ export class SettingsComponent {
     this.UI.currentUser = null;
   }
 
-  applyNewName(){
+  updateName(){
     if(this.currentName==this.UI.currentUserLastMessageObj.name&&this.currentFamilyName==this.UI.currentUserLastMessageObj.familyName||this.currentName==''){
       this.editName=false;
       return;
@@ -115,6 +122,21 @@ export class SettingsComponent {
         text:'Updating name to: '+this.currentName+' '+this.currentFamilyName,
         name:this.currentName,
         familyName:this.currentFamilyName,
+        auto:true
+      })
+    });
+  }
+
+  updateEmail(){
+    if(this.currentEmail==(this.UI.currentUserLastMessageObj.userEmail||null)||this.currentEmail=='')return
+    return this.afs.collection('IDs').add({
+      user:this.UI.currentUser,
+      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(ref=>{
+      this.UI.createMessage({
+        chain:ref.id,
+        text:'Updating email to: '+this.currentEmail,
+        userEmail:this.currentEmail,
         auto:true
       })
     });

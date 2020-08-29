@@ -43,8 +43,6 @@ module.exports = {
         },
         json: true,
         body: body
-      }).then(()=>{
-          return 'done';
       });
     }).catch(error=>{
       console.log('user '+user+' error '+error);

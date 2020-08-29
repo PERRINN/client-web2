@@ -29,8 +29,6 @@ module.exports = {
             email:email,
             role:'MEMBER'
           }
-        }).then(()=>{
-            return 'done';
         });
       });
     }).catch(error=>{

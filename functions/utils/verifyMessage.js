@@ -116,6 +116,7 @@ module.exports = {
       //user data
       messageData.searchName=(messageData.name||userPreviousMessageData.name||'').toLowerCase()+' '+(messageData.familyName||userPreviousMessageData.familyName||'').toLowerCase()
       messageData.createdTimestamp=messageData.createdTimestamp||userPreviousMessageData.createdTimestamp||now
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userEmail:messageData.userEmail||userPreviousMessageData.userEmail||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{name:messageData.name||userPreviousMessageData.name||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{familyName:messageData.familyName||userPreviousMessageData.familyName||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userImageTimestamp:messageData.userImageTimestamp||userPreviousMessageData.userImageTimestamp||null},{create:true})
@@ -132,6 +133,7 @@ module.exports = {
       if((messageData.imageUrlThumbUser||userPreviousMessageData.imageUrlThumbUser||'').length>50)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlThumbUserLong:messageData.imageUrlThumbUser||userPreviousMessageData.imageUrlThumbUser||null},{create:true})
       if((messageData.imageUrlMedium||userPreviousMessageData.imageUrlMedium||'').length>50)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlMediumLong:messageData.imageUrlMedium||userPreviousMessageData.imageUrlMedium||null},{create:true})
       if((messageData.imageUrlOriginal||userPreviousMessageData.imageUrlOriginal||'').length>50)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{imageUrlOriginalLong:messageData.imageUrlOriginal||userPreviousMessageData.imageUrlOriginal||null},{create:true})
+      if (messageData.userEmail&&(messageData.userEmail!=userPreviousMessageData.userEmail))admin.auth().updateUser(user,{email:messageData.userEmail})
       if (((messageData.apps||{}).Google||{}).enabled&&!((userPreviousMessageData.apps||{}).Google||{}).enabled&&userChain.index>1)googleUtils.joinPERRINNGoogleGroup(user)
       if (((messageData.apps||{}).Onshape||{}).enabled&&!((userPreviousMessageData.apps||{}).Onshape||{}).enabled&&userChain.index>1)onshapeUtils.joinPERRINNOnshapeTeam(user)
       if(messageData.createdTimestamp==now){

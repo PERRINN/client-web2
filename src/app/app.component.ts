@@ -16,7 +16,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
       </div>
     </div>
     <div style='padding-top:40px'>
-      <div style="max-width:800px;margin:0 auto">
+      <div *ngIf="UI.currentUser" style="max-width:800px;margin:0 auto">
         <div style="float:left;width:150px;height:33px;cursor:pointer;border-style:solid;border-width:0 1px 0 0;border-color:#ddd" (click)="router.navigate(['profile','user',UI.currentUser])">
           <img *ngIf="UI.currentUserLastMessageObj?.imageUrlThumbUser" [src]="UI.currentUserLastMessageObj.imageUrlThumbUser" style="display:inline;float:left;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
           <div *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="float:left;margin:5px;font-size:10px">C{{UI.currentUserLastMessageObj.PERRINN.wallet.balance|number:'1.2-2'}}</div>
@@ -31,7 +31,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
     <div id='main_container'>
-      <chatModal></chatModal>
+      <chatModal *ngIf="UI.currentUser"></chatModal>
       <router-outlet></router-outlet>
     </div>
   `,
