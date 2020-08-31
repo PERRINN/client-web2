@@ -3,6 +3,8 @@ const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
 const emailUtils = require('../utils/email')
 const verifyMessageUtils = require('../utils/verifyMessage')
+const onshapeUtils = require('../utils/onshape')
+const googleUtils = require('../utils/google')
 
 const runtimeOpts={timeoutSeconds:540,memory:'1GB'}
 
@@ -10,6 +12,16 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
   try{
     let count=0
     const listUsersResult=await admin.auth().listUsers()
+    const listGoogleUsers=await googleUtils.getPERRINNGoogleGroup()
+    let googleUsers=[]
+    listGoogleUsers.data.members.forEach(member=>{
+      googleUsers.push(member.email)
+    })
+    const listOnshapeUsers=await onshapeUtils.getPERRINNOnshapeTeam()
+    let onshapeUsers=[]
+    listOnshapeUsers.items.forEach(item=>{
+      onshapeUsers.push(item.member.email)
+    })
     for(const userRecord of listUsersResult.users){
       let messageRef=''
       let messageData={}
@@ -18,6 +30,8 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       count=count+1
     }
     console.log(count+' users processed.');
+    console.log(googleUsers.length+' Google users.');
+    console.log(onshapeUsers.length+' Onshape users.');
   }
   catch(error){
     console.log(error)

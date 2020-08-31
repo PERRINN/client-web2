@@ -36,7 +36,7 @@ import * as firebase from 'firebase/app';
     <div *ngIf="editName" (click)="updateName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update name</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <div style="font-size:14px;margin:20px;color:#444">Your PERRINN email</div>
-    <div style="font-size:10px;margin:20px;color:#777">This email is visible by all other PERRINN members. Use this email to sign into PERRINN.com, receive notifications, connect to other PERRINN apps like Onshape, Google Drive and Google Meet (calendar events and meetings). This email can be the one you used to register on PERRINN.com or any other email.</div>
+    <div style="font-size:10px;margin:20px;color:#777">Use this email to sign into PERRINN.com, receive notifications, connect to other PERRINN apps like Onshape, Google Drive and Google Meet (calendar events and meetings). This email can be the one you used to register on PERRINN.com or any other email. This email is visible by other PERRINN members.</div>
     <input [(ngModel)]="currentEmail" placeholder="Enter your PERRINN email">
     <div (click)="updateEmail()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update email</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
@@ -63,15 +63,6 @@ import * as firebase from 'firebase/app';
           <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white;border-style:none" (click)="addChild(team)">Add</div>
         </li>
       </ul>
-    </div>
-  <div class="seperator" style="width:100%;margin:0px"></div>
-    <div style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNGoogleGroup()">
-      <span>Join PERRINN Google group</span>
-      <span style="font-size:10px;margin-left:5px">(your PERRINN email must match your Google email)</span>
-    </div>
-    <div style="color:blue;cursor:pointer;margin:20px" (click)="joinPERRINNOnshapeTeam()">
-      <span>Join PERRINN Onshape team</span>
-      <span style="font-size:10px;margin-left:5px">(your PERRINN email must match your Onshape email)</span>
     </div>
   <div class="seperator" style="width:100%;margin:0px"></div>
   <div class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
@@ -128,7 +119,7 @@ export class SettingsComponent {
   }
 
   updateEmail(){
-    if(this.currentEmail==(this.UI.currentUserLastMessageObj.userEmail||null)||this.currentEmail=='')return
+    if(this.currentEmail=='')return
     return this.afs.collection('IDs').add({
       user:this.UI.currentUser,
       serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -143,34 +134,6 @@ export class SettingsComponent {
   }
 
   addChild(team){
-  }
-
-  joinPERRINNOnshapeTeam() {
-    return this.afs.collection('IDs').add({
-      user:this.UI.currentUser,
-      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(ref=>{
-      this.UI.createMessage({
-        chain:ref.id,
-        text:'joining PERRINN Onshape team',
-        apps:{Onshape:{enabled:true}},
-        auto:true
-      })
-    });
-  }
-
-  joinPERRINNGoogleGroup() {
-    return this.afs.collection('IDs').add({
-      user:this.UI.currentUser,
-      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(ref=>{
-      this.UI.createMessage({
-        chain:ref.id,
-        text:'joining PERRINN Google group',
-        apps:{Google:{enabled:true}},
-        auto:true
-      })
-    });
   }
 
   showFullScreenImage(src) {
