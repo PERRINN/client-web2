@@ -8,8 +8,6 @@ import * as firebase from 'firebase/app';
 export class UserInterfaceService {
   globalChatActivity:boolean;
   loading:boolean;
-  currentDomain:string;
-  currentDomainLastMessageObj:any;
   currentUser:string;
   currentUserClaims:any;
   currentUserLastMessageObj:any;
@@ -31,17 +29,8 @@ export class UserInterfaceService {
         });
       } else {
         this.currentUser=null;
-        this.currentDomain=null;
       }
     });
-  }
-
-  switchDomain(domain){
-    if(domain==this.currentDomain)return
-    this.currentDomain=domain
-    this.afs.collection<any>('PERRINNMessages',ref=>ref.where('domain','==',this.currentDomain).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1)).valueChanges().subscribe(snapshot=>{
-      this.currentDomainLastMessageObj=snapshot[0];
-    })
   }
 
   createMessage(messageObj){

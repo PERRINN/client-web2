@@ -19,11 +19,8 @@ import * as firebase from 'firebase/app'
     <input [(ngModel)]="chatSubjectEdit" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="Edit subject">
     <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubjectEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
-    <input [(ngModel)]="domainEdit" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="Edit domain name">
-    <div *ngIf="chatLastMessageObj?.domain!=domainEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="saveNewDomain()">Save</div>
-    <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
-      <li *ngFor="let recipient of objectToArray(recipients)" (click)="router.navigate(['profile','user',recipient[0]])" style="cursor:pointer;float:left">
+      <li *ngFor="let recipient of objectToArray(recipients)" (click)="router.navigate(['profile',recipient[0]])" style="cursor:pointer;float:left">
         <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
         <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
       </li>
@@ -42,9 +39,6 @@ import * as firebase from 'firebase/app'
       </li>
     </ul>
     <div class="seperator" style="width:100%;margin:0px"></div>
-      <div *ngIf="!pinNextMessage" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="pinNextMessage=true">Pin next message</div>
-      <div *ngIf="pinNextMessage" style="float:left;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#777;">Next message will be pinned</div>
-      <div *ngIf="pinNextMessage" style="float:left;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="pinNextMessage=false">Cancel</div>
       <div style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
@@ -74,12 +68,12 @@ import * as firebase from 'firebase/app'
             <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'fullDate'}}</div>
           </div>
           <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="clear:both;width:100%;height:15px"></div>
-          <div *ngIf="message.payload.user!=UI.currentUser&&message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first)" style="float:left;width:60px;min-height:10px">
-            <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:50%; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['profile','user',message.payload?.user])">
+          <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first)" style="float:left;width:60px;min-height:10px">
+            <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:50%; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['profile',message.payload?.user])">
           </div>
           <div [style.background-color]="message.payload?.auto?'none':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:3px;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
             <div>
-              <div *ngIf="message.payload.user!=UI.currentUser&&isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
+              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
               <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
               <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
               <div style="clear:both;text-align:center">
@@ -88,8 +82,6 @@ import * as firebase from 'firebase/app'
               <div *ngIf="showDetails[message.key]" style="margin:5px">
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">userChain: {{message.payload?.userChain|json}}</div>
-                <div class="seperator" style="width:100%"></div>
-                <div style="color:#666;font-size:10px">domainChain: {{message.payload?.domainChain|json}}</div>
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">membership: {{message.payload?.membership|json}}</div>
                 <div class="seperator" style="width:100%"></div>
@@ -151,8 +143,6 @@ export class ChatComponent {
   reads:any[]
   autoMessage:boolean
   chatSubjectEdit:string
-  domainEdit:string
-  pinNextMessage:boolean
   nowSeconds:number
   chatLastMessageObj:any
   chatChain:string
@@ -185,8 +175,6 @@ export class ChatComponent {
       this.autoMessage=false
       this.messageNumberDisplay=15
       this.chatSubjectEdit=''
-      this.domainEdit=''
-      this.pinNextMessage=false
       this.refreshMessages(params.id)
     })
   }
@@ -217,10 +205,7 @@ export class ChatComponent {
           this.reads.push(c.payload.doc.id)
           this.chatLastMessageObj=c.payload.doc.data()
           this.chatSubjectEdit=c.payload.doc.data()['chatSubject']
-          this.domainEdit=c.payload.doc.data()['domain']
           this.recipients=c.payload.doc.data()['recipients']
-          this.UI.currentDomainLastMessageObj=c.payload.doc.data()
-          this.UI.currentDomain=c.payload.doc.data()['domain']
         }
       })
       batch.commit()
@@ -278,26 +263,15 @@ export class ChatComponent {
     this.UI.showChatDetails=false
   }
 
-  saveNewDomain() {
-    this.UI.createMessage({
-      text:'Changing domain name to: '+this.domainEdit+" (was: "+this.chatLastMessageObj.domain+")",
-      chain:this.chatLastMessageObj.chain||this.chatChain,
-      domain:this.domainEdit,
-    })
-    this.UI.showChatDetails=false
-  }
-
   addMessage() {
     this.UI.createMessage({
       text:this.draftMessage,
       chain:this.chatLastMessageObj.chain||this.chatChain,
       image:this.draftImage,
       imageDownloadURL:this.draftImageDownloadURL,
-      pin:this.pinNextMessage
     })
     this.draftMessage=''
     this.draftImage=''
-    this.pinNextMessage=false
     this.UI.showChatDetails=false
   }
 
@@ -311,7 +285,6 @@ export class ChatComponent {
     this.teams=null
     this.draftMessage=''
     this.draftImage=''
-    this.pinNextMessage=false
     this.UI.showChatDetails=false
   }
 

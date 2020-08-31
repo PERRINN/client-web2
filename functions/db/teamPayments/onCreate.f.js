@@ -23,7 +23,6 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{user}/payment
           let messageObj={
             user:sender,
             text:"Thank you for purchasing "+val.amountCOINSPurchased+" new COINS.",
-            domain:context.params.user,
             recipientList:[sender,'QYm5NATKa6MGD87UpNZCTl6IolX2',context.params.user],
             process:{
               inputs:{

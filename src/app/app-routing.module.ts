@@ -11,7 +11,7 @@ import { BuyCoinsComponent } from './buyCoins.component';
 
 const appRoutes: Routes = [
   { path: 'chat/:id', component: ChatComponent },
-  { path: 'profile/:mode/:id', component: ProfileComponent },
+  { path: 'profile/:id', component: ProfileComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'search', component: SearchComponent },

@@ -45,24 +45,6 @@ module.exports = {
       })
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{lastMessage:chatLastMessage})
 
-      //domain chain
-      messageData.domain=messageData.domain||chatPreviousMessageData.domain||null
-      let domainChain={}
-      let domainPreviousMessageData={}
-      domainChain.currentMessage=messageId
-      domainChain.nextMessage='none'
-      domainChain.previousMessage='none'
-      domainChain.index=1
-      const lastDomainMessages=await admin.firestore().collection('PERRINNMessages').where('domain','==',messageData.domain).where('verified','==',true).orderBy('serverTimestamp','desc').limit(2).get()
-      lastDomainMessages.forEach(message=>{
-        if(message.id!=messageId&&domainChain.previousMessage=='none'){
-          domainChain.previousMessage=message.id
-          domainPreviousMessageData=message.data()
-          domainChain.index=((domainPreviousMessageData.domainChain||{}).index+1)||1
-          batch.update(admin.firestore().doc('PERRINNMessages/'+domainChain.previousMessage),{"domainChain.nextMessage":messageId||null},{create:true})
-        }
-      })
-
       //message recipientList (merge with user, trasnactionOut receiver, previous chat list and remove duplicates and remove undefined)
       messageData.recipientList=[user].concat([(messageData.transactionOut||{}).receiver]||[]).concat(messageData.recipientList||[]).concat(chatPreviousMessageData.recipientList||[])
       messageData.recipientList=messageData.recipientList.filter((item,pos)=>messageData.recipientList.indexOf(item)===pos)
@@ -145,19 +127,9 @@ module.exports = {
         await createMessageUtils.createMessageAFS(messageObj)
       }
 
-      //domain data
-      var nameLowerCase=(messageData.domain||domainPreviousMessageData.domain||'').toLowerCase()
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domain:messageData.domain||null},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainImageTimestamp:messageData.domainImageTimestamp||domainPreviousMessageData.domainImageTimestamp||null},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainImageUrlThumb:messageData.domainImageUrlThumb||domainPreviousMessageData.domainImageUrlThumb||null},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainImageUrlMedium:messageData.domainImageUrlMedium||domainPreviousMessageData.domainImageUrlMedium||null},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainImageUrlOriginal:messageData.domainImageUrlOriginal||domainPreviousMessageData.domainImageUrlOriginal||null},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainSearchName:nameLowerCase},{create:true})
-
       //message transaction out receiver
       if((messageData.transactionOut||{}).receiver){
         createMessageUtils.createMessageAFS({
-          domain:messageData.domain,
           user:messageData.transactionOut.receiver,
           text:((messageData.transactionOut||{}).amount||0)+" COINS received, reference: "+messageData.transactionOut.reference,
           chain:messageData.chain,
@@ -221,7 +193,6 @@ module.exports = {
 
       //message objects
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userChain:userChain},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{domainChain:domainChain},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{membership:membership},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.wallet":wallet},{create:true})
 
@@ -230,6 +201,13 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{verifiedTimestamp:admin.firestore.FieldValue.serverTimestamp()},{create:true})
 
       await batch.commit()
+
+      return {
+        user:user,
+        userEmail:messageData.userEmail||userPreviousMessageData.userEmail||null,
+        wallet:wallet
+      }
+
     }
     catch(error){
       console.log('user '+user+' error '+error)
