@@ -67,7 +67,6 @@ import { AngularFireAuth } from '@angular/fire/auth';
           <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}{{(message.payload.doc.data()?.image!=''&&message.payload.doc.data()?.image!=undefined)?' (image)':''}}</div>
         </div>
         <div class="seperator"></div>
-        {{last?scrollToTop(message.key):''}}
       </li>
     </ul>
   </div>
@@ -119,14 +118,6 @@ export class ProfileComponent {
           .limit(30)
         ).snapshotChanges();
       });
-    }
-  }
-
-  scrollToTop(team: string) {
-    if (team != this.scrollTeam) {
-      const element = document.getElementById('main_container');
-      element.scrollTop = 0;
-      this.scrollTeam = team;
     }
   }
 

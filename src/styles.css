@@ -33,9 +33,8 @@ body {
 #main_container {
   margin: 0 auto;
   max-width: 100%;
-  height: 100vh;
+  height: calc(100vh - 73px);
   overflow-y: auto;
-  padding-bottom:5px;
 }
 #login {
   width: 10000px;
@@ -49,10 +48,7 @@ body {
 .menu {
   color: #FFF;
   background-color:#2a5aa8;
-  position: fixed;
   width: 100%;
-  z-index: 999999;
-  margin-right:7px;
   user-select: none;
 }
 .menu .iconSmall {

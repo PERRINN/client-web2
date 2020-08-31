@@ -100,7 +100,7 @@ import * as firebase from 'firebase/app'
           {{(last||i==(messageNumberDisplay-1))?scrollToBottom(message.payload?.serverTimestamp?.seconds):''}}
         </li>
       </ul>
-      <div style="height:175px;width:100%"></div>
+      <div style="height:100px;width:100%"></div>
     </div>
   </div>
 

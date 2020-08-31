@@ -15,7 +15,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
         <img src="./../assets/App icons/website.png" style="padding:2px;cursor:pointer;float:left;width:30px;margin:5px 5px 5px 45px;border-radius:3px;filter: brightness(0) invert(1)" onclick="window.open('https://sites.google.com/view/perrinn/home','_blank')">
       </div>
     </div>
-    <div style='padding-top:40px'>
+    <div>
       <div *ngIf="UI.currentUser" style="max-width:800px;margin:0 auto">
         <div style="float:left;width:150px;height:33px;cursor:pointer;border-style:solid;border-width:0 1px 0 0;border-color:#ddd" (click)="router.navigate(['profile',UI.currentUser])">
           <img *ngIf="UI.currentUserLastMessageObj?.imageUrlThumbUser" [src]="UI.currentUserLastMessageObj.imageUrlThumbUser" style="display:inline;float:left;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
