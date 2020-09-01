@@ -19,8 +19,8 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       let messageData={}
       let lastUserMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',userRecord.uid).orderBy('serverTimestamp','desc').limit(1).get()
       let result=await verifyMessageUtils.verifyMessage(lastUserMessage.docs[0].id,lastUserMessage.docs[0].data())
-      if (result.wallet.amount>0)members.push(result.user)
-      if (result.wallet.amount>0&&result.userEmail&&result.userEmail!='')membersWithEmail.push(result.userEmail)
+      if (result.wallet.balance>0)members.push(result.user)
+      if (result.wallet.balance>0&&result.userEmail&&result.userEmail!='')membersWithEmail.push(result.userEmail)
       userCount=userCount+1
     }
     const listGoogleUsers=await googleUtils.getPERRINNGoogleGroup()
@@ -33,11 +33,11 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     listOnshapeUsers.items.forEach(item=>{
       onshapeUsers.push(item.member.email)
     })
-    console.log(userCount+' users processed.');
-    console.log(members.length+' PERRINN members.');
-    console.log(membersWithEmail.length+' PERRINN members with PERRINN email.');
-    console.log(googleUsers.length+' Google users.');
-    console.log(onshapeUsers.length+' Onshape users.');
+    console.log(userCount+' users processed.')
+    console.log(members.length+' PERRINN members.')
+    console.log(membersWithEmail.length+' PERRINN members with PERRINN email.')
+    console.log(googleUsers.length+' Google users.')
+    console.log(onshapeUsers.length+' Onshape users.')
   }
   catch(error){
     console.log(error)
