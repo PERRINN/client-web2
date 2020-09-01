@@ -9,7 +9,6 @@ export class UserInterfaceService {
   globalChatActivity:boolean;
   loading:boolean;
   currentUser:string;
-  currentUserClaims:any;
   currentUserLastMessageObj:any;
   showChatDetails:boolean;
 
@@ -23,9 +22,6 @@ export class UserInterfaceService {
         this.currentUser=auth.uid;
         afs.collection<any>('PERRINNMessages',ref=>ref.where('user','==',this.currentUser).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1)).valueChanges().subscribe(snapshot=>{
           this.currentUserLastMessageObj=snapshot[0];
-        });
-        firebase.auth().currentUser.getIdTokenResult().then(result=>{
-          this.currentUserClaims=result.claims;
         });
       } else {
         this.currentUser=null;

@@ -145,19 +145,6 @@ module.exports = {
       membership.daysTotal=((userPreviousMessageData.membership||{}).daysTotal||0)+membership.days
       membership.amount=membership.days*membership.dailyCost
       wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount))*100000)/100000
-      membership.previousState=((messageData.PERRINN||{}).wallet||{}).balance>0||((userPreviousMessageData.PERRINN||{}).wallet||{}).balance>0||false
-      membership.changeState=(wallet.balance>0)!=membership.previousState
-      if (membership.changeState){
-        if(user!='-L7jqFf8OuGlZrfEK6dT'){
-          await admin.auth().setCustomUserClaims(user,{member:wallet.balance>0||false})
-          await admin.auth().revokeRefreshTokens(user)
-          createMessageUtils.createMessageAFS({
-            user:'-L7jqFf8OuGlZrfEK6dT',
-            text:wallet.balance>0?"Membership activated. You are now a Member of the PERRINN Team!":"Membership de-activated. You are no longer a Member of the PERRINN Team.",
-            recipientList:['QYm5NATKa6MGD87UpNZCTl6IolX2',user]
-          })
-        }
-      }
 
       //message chat Subject
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{chatSubject:messageData.chatSubject||chatPreviousMessageData.chatSubject||null},{create:true})
