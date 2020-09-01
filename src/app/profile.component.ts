@@ -24,7 +24,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
     <div *ngIf="id!='all'">
       <div style="clear:both;background-color:#f4f7fc">
         <div style="float:left">
-          <img [src]="focusUserLastMessageObj?.imageUrlMedium" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px;border-radius:50%">
+          <img [src]="focusUserLastMessageObj?.imageUrlThumbUser" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px;border-radius:50%">
         </div>
         <div style="padding:10px">
           <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
