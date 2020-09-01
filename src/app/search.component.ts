@@ -16,7 +16,8 @@ import * as firebase from 'firebase/app';
   </div>
   <div class='sheet'>
   <ul class="listLight">
-    <li *ngFor="let message of messages | async" style="padding:5px">
+    <li *ngFor="let message of messages | async" style="padding:5px"
+    [ngClass]="UI.isContentAccessible(message.values.user)?'clear':'encrypted'">
       <div style="float:left;width:250px" (click)="router.navigate(['profile',message.values.user])">
         <img [src]="message?.values.imageUrlThumbUser" style="display: inline; float: left; margin: 0 10px 0 10px; opacity: 1; object-fit: cover; height:40px; width:40px">
         <span>{{message.values?.name}}</span>

@@ -11,23 +11,25 @@ import * as firebase from 'firebase/app'
   selector: 'chat',
   template: `
 
-  <div class="sheet" *ngIf="UI.showChatDetails">
+  <div class="sheet" *ngIf="showChatDetails">
     <div style="background:#f2f2f2">
-      <div (click)="UI.showChatDetails=false" style="float:left;font-size:12px;line-height:20px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
+      <div (click)="showChatDetails=false" style="float:left;font-size:12px;line-height:20px;margin:10px;color:#4287f5;cursor:pointer">< messages</div>
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <input [(ngModel)]="chatSubjectEdit" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="Edit subject">
     <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubjectEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
-      <li *ngFor="let recipient of objectToArray(recipients)" (click)="router.navigate(['profile',recipient[0]])" style="cursor:pointer;float:left">
+      <li *ngFor="let recipient of objectToArray(recipients)" (click)="router.navigate(['profile',recipient[0]])" style="cursor:pointer;float:left"
+      [ngClass]="UI.isContentAccessible(recipient[0])?'clear':'encrypted'">
         <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
         <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
       </li>
       <input id="searchInput" style="border:none" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="add people">
     </ul>
     <ul class="listLight">
-      <li *ngFor="let team of teams | async" >
+      <li *ngFor="let team of teams | async"
+      [ngClass]="UI.isContentAccessible(team.key)?'clear':'encrypted'">
         <div *ngIf="!recipients[team.key]" style="padding:5px">
           <div style="float:left;width:175px">
             <img [src]="team?.values?.imageUrlThumbUser" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
@@ -44,11 +46,12 @@ import * as firebase from 'firebase/app'
   </div>
 
 
-  <div class="sheet" id="chat_window" style="overflow-y:auto;height:100%" *ngIf="!UI.showChatDetails" scrollable (scrollPosition)="scrollHandler($event)">
-    <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="UI.showChatDetails=true">
+  <div class="sheet" id="chat_window" style="overflow-y:auto;height:100%" *ngIf="!showChatDetails" scrollable (scrollPosition)="scrollHandler($event)">
+    <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="showChatDetails=true">
       <div style="float:left;margin:0 5px 0 10px;min-height:40px">
         <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
-        <span *ngFor="let recipient of objectToArray(recipients);let last=last">{{recipient[0]==UI.currentUser?'You':recipient[1]?.name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
+        <span *ngFor="let recipient of objectToArray(recipients);let last=last"
+        [ngClass]="UI.isContentAccessible(recipient[0])?'clear':'encrypted'">{{recipient[0]==UI.currentUser?'You':recipient[1]?.name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
@@ -59,7 +62,8 @@ import * as firebase from 'firebase/app'
     </div>
     <div>
       <ul style="list-style:none;">
-        <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
+        <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index"
+        [ngClass]="UI.isContentAccessible(message.payload.user)?'clear':'encrypted'">
           <div *ngIf="previousMessageRead&&!(message.payload?.reads||[])[UI.currentUser]&&message.payload?.serverTimestamp?.seconds<nowSeconds">
             <div style="margin:0 auto;text-align:center;margin-top:25px;color:#999;font-size:10px">Left here</div>
             <div class="seperator" style="width:100%;margin-bottom:25px"></div>
@@ -147,6 +151,7 @@ export class ChatComponent {
   chatLastMessageObj:any
   chatChain:string
   recipients:{}
+  showChatDetails:boolean
 
   constructor(
     public afs: AngularFirestore,
@@ -155,6 +160,7 @@ export class ChatComponent {
     private route: ActivatedRoute,
     private storage: AngularFireStorage,
   ) {
+    this.showChatDetails=false
     this.UI.loading=true
     this.recipients={}
     this.nowSeconds=Date.now()/1000
@@ -260,7 +266,7 @@ export class ChatComponent {
       chain:this.chatLastMessageObj.chain||this.chatChain,
       chatSubject:this.chatSubjectEdit,
     })
-    this.UI.showChatDetails=false
+    this.showChatDetails=false
   }
 
   addMessage() {
@@ -272,7 +278,7 @@ export class ChatComponent {
     })
     this.draftMessage=''
     this.draftImage=''
-    this.UI.showChatDetails=false
+    this.showChatDetails=false
   }
 
   addRecipient(recipientObj) {
@@ -285,7 +291,7 @@ export class ChatComponent {
     this.teams=null
     this.draftMessage=''
     this.draftImage=''
-    this.UI.showChatDetails=false
+    this.showChatDetails=false
   }
 
   onImageChange(event:any) {

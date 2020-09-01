@@ -111,7 +111,6 @@ export class SendCoinsComponent  {
         },
         auto:true
       })
-      this.UI.showChatDetails=false;
     });
   }
 
