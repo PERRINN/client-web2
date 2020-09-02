@@ -36,7 +36,7 @@ import * as firebase from 'firebase/app';
     <div *ngIf="editName" (click)="updateName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update name</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <div style="font-size:14px;margin:20px;color:#444">Your PERRINN email</div>
-    <div style="font-size:10px;margin:20px;color:#777">Use this email to sign into PERRINN.com, receive notifications, connect to other PERRINN apps like Onshape, Google Drive and Google Meet (calendar events and meetings). This email can be the one you used to register on PERRINN.com or any other email. This email is visible by other PERRINN members.</div>
+    <div style="font-size:10px;margin:20px;color:#777">Use this email to receive notifications, connect to other PERRINN apps like Onshape, Google Drive and Google Meet (calendar events and meetings). This email can be the one you use to log into PERRINN.com or any other email. This email is visible by other PERRINN members.</div>
     <input [(ngModel)]="currentEmail" placeholder="Enter your PERRINN email">
     <div (click)="updateEmail()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update email</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
@@ -104,33 +104,23 @@ export class SettingsComponent {
       this.editName=false;
       return;
     }
-    return this.afs.collection('IDs').add({
-      user:this.UI.currentUser,
-      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(ref=>{
-      this.UI.createMessage({
-        chain:ref.id,
-        text:'Updating name to: '+this.currentName+' '+this.currentFamilyName,
-        name:this.currentName,
-        familyName:this.currentFamilyName,
-        auto:true
-      })
-    });
+    this.UI.createMessage({
+      chain:this.newId(),
+      text:'Updating name to: '+this.currentName+' '+this.currentFamilyName,
+      name:this.currentName,
+      familyName:this.currentFamilyName,
+      auto:true
+    })
   }
 
   updateEmail(){
     if(this.currentEmail=='')return
-    return this.afs.collection('IDs').add({
-      user:this.UI.currentUser,
-      serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(ref=>{
-      this.UI.createMessage({
-        chain:ref.id,
-        text:'Updating email to: '+this.currentEmail,
-        userEmail:this.currentEmail,
-        auto:true
-      })
-    });
+    this.UI.createMessage({
+      chain:this.newId(),
+      text:'Updating email to: '+this.currentEmail,
+      userEmail:this.currentEmail,
+      auto:true
+    })
   }
 
   addChild(team){
@@ -164,23 +154,19 @@ export class SettingsComponent {
       uploader.value = '0';
       document.getElementById('buttonFile').style.visibility = 'visible';
       document.getElementById('uploader').style.visibility = 'hidden';
-      let draftMessage = task.task.snapshot.ref.name.substring(0, 13);
-      let draftImage = task.task.snapshot.ref.name.substring(0, 13);
+      let imageTimestamp = task.task.snapshot.ref.name.substring(0, 13);
       storageRef.getDownloadURL().subscribe(url => {
-        return this.afs.collection('IDs').add({
-          user:this.UI.currentUser,
-          serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(ref=>{
-          this.UI.createMessage({
-            chain:ref.id,
-            text:'updating profile picture',
-            image:draftImage,
-            imageDownloadURL:url,
-            userImageTimestamp:draftImage,
-            imageUrlOriginal:url,
-            auto:true
-          })
-        });
+        this.UI.createMessage({
+          chain:this.newId(),
+          text:'updating profile picture',
+          userImageTimestamp:imageTimestamp,
+          chatImageTimestamp:imageTimestamp,
+          chatImageUrlThumb:url,
+          chatImageUrlMedium:url,
+          chatImageUrlOriginal:url,
+          imageUrlOriginal:url,
+          auto:true
+        })
       });
     });
   }
@@ -212,6 +198,15 @@ export class SettingsComponent {
     return Object.keys(obj).map(function(key) {
       return [key, obj[key]];
     });
+  }
+
+  newId():string{
+    const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let autoId=''
+    for(let i=0;i<20;i++){
+      autoId+=chars.charAt(Math.floor(Math.random()*chars.length))
+    }
+    return autoId
   }
 
 }

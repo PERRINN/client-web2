@@ -110,7 +110,6 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.name`]:messageData.name||userPreviousMessageData.name||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.familyName`]:messageData.familyName||userPreviousMessageData.familyName||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.imageUrlThumb`]:messageData.imageUrlThumbUser||userPreviousMessageData.imageUrlThumbUser||null},{create:true})
-      if (messageData.userEmail)admin.auth().updateUser(user,{email:messageData.userEmail})
       if (messageData.userEmail)googleUtils.joinPERRINNGoogleGroup(messageData.userEmail)
       if (messageData.userEmail)onshapeUtils.joinPERRINNOnshapeTeam(messageData.userEmail)
       if(messageData.createdTimestamp==now){

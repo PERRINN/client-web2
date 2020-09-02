@@ -5,12 +5,13 @@ module.exports = {
 
   createMessageAFS:async(messageObj)=>{
     try{
-      const ref=await admin.firestore().collection('IDs').add({
-        user:messageObj.user,
-        serverTimestamp:admin.firestore.FieldValue.serverTimestamp()
-      })
+      const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+      let autoId=''
+      for(let i=0;i<20;i++){
+        autoId+=chars.charAt(Math.floor(Math.random()*chars.length))
+      }
       messageObj.serverTimestamp=admin.firestore.FieldValue.serverTimestamp();
-      messageObj.chain=messageObj.chain||ref.id;
+      messageObj.chain=messageObj.chain||autoId;
       messageObj.auto=true;
       if(messageObj.PERRINN==undefined)messageObj.PERRINN={}
       messageObj.PERRINN.emailNotifications=[];

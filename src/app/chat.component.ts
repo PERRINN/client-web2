@@ -81,7 +81,7 @@ import * as firebase from 'firebase/app'
               <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
               <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
               <div style="clear:both;text-align:center">
-                <img class="imageWithZoom" *ngIf="message.payload?.image" [src]="message.payload?.imageDownloadURL" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.imageDownloadURL)">
+                <img class="imageWithZoom" *ngIf="message.payload?.chatImageTimestamp" [src]="message.payload?.chatImageUrlMedium" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.chatImageUrlOriginal)">
               </div>
               <div *ngIf="showDetails[message.key]" style="margin:5px">
                 <div class="seperator" style="width:100%"></div>
@@ -129,8 +129,8 @@ import * as firebase from 'firebase/app'
 })
 export class ChatComponent {
   draftMessage:string
-  draftImage:string
-  draftImageDownloadURL:string
+  imageTimestamp:string
+  imageDownloadUrl:string
   messageNumberDisplay:number
   lastChatVisitTimestamp:number
   scrollMessageTimestamp:number
@@ -175,8 +175,8 @@ export class ChatComponent {
       this.previousMessageUser=''
       this.previousMessageRead=false
       this.previousMessageRecipientList=[]
-      this.draftImage=''
-      this.draftImageDownloadURL=''
+      this.imageTimestamp=''
+      this.imageDownloadUrl=''
       this.draftMessage=''
       this.autoMessage=false
       this.messageNumberDisplay=15
@@ -273,11 +273,13 @@ export class ChatComponent {
     this.UI.createMessage({
       text:this.draftMessage,
       chain:this.chatLastMessageObj.chain||this.chatChain,
-      image:this.draftImage,
-      imageDownloadURL:this.draftImageDownloadURL,
+      chatImageTimestamp:this.imageTimestamp,
+      chatImageUrlThumb:this.imageDownloadUrl,
+      chatImageUrlMedium:this.imageDownloadUrl,
+      chatImageUrlOriginal:this.imageDownloadUrl
     })
     this.draftMessage=''
-    this.draftImage=''
+    this.imageTimestamp=''
     this.showChatDetails=false
   }
 
@@ -290,7 +292,7 @@ export class ChatComponent {
     this.searchFilter=''
     this.teams=null
     this.draftMessage=''
-    this.draftImage=''
+    this.imageTimestamp=''
     this.showChatDetails=false
   }
 
@@ -316,9 +318,9 @@ export class ChatComponent {
       uploader.value='0'
       document.getElementById('buttonFile').style.visibility='visible'
       document.getElementById('uploader').style.visibility='hidden'
-      this.draftImage=task.task.snapshot.ref.name.substring(0, 13)
+      this.imageTimestamp=task.task.snapshot.ref.name.substring(0, 13)
       storageRef.getDownloadURL().subscribe(url=>{
-        this.draftImageDownloadURL=url
+        this.imageDownloadUrl=url
         this.addMessage()
         event.target.value=''
       })
