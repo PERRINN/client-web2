@@ -9,7 +9,7 @@ import * as firebase from 'firebase/app';
 @Component({
   selector: 'buyCoins',
   template: `
-  <div style="width:320px;color:white;background-color:green;border-radius:5px;margin:25px auto;padding:25px;text-align:center">
+  <div style="width:320px;color:white;background-color:green;margin:25px auto;padding:25px;text-align:center">
     <span style="font-size:12px">Buy</span>
     <br/>
     <span style="font-size:20px">{{amountCOINSPurchased}}</span>
@@ -20,6 +20,7 @@ import * as firebase from 'firebase/app';
   </div>
   <div [hidden]='!selectingCurrency'>
     <div class="sheet" style="max-width:320px">
+      <div class="seperator"></div>
       <div class="title">Select your currency</div>
       <ul class="listLight">
         <li *ngFor="let currency of objectToArray(currencyList)"
@@ -27,17 +28,18 @@ import * as firebase from 'firebase/app';
           (click)="currentCurrencyID = currency[0];refreshAmountCharge()"
           style="padding:15px">
           <div style="width:250px;height:20px;float:left;font-size:15px">{{currency[1].designation}}</div>
-          <div style="height:20px;float:left">1 COIN costs {{1/currency[1].toCOIN|number:'1.2-2'}} {{currency[1].code}}</div>
+          <div style="height:20px;float:left;font-size:10px">1 COIN costs {{1/currency[1].toCOIN|number:'1.2-2'}} {{currency[1].code}}</div>
         </li>
       </ul>
       <div class="content" style="text-align:center; padding-top:20px">{{amountCharge/100 | number:'1.2-2'}} {{currentCurrencyID | uppercase}} to be paid.</div>
       <div style="text-align:center">
         <button type="button" (click)="selectingCurrency=false;enteringCardDetails=true">Proceed to payment</button>
       </div>
+      <div class="seperator"></div>
     </div>
   </div>
   <div [hidden]='!enteringCardDetails'>
-  <div class="module form-module">
+  <div class="module form-module" style="border-style:solid;border-width:1px;border-color:#ddd">
   <div class="top">
     <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="selectingCurrency=true;enteringCardDetails=false">back</div>
   </div>
@@ -63,8 +65,10 @@ import * as firebase from 'firebase/app';
   </div>
   <div [hidden]='!processingPayment'>
     <div class='sheet' style="max-width:320px">
+      <div class="seperator"></div>
       <div class='content' style="text-align:center">{{messagePayment}}</div>
       <div class='content' style="padding-top:30px; text-align:center">{{messagePERRINNTransaction}}</div>
+      <div class="seperator"></div>
     </div>
   </div>
   `,

@@ -118,7 +118,7 @@ module.exports = {
           user:sender,
           text:"Welcome to PERRINN, we are happy to have you here with us! If you have any question please ask here. We will be happy to help.",
           chatSubject:'Welcome to PERRINN',
-          recipientList:[sender,'QYm5NATKa6MGD87UpNZCTl6IolX2',user]
+          recipientList:['QYm5NATKa6MGD87UpNZCTl6IolX2',user]
         }
         await createMessageUtils.createMessageAFS(messageObj)
       }
