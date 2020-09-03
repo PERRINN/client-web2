@@ -124,7 +124,7 @@ module.exports = {
       }
 
       //message transaction out receiver
-      if((messageData.transactionOut||{}).receiver){
+      if((messageData.transactionOut||{}).receiver&&!(messageData.transactionOut||{}).receiverName){
         createMessageUtils.createMessageAFS({
           user:messageData.transactionOut.receiver,
           text:((messageData.transactionOut||{}).amount||0)+" COINS received, reference: "+messageData.transactionOut.reference,
