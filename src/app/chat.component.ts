@@ -111,7 +111,7 @@ import * as firebase from 'firebase/app'
   <div class="sheet">
     <div class="fixed" style="bottom:0">
       <div class="seperator" style="width:100%"></div>
-      <div *ngIf="chatLastMessageObj.recipients&&!recipients[UI.currentUser]" style="padding:10px">
+      <div *ngIf="chatLastMessageObj.recipients&&!recipients[UI.currentUser]&&UI.currentUserIsMember" style="padding:10px">
         <div (click)="addRecipient(UI.currentUser,UI.currentUserLastMessageObj.name,UI.currentUserLastMessageObj.familyName)" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:0 auto;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Follow this chat</div>
       </div>
       <div *ngIf="!chatLastMessageObj.recipients||recipients[UI.currentUser]">
