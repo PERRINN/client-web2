@@ -67,26 +67,24 @@ import * as firebase from 'firebase/app';
     <div class='sheet' style="max-width:320px">
       <div class="seperator"></div>
       <div class='content' style="text-align:center">{{messagePayment}}</div>
-      <div class='content' style="padding-top:30px; text-align:center">{{messagePERRINNTransaction}}</div>
       <div class="seperator"></div>
     </div>
   </div>
   `,
 })
 export class BuyCoinsComponent {
-  cardNumber: string;
-  expiryMonth: string;
-  expiryYear: string;
-  cvc: string;
-  amountCOINSPurchased: number;
-  amountCharge: number;
-  currentCurrencyID: string;
-  messagePayment: string;
-  messagePERRINNTransaction: string;
-  currencyList: any;
-  selectingCurrency: boolean;
-  enteringCardDetails: boolean;
-  processingPayment: boolean;
+  cardNumber: string
+  expiryMonth: string
+  expiryYear: string
+  cvc: string
+  amountCOINSPurchased: number
+  amountCharge: number
+  currentCurrencyID: string
+  messagePayment: string
+  currencyList: any
+  selectingCurrency: boolean
+  enteringCardDetails: boolean
+  processingPayment: boolean
 
   constructor(
     public afs: AngularFirestore,
@@ -94,17 +92,16 @@ export class BuyCoinsComponent {
     private _zone: NgZone,
     public UI: UserInterfaceService
   ) {
-    this.selectingCurrency = true;
-    this.enteringCardDetails = false;
-    this.processingPayment = false;
-    this.messagePayment = '';
-    this.messagePERRINNTransaction = '';
-    this.amountCOINSPurchased = 50;
-    this.currentCurrencyID = 'gbp';
+    this.selectingCurrency = true
+    this.enteringCardDetails = false
+    this.processingPayment = false
+    this.messagePayment = ''
+    this.amountCOINSPurchased = 50
+    this.currentCurrencyID = 'gbp'
     afs.doc<any>('appSettings/payment').valueChanges().subscribe(snapshot=>{
-      this.currencyList=snapshot.currencyList;
-      this.refreshAmountCharge();
-    });
+      this.currencyList=snapshot.currencyList
+      this.refreshAmountCharge()
+    })
   }
 
   processPayment() {
@@ -116,11 +113,11 @@ export class BuyCoinsComponent {
     }, (status: number, response: any) => {
       this._zone.run(() => {
         if (response.error) {
-          this.messagePayment = response.error.message;
+          this.messagePayment = response.error.message
         } else {
-          this.enteringCardDetails = false;
-          this.processingPayment = true;
-          this.messagePayment = `Processing card...`;
+          this.enteringCardDetails = false
+          this.processingPayment = true
+          this.messagePayment = `Processing card...`
           this.afs.collection('PERRINNTeams/'+this.UI.currentUser+'/payments').add({
             source:response.id,
             amountCOINSPurchased:this.amountCOINSPurchased,
@@ -130,25 +127,25 @@ export class BuyCoinsComponent {
             serverTimestamp:firebase.firestore.FieldValue.serverTimestamp()
           }).then(paymentID=>{
             this.afs.doc<any>('PERRINNTeams/'+this.UI.currentUser+'/payments/'+paymentID.id).valueChanges().subscribe(payment=>{
-              if(payment.outcome!=undefined)this.messagePayment=payment.outcome.seller_message;
-              if(this.messagePayment=='Payment complete.')this.messagePERRINNTransaction='COINS have been sent to you. Enjoy experiencing the PERRINN Team!';
-              if(payment.errorMessage!=undefined)this.messagePayment=payment.errorMessage;
-            });
-          });
+              if(payment.outcome!=undefined)this.messagePayment=payment.outcome.seller_message
+              if(this.messagePayment=='Payment complete.')this.router.navigate(['chat',this.UI.currentUser])
+              if(payment.errorMessage!=undefined)this.messagePayment=payment.errorMessage
+            })
+          })
         }
-      });
-    });
+      })
+    })
   }
 
   refreshAmountCharge() {
-    this.amountCharge = Number((this.amountCOINSPurchased/this.currencyList[this.currentCurrencyID].toCOIN*100).toFixed(0));
+    this.amountCharge = Number((this.amountCOINSPurchased/this.currencyList[this.currentCurrencyID].toCOIN*100).toFixed(0))
   }
 
   objectToArray(obj) {
-    if (obj == null) { return []; }
+    if (obj == null) { return [] }
     return Object.keys(obj).map(function(key) {
-      return [key, obj[key]];
-    });
+      return [key, obj[key]]
+    })
   }
 
 }

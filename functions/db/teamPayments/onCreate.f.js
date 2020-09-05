@@ -21,6 +21,7 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{user}/payment
         let sender='-L7jqFf8OuGlZrfEK6dT';
         let messageObj={
           user:sender,
+          chain:context.params.user,
           recipientList:['QYm5NATKa6MGD87UpNZCTl6IolX2'],
           text:"Thank you for purchasing "+val.amountCOINSPurchased+" new COINS.",
           transactionOut:{
