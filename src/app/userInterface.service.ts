@@ -35,6 +35,8 @@ export class UserInterfaceService {
     if (!messageObj.text&&!messageObj.chatImageTimestamp) return null
     messageObj.serverTimestamp=firebase.firestore.FieldValue.serverTimestamp()
     messageObj.user=this.currentUser
+    messageObj.name=messageObj.name||this.currentUserLastMessageObj.name||''
+    messageObj.imageUrlThumbUser=messageObj.imageUrlThumbUser||this.currentUserLastMessageObj.imageUrlThumbUser||''
     messageObj.PERRINN={}
     messageObj.PERRINN.emailNotifications=[]
     return this.afs.collection('PERRINNMessages').add(messageObj)

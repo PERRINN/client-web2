@@ -41,10 +41,16 @@ import * as firebase from 'firebase/app'
       </li>
     </ul>
     <div class="seperator" style="width:100%;margin:0px"></div>
-      <div style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="router.navigate(['sendCoins'])">Send Coins</div>
+      <div *ngIf="chatLastMessageObj?.recipientList.length!=2" style="font-size:10px;margin:10px;color:#777">To send COINS, chat must be between you and another user.</div>
+      <div *ngIf="chatLastMessageObj?.recipientList.length==2&&chatLastMessageObj?.recipientList.includes(UI.currentUser)">
+        <div style="font-size:12px;margin:10px;color:#777">Send COINS</div>
+        <input style="width:100px;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="500" (keyup)="inputsValid=checkInputs()" [(ngModel)]="amount" placeholder="Amount">
+        <div *ngIf="amount>0&&amount<=UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="clear:both;width:200px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="sendCoins(amount)">
+          Send {{amount}} Coins to {{(chatLastMessageObj?.recipientList[0]==UI.currentUser)?(chatLastMessageObj?.recipients[chatLastMessageObj?.recipientList[1]].name):(chatLastMessageObj?.recipients[chatLastMessageObj?.recipientList[0]].name)}}
+        </div>
+      </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
-
 
   <div class="sheet" id="chat_window" style="overflow-y:auto;height:100%" *ngIf="!showChatDetails" scrollable (scrollPosition)="scrollHandler($event)">
     <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="showChatDetails=true">
@@ -142,7 +148,6 @@ export class ChatComponent {
   previousMessageServerTimestamp:any
   previousMessageUser:string
   previousMessageRead:boolean
-  previousMessageRecipientList:[]
   isCurrentUserLeader:boolean
   isCurrentUserMember:boolean
   showDetails:{}
@@ -179,7 +184,6 @@ export class ChatComponent {
       this.previousMessageServerTimestamp={}
       this.previousMessageUser=''
       this.previousMessageRead=false
-      this.previousMessageRecipientList=[]
       this.imageTimestamp=''
       this.imageDownloadUrl=''
       this.draftMessage=''
@@ -253,7 +257,6 @@ export class ChatComponent {
   storeMessageValues(message) {
     this.previousMessageUser=message.user
     this.previousMessageServerTimestamp=message.serverTimestamp
-    this.previousMessageRecipientList=message.recipientList
     this.previousMessageRead=(message.reads||[])[this.UI.currentUser]
   }
 
@@ -270,6 +273,21 @@ export class ChatComponent {
       text:'Changing chat subject to: '+this.chatSubjectEdit+" (was: "+this.chatLastMessageObj.chatSubject+")",
       chain:this.chatLastMessageObj.chain||this.chatChain,
       chatSubject:this.chatSubjectEdit,
+    })
+    this.showChatDetails=false
+  }
+
+  sendCoins(amount){
+    let receiver=''
+    if (this.chatLastMessageObj.recipientList[0]==this.UI.currentUser)receiver=this.chatLastMessageObj.recipientList[1]
+    else receiver=this.chatLastMessageObj.recipientList[0]
+    this.UI.createMessage({
+      text:'sending '+amount+' COINS',
+      chain:this.chatLastMessageObj.chain||this.chatChain,
+      transactionOut:{
+        receiver:receiver,
+        amount:amount
+      }
     })
     this.showChatDetails=false
   }

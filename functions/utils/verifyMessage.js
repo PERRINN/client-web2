@@ -127,12 +127,11 @@ module.exports = {
       if((messageData.transactionOut||{}).receiver&&!(messageData.transactionOut||{}).receiverName){
         createMessageUtils.createMessageAFS({
           user:messageData.transactionOut.receiver,
-          text:((messageData.transactionOut||{}).amount||0)+" COINS received, reference: "+messageData.transactionOut.reference,
+          text:((messageData.transactionOut||{}).amount||0)+" COINS received",
           chain:messageData.chain,
           transactionIn:{
             donor:user,
-            amount:(messageData.transactionOut||{}).amount||0,
-            reference:messageData.transactionOut.reference
+            amount:(messageData.transactionOut||{}).amount||0
           }
         })
       }
@@ -162,8 +161,7 @@ module.exports = {
   //            amount:amount,
   //            receiver:user,
   //            receiverName:userObj.data().name,
-  //            receiverFamilyName:userObj.data().familyName,
-  //            reference:'automatic top up'
+  //            receiverFamilyName:userObj.data().familyName
   //          },
   //          function:{
   //            name:'transactionOut'

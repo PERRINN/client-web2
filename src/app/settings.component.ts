@@ -105,22 +105,22 @@ export class SettingsComponent {
       return;
     }
     this.UI.createMessage({
-      chain:this.newId(),
-      text:'Updating name to: '+this.currentName+' '+this.currentFamilyName,
+      chain:this.UI.currentUser,
+      text:'Updating my name to: '+this.currentName+' '+this.currentFamilyName,
       name:this.currentName,
-      familyName:this.currentFamilyName,
-      auto:true
+      familyName:this.currentFamilyName
     })
+    this.router.navigate(['chat',this.UI.currentUser])
   }
 
   updateEmail(){
     if(this.currentEmail=='')return
     this.UI.createMessage({
-      chain:this.newId(),
-      text:'Updating email to: '+this.currentEmail,
-      userEmail:this.currentEmail,
-      auto:true
+      chain:this.UI.currentUser,
+      text:'Updating my email to: '+this.currentEmail,
+      userEmail:this.currentEmail
     })
+    this.router.navigate(['chat',this.UI.currentUser])
   }
 
   addChild(team){
@@ -157,16 +157,16 @@ export class SettingsComponent {
       let imageTimestamp = task.task.snapshot.ref.name.substring(0, 13);
       storageRef.getDownloadURL().subscribe(url => {
         this.UI.createMessage({
-          chain:this.newId(),
-          text:'updating profile picture',
+          chain:this.UI.currentUser,
+          text:'updating my profile picture',
           userImageTimestamp:imageTimestamp,
           chatImageTimestamp:imageTimestamp,
           chatImageUrlThumb:url,
           chatImageUrlMedium:url,
           chatImageUrlOriginal:url,
-          imageUrlOriginal:url,
-          auto:true
+          imageUrlOriginal:url
         })
+        this.router.navigate(['chat',this.UI.currentUser])
       });
     });
   }
@@ -198,15 +198,6 @@ export class SettingsComponent {
     return Object.keys(obj).map(function(key) {
       return [key, obj[key]];
     });
-  }
-
-  newId():string{
-    const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    let autoId=''
-    for(let i=0;i<20;i++){
-      autoId+=chars.charAt(Math.floor(Math.random()*chars.length))
-    }
-    return autoId
   }
 
 }

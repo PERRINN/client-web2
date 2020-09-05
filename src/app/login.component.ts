@@ -113,28 +113,18 @@ export class LoginComponent  {
             const imageUrlMedium="https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Fmedium_1523055261437Screen%20Shot%202018-04-06%20at%2022.36.21.png?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=WBDL52YygQ1yrfHTmygdhqldkZnJYJ6DiyAVV8up%2BKEeYJgRMVfPKtQNvtXurJt5uE0CTIRzGgbKBFW%2FaPjYx10JmIYLEM5NHRaZjI9czIXSnlzKzM4aJfXljHfwgMuk3c1St%2BmGnQMeAwyD9dZpqsppTHDYUEuYyw%2BbcaWG7fpRzSleXde1QZ8N1%2Bqa0DjuemU81bTJoG5vOAXa8qHuigTaOJlHP%2Fw9WN3pxiA6Q5tea9kfBEXwOJ2Pm5wL6hAoexAwATDMsQI2T2LEbLizJY2e8VoKTqK3u3TdAnoD38CQUrCDI61w3vTlW%2BxKeFB3huZjtH3V7MPJ%2FTgpOknE3g%3D%3D";
             const imageUrlOriginal="https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2Foriginal_1523055261437Screen%20Shot%202018-04-06%20at%2022.36.21.png?GoogleAccessId=firebase-adminsdk-rh8x2@perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=c8sqTFAMkJMDEr0CZdFAMD0I9gsBWMqqy21O2wmkAKRt3H%2B9Z2DZNnZgzdFPPOgYTSojdOyuhzy8X%2FyET97nUi3fnwQfy1eQrCu%2F5iI4GbCEaZqsosbMz5MiLOsVoLGOlLpjFekVOQTIuniZfTRuPfEL6zNzyyyQasAHfZOqz76E1FkQBg3sYWiabS4sfcirSP%2BhIQT4k6Px02B%2BARos4%2F%2FnivTla9KX8OPYH7tmUj%2Fsc%2F1sPiQaqIrWXpC5HX4TLZ9w%2Bdl83HSCSBYmkwUAOtrtJ1uncwwhia4pzmniLvfXj1%2BikJA6HXcon44Ymv8jDpHh4AqbBVqAXTWyIzKzaQ%3D%3D";
             this.UI.createMessage({
-              chain:this.newId(),
+              chain:auth.uid,
               text:'Creating user: '+name+' '+familyName,
               name:name,
               familyName:familyName,
               imageUrlThumbUser:imageUrlThumb,
               imageUrlMedium:imageUrlMedium,
-              imageUrlOriginal:imageUrlOriginal,
-              auto:true
+              imageUrlOriginal:imageUrlOriginal
             })
           });
         });
       }
     }
-  }
-
-  newId():string{
-    const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    let autoId=''
-    for(let i=0;i<20;i++){
-      autoId+=chars.charAt(Math.floor(Math.random()*chars.length))
-    }
-    return autoId
   }
 
 }

@@ -27,7 +27,6 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
     <div id='main_container'>
-      <chatModal *ngIf="UI.currentUser"></chatModal>
       <router-outlet></router-outlet>
     </div>
   `,

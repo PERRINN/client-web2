@@ -25,8 +25,7 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{user}/payment
           text:"Thank you for purchasing "+val.amountCOINSPurchased+" new COINS.",
           transactionOut:{
             receiver:context.params.user,
-            amount:val.amountCOINSPurchased,
-            reference:'COINS purchase.'
+            amount:val.amountCOINSPurchased
           }
         };
         createMessageUtils.createMessageAFS(messageObj);

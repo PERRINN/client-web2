@@ -6,12 +6,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ChatComponent }  from './chat.component';
-import { ChatModalComponent }  from './chatModal.component';
 import { LoginComponent }  from './login.component';
 import { ProfileComponent }  from './profile.component';
 import { SettingsComponent }  from './settings.component';
 import { SearchComponent }  from './search.component';
-import { SendCoinsComponent }  from './sendCoins.component';
 import { BuyCoinsComponent }  from './buyCoins.component';
 import { LinkyModule } from 'angular-linky';
 
@@ -40,12 +38,10 @@ export const firebaseConfig = {
   declarations: [
     AppComponent,
     ChatComponent,
-    ChatModalComponent,
     LoginComponent,
     ProfileComponent,
     SettingsComponent,
     SearchComponent,
-    SendCoinsComponent,
     BuyCoinsComponent,
     ScrollableDirective,
   ],
