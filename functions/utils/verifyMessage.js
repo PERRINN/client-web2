@@ -140,7 +140,10 @@ module.exports = {
       //PERRINN membership
       let membership={}
       membership.dailyCost=costs.data().membershipDay
-      membership.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
+      if(wallet.balance>0){
+        membership.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
+        if((membership.days*membership.dailyCost)>wallet.balance)membership.days=wallet.balance/membership.dailyCost
+      } else membership.days=0
       membership.daysTotal=((userPreviousMessageData.membership||{}).daysTotal||0)+membership.days
       membership.amount=membership.days*membership.dailyCost
       wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount))*100000)/100000
