@@ -39,6 +39,7 @@ export class UserInterfaceService {
     messageObj.imageUrlThumbUser=messageObj.imageUrlThumbUser||this.currentUserLastMessageObj.imageUrlThumbUser||''
     messageObj.PERRINN={}
     messageObj.PERRINN.emailNotifications=[]
+    messageObj.reads={[this.currentUser]:true}
     return this.afs.collection('PERRINNMessages').add(messageObj)
   }
 

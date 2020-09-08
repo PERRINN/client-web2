@@ -41,7 +41,7 @@ import * as firebase from 'firebase/app'
       </li>
     </ul>
     <div class="seperator" style="width:100%;margin:0px"></div>
-      <div *ngIf="chatLastMessageObj?.recipientList.length!=2" style="font-size:10px;margin:10px;color:#777">To send COINS, chat must be between you and another user.</div>
+      <div *ngIf="chatLastMessageObj?.recipientList.length!=2" style="font-size:10px;margin:10px;color:#777">To send COINS, chat must be between you and 1 other user only.</div>
       <div *ngIf="chatLastMessageObj?.recipientList.length==2&&chatLastMessageObj?.recipientList.includes(UI.currentUser)">
         <div style="font-size:12px;margin:10px;color:#777">Send COINS</div>
         <input style="width:100px;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="500" (keyup)="inputsValid=checkInputs()" [(ngModel)]="amount" placeholder="Amount">

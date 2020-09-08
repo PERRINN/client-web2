@@ -49,6 +49,7 @@ module.exports = {
       messageData.recipientList=[user].concat([(messageData.transactionOut||{}).receiver]||[]).concat(messageData.recipientList||[]).concat(chatPreviousMessageData.recipientList||[])
       messageData.recipientList=messageData.recipientList.filter((item,pos)=>messageData.recipientList.indexOf(item)===pos)
       messageData.recipientList.indexOf('undefined')!=-1&&messageData.recipientList.splice(messageData.recipientList.indexOf('undefined'),1)
+      if(messageData.chain==user)messageData.recipientList=[user]
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{recipientList:messageData.recipientList||[]},{create:true})
 
       //message recipients data
@@ -145,6 +146,7 @@ module.exports = {
       wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount))*100000)/100000
 
       //message chat Subject
+      if(messageData.chain==user)messageData.chatSubject='User records'
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{chatSubject:messageData.chatSubject||chatPreviousMessageData.chatSubject||null},{create:true})
 
       //child topup
