@@ -64,6 +64,9 @@ module.exports = {
         if(recipient.docs[0]!=undefined)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient.docs[0].data().user}.imageUrlThumb`]:(recipient.docs[0].data()||{}).imageUrlThumbUser||null},{create:true})
       })
 
+      //email notifications
+      if((messageData.PERRINN||{}).emailNotifications)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.emailNotifications":messageData.recipientList},{create:true})
+
       //messaging cost
       const costs=await admin.firestore().doc('appSettings/costs').get()
       let amountWrite=costs.data().messageWrite
@@ -93,13 +96,26 @@ module.exports = {
       wallet.balance=Math.round((Number(wallet.balance)-Number((messageData.transactionOut||{}).amount||0))*100000)/100000
       wallet.balance=Math.round((Number(wallet.balance)+Number((messageData.transactionIn||{}).amount||0))*100000)/100000
 
-      //email notifications
-      if((messageData.PERRINN||{}).emailNotifications)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.emailNotifications":messageData.recipientList},{create:true})
+      //PERRINN membership
+      let membership={}
+      membership.dailyCost=costs.data().membershipDay
+      if(wallet.balance>0){
+        membership.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
+        if((membership.days*membership.dailyCost)>wallet.balance)membership.days=wallet.balance/membership.dailyCost
+      } else membership.days=0
+      membership.daysTotal=((userPreviousMessageData.membership||{}).daysTotal||0)+membership.days
+      membership.amount=membership.days*membership.dailyCost
+      wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount))*100000)/100000
 
       //user data
+      let authEmail=''
+      if(!(messageData.userEmail||userPreviousMessageData.userEmail)){
+        const userRecord=await admin.auth().getUser(user)
+        if(userRecord)authEmail=userRecord.toJSON().email
+      }
       messageData.searchName=(messageData.name||userPreviousMessageData.name||'').toLowerCase()+' '+(messageData.familyName||userPreviousMessageData.familyName||'').toLowerCase()
       messageData.createdTimestamp=messageData.createdTimestamp||userPreviousMessageData.createdTimestamp||now
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userEmail:messageData.userEmail||userPreviousMessageData.userEmail||null},{create:true})
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userEmail:messageData.userEmail||userPreviousMessageData.userEmail||authEmail||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{name:messageData.name||userPreviousMessageData.name||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{familyName:messageData.familyName||userPreviousMessageData.familyName||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userImageTimestamp:messageData.userImageTimestamp||userPreviousMessageData.userImageTimestamp||null},{create:true})
@@ -111,8 +127,8 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.name`]:messageData.name||userPreviousMessageData.name||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.familyName`]:messageData.familyName||userPreviousMessageData.familyName||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.imageUrlThumb`]:messageData.imageUrlThumbUser||userPreviousMessageData.imageUrlThumbUser||null},{create:true})
-      if (messageData.userEmail)googleUtils.joinPERRINNGoogleGroup(messageData.userEmail)
-      if (messageData.userEmail)onshapeUtils.joinPERRINNOnshapeTeam(messageData.userEmail)
+      if (messageData.userEmail&&wallet.balance>0)googleUtils.joinPERRINNGoogleGroup(messageData.userEmail)
+      if (messageData.userEmail&&wallet.balance>0)onshapeUtils.joinPERRINNOnshapeTeam(messageData.userEmail)
       if(messageData.createdTimestamp==now){
         let sender='-L7jqFf8OuGlZrfEK6dT'
         let messageObj={
@@ -136,17 +152,6 @@ module.exports = {
           }
         })
       }
-
-      //PERRINN membership
-      let membership={}
-      membership.dailyCost=costs.data().membershipDay
-      if(wallet.balance>0){
-        membership.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
-        if((membership.days*membership.dailyCost)>wallet.balance)membership.days=wallet.balance/membership.dailyCost
-      } else membership.days=0
-      membership.daysTotal=((userPreviousMessageData.membership||{}).daysTotal||0)+membership.days
-      membership.amount=membership.days*membership.dailyCost
-      wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount))*100000)/100000
 
       //message chat Subject
       if(messageData.chain==user)messageData.chatSubject='User records'
@@ -190,7 +195,7 @@ module.exports = {
 
       return {
         user:user,
-        userEmail:messageData.userEmail||userPreviousMessageData.userEmail||null,
+        userEmail:messageData.userEmail||userPreviousMessageData.userEmail||authEmail||null,
         wallet:wallet
       }
 

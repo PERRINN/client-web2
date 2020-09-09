@@ -1,26 +1,27 @@
-const admin = require('firebase-admin');
-const nodemailer = require('nodemailer');
-const functions = require('firebase-functions');
-
-const sgMail = require('@sendgrid/mail');
-const API_KEY=functions.config().sendgrid.key;
-sgMail.setApiKey(API_KEY);
+const admin = require('firebase-admin')
+const nodemailer = require('nodemailer')
+const functions = require('firebase-functions')
+const sgMail = require('@sendgrid/mail')
+const API_KEY=functions.config().sendgrid.key
+sgMail.setApiKey(API_KEY)
 
 let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
-    port: 587,
-    auth: {
-        user: 'nicolas@perrinn.com',
-        pass: functions.config().email2.password
-    }
-});
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  auth: {
+    user: 'nicolas@perrinn.com',
+    pass: functions.config().email2.password
+  }
+})
 
 module.exports = {
 
-  sendNewMessageEmail:(dest)=>{
-    return admin.auth().getUser(dest).then(function(userRecord) {
-      var email=userRecord.toJSON().email;
+  sendNewMessageEmail:async(user)=>{
+    try{
+      let email=''
+      const userLastMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',recipient||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+      if(userLastMessage)email=(userLastMessage.docs[0].data()||{}).userEmail||''
       const mailOptions = {
         from: 'PERRINN <hello@perrinn.com>',
         to: email,
@@ -28,18 +29,17 @@ module.exports = {
         html: `
           <a  class=”link” href="https://www.perrinn.com" target="_blank" style="padding:20px;text-decoration:none;text-align:center;font-size:14px;margin:50px;color:white;background-color:#267cb5;cursor:pointer">Go to PERRINN.com</a>
         `
-      };
+      }
       return transporter.sendMail(mailOptions)
-      .then(result=>{
-        return 'done';
-      });
-    }).catch(error=>{
-      console.log(error);
-    });
+    }
+    catch(error){
+      console.log(error)
+      return error
+    }
   },
 
   sendErrorEmail:(err)=>{
-    var email='perrinnlimited@gmail.com';
+    var email='perrinnlimited@gmail.com'
     const mailOptions = {
       from: 'PERRINN <hello@perrinn.com>',
       to: email,
@@ -47,19 +47,20 @@ module.exports = {
       html: `
         <a  class=”link” href="https://console.firebase.google.com/u/0/project/perrinn-d5fc1/functions/logs?severity=DEBUG" target="_blank" style="padding:20px;text-decoration:none;text-align:center;font-size:14px;margin:50px;color:white;background-color:#267cb5;cursor:pointer">Go to backend</a>
       `
-    };
+    }
     return transporter.sendMail(mailOptions)
     .then(result=>{
-      return 'done';
+      return 'done'
     }).catch(error=>{
-      console.log(error);
-    });
+      console.log(error)
+    })
   },
 
-  sendNewMessageEmailSendGrid:async(dest)=>{
+  sendNewMessageEmailSendGrid:async(user)=>{
     try{
-      const userRecord=await admin.auth().getUser(dest)
-      var email=userRecord.toJSON().email;
+      let email=''
+      const userLastMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',recipient||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+      if(userLastMessage)email=(userLastMessage.docs[0].data()||{}).userEmail||''
       const msg = {
         to:email,
         from:'PERRINN <hello@perrinn.com>',
@@ -71,7 +72,7 @@ module.exports = {
       return sgMail.send(msg)
     }
     catch(error){
-      console.log(error);
+      console.log(error)
       return error
     }
   },
