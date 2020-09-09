@@ -109,7 +109,7 @@ module.exports = {
 
       //user data
       let authEmail=''
-      if(!(messageData.userEmail||userPreviousMessageData.userEmail)){
+      if(!(messageData.userEmail||userPreviousMessageData.userEmail||(user=='-L7jqFf8OuGlZrfEK6dT'))){
         const userRecord=await admin.auth().getUser(user)
         if(userRecord)authEmail=userRecord.toJSON().email
       }
