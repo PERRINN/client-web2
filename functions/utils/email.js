@@ -20,7 +20,7 @@ module.exports = {
   sendNewMessageEmail:async(user)=>{
     try{
       let email=''
-      const userLastMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',recipient||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+      const userLastMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',user||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
       if(userLastMessage)email=(userLastMessage.docs[0].data()||{}).userEmail||''
       const mailOptions = {
         from: 'PERRINN <hello@perrinn.com>',
@@ -59,7 +59,7 @@ module.exports = {
   sendNewMessageEmailSendGrid:async(user)=>{
     try{
       let email=''
-      const userLastMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',recipient||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+      const userLastMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',user||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
       if(userLastMessage)email=(userLastMessage.docs[0].data()||{}).userEmail||''
       const msg = {
         to:email,
