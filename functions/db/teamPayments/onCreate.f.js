@@ -1,24 +1,25 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
-const stripeObj = require('stripe')(functions.config().stripe.token);
+const stripeObj = require('stripe')(functions.config().stripe.token)
 const createMessageUtils = require('../../utils/createMessage')
 
 exports=module.exports=functions.firestore.document('PERRINNTeams/{user}/payments/{chargeID}').onCreate((data,context)=>{
   return admin.auth().getUser(context.params.user).then(function(userRecord) {
-    var email=userRecord.toJSON().email;
-    const val = data.data();
-    if (val === null || val.id || val.error) return null;
-    const amount=val.amountCharge;
-    const currency=val.currency;
-    const source=val.source;
-    const description=val.amountCOINSPurchased+" COINS to "+email;
-    const idempotency_key=context.params.chargeID;
-    let charge = {amount,currency,source,description};
+    var email=userRecord.toJSON().email
+    const val = data.data()
+    if (val === null || val.id || val.error) return null
+    const amount=val.amountCharge
+    const currency=val.currency
+    const source=val.source
+    const description=val.amountCOINSPurchased+" COINS to "+email
+    const receipt_email=email
+    const idempotency_key=context.params.chargeID
+    let charge = {amount,currency,source,description,receipt_email}
     return stripeObj.charges.create(charge, {idempotency_key})
     .then(response=>{
       if (response.outcome.seller_message=='Payment complete.'){
-        let sender='-L7jqFf8OuGlZrfEK6dT';
+        let sender='-L7jqFf8OuGlZrfEK6dT'
         let messageObj={
           user:sender,
           chain:context.params.user,
@@ -28,15 +29,15 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{user}/payment
             receiver:context.params.user,
             amount:val.amountCOINSPurchased
           }
-        };
-        createMessageUtils.createMessageAFS(messageObj);
+        }
+        createMessageUtils.createMessageAFS(messageObj)
       }
-      return data.ref.set(response,{merge:true});
+      return data.ref.set(response,{merge:true})
     }, error=>{
       return data.ref.update({
         errorMessage:error.message,
         errorType:error.type
-      });
-    });
-  });
-});
+      })
+    })
+  })
+})
