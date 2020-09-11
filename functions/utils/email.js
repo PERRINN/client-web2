@@ -30,7 +30,8 @@ module.exports = {
           <a  class=”link” href="https://www.perrinn.com" target="_blank" style="padding:20px;text-decoration:none;text-align:center;font-size:14px;margin:50px;color:white;background-color:#267cb5;cursor:pointer">Go to PERRINN.com</a>
         `
       }
-      return transporter.sendMail(mailOptions)
+      if(email!='')return transporter.sendMail(mailOptions)
+      else return
     }
     catch(error){
       console.log(error)
@@ -69,7 +70,8 @@ module.exports = {
           messageCount:5,
         }
       }
-      return sgMail.send(msg)
+      if(email!='')return sgMail.send(msg)
+      else return
     }
     catch(error){
       console.log(error)
