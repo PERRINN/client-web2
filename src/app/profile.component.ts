@@ -12,19 +12,20 @@ import { AngularFireAuth } from '@angular/fire/auth';
   template: `
   <div class='sheet'>
     <div *ngIf="!UI.currentUserIsMember" style="background-color:#f2f5d0;padding:5px">
-      <div style="color:#777;font-size:10px;float:left">You have limited access to the team. To become a member and gain full access, you need to top up your COINS.</div>
-      <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 10px 0 10px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/membership','_blank')">More info</div>
+      <div style="color:#777;font-size:10px;float:left">To become a PERRINN member and gain full access, you need to top up your COINS (go to your settings). If you have any question about the membership, feel free to chat with Nicolas.</div>
+      <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 5px 0 5px;padding:0 3px 0 3px;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/membership','_blank')">More info about the membership</div>
+      <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 5px 0 5px;padding:0 3px 0 3px;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['profile','QYm5NATKa6MGD87UpNZCTl6IolX2'])">Chat with Nicolas</div>
     </div>
     <div *ngIf="id=='all'" style="clear:both;background:#f2f2f2;font-size:16px;padding:5px 15px 5px 15px">Team wide messages</div>
     <div *ngIf="id=='all'" class="seperator" style="width:100%;margin:0px"></div>
     <div *ngIf="id!='all'">
       <div style="clear:both;background-color:#f4f7fc"
-      [ngClass]="UI.isContentAccessible(focusUserLastMessageObj.user)?'clear':'encrypted'">
+      [ngClass]="UI.isContentAccessible(focusUserLastMessageObj?.user)?'clear':'encrypted'">
         <div style="float:left">
           <img [src]="focusUserLastMessageObj?.imageUrlThumbUser" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px;border-radius:50%">
         </div>
         <div style="padding:10px">
-          <div style="clear:both;float:left;color:#222;white-space:nowrap;width:75%;text-overflow:ellipsis">
+          <div style="clear:both;color:#222">
             <div style="float:left">
               <span >{{focusUserLastMessageObj?.name}}</span>
               <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
@@ -32,6 +33,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
             </div>
             <img *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" src="./../assets/App icons/driveLogo.png" style="float:left;width:15px;margin:5px;cursor:pointer" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
             <img *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:15px;margin:5px;cursor:pointer" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
+            <div *ngIf="UI.currentUser!=focusUserLastMessageObj?.user" (click)="newMessageToUser()" style="float:right;font-size:10px;padding:2px 4px 2px 4px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">New message to {{focusUserLastMessageObj?.name}}</div>
           </div>
           <div style="clear:both">
             <div style="float:left;font-size:10px;color:#666">{{focusUserLastMessageObj?.userEmail}}</div>
@@ -132,9 +134,23 @@ export class ProfileComponent {
     });
   }
 
-  logout() {
-    this.afAuth.auth.signOut();
-    this.UI.currentUser = null;
+  newMessageToUser() {
+    let ID=this.newId()
+    this.UI.createMessage({
+      text:'Starting a new chat.',
+      chain:ID,
+      recipientList:[this.focusUserLastMessageObj.user]
+    })
+    this.router.navigate(['chat',ID])
+  }
+
+  newId():string{
+    const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let autoId=''
+    for(let i=0;i<20;i++){
+      autoId+=chars.charAt(Math.floor(Math.random()*chars.length))
+    }
+    return autoId
   }
 
 }

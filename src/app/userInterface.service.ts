@@ -21,7 +21,7 @@ export class UserInterfaceService {
         this.currentUser=auth.uid
         afs.collection<any>('PERRINNMessages',ref=>ref.where('user','==',this.currentUser).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1)).valueChanges().subscribe(snapshot=>{
           this.currentUserLastMessageObj=snapshot[0]
-          this.currentUserIsMember=(((snapshot[0].PERRINN||{}).wallet||{}).balance<50)||false
+          this.currentUserIsMember=(((snapshot[0].PERRINN||{}).wallet||{}).balance>0)||false
         })
       } else {
         this.currentUser=null
