@@ -11,30 +11,40 @@ const runtimeOpts={timeoutSeconds:540,memory:'1GB'}
 exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 hours').onRun(async(context) => {
   try{
     let userCount=0
-    let members=[]
+    let membersEmails=[]
     const listUsersResult=await admin.auth().listUsers()
     for(const userRecord of listUsersResult.users){
       let messageRef=''
       let messageData={}
       let lastUserMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',userRecord.uid).orderBy('serverTimestamp','desc').limit(1).get()
       let result=await verifyMessageUtils.verifyMessage(lastUserMessage.docs[0].id,lastUserMessage.docs[0].data())
-      if (result.wallet.balance>0)members.push(result.user)
+      if (result.wallet.balance>0)membersEmails.push(result.userEmail)
       userCount=userCount+1
     }
-    const listGoogleUsers=await googleUtils.getPERRINNGoogleGroup()
-    let googleUsers=[]
-    listGoogleUsers.data.members.forEach(member=>{
-      googleUsers.push(member.email)
+    const googleUsers=await googleUtils.getPERRINNGoogleGroup()
+    let googleEmails=[]
+    googleUsers.data.members.forEach(member=>{
+      googleEmails.push(member.email)
     })
-    const listOnshapeUsers=await onshapeUtils.getPERRINNOnshapeTeam()
-    let onshapeUsers=[]
-    listOnshapeUsers.items.forEach(item=>{
-      onshapeUsers.push(item.member.email)
+    let googleEmailsInvalid=[]
+    googleEmails.forEach(email=>{
+      if(!membersEmails.includes(email))googleEmailsInvalid.push(email)
+    })
+    const onshapeUsers=await onshapeUtils.getPERRINNOnshapeTeam()
+    let onshapeEmails=[]
+    onshapeUsers.items.forEach(item=>{
+      onshapeEmails.push(item.member.email)
+    })
+    let onshapeEmailsInvalid=[]
+    onshapeEmails.forEach(email=>{
+      if(!membersEmails.includes(email))onshapeEmailsInvalid.push(email)
     })
     console.log(userCount+' users processed.')
-    console.log(members.length+' PERRINN members.')
-    console.log(googleUsers.length+' Google users.')
-    console.log(onshapeUsers.length+' Onshape users.')
+    console.log(membersEmails.length+' PERRINN members.')
+    console.log(googleEmails.length+' Google users.')
+    console.log(onshapeEmails.length+' Onshape users.')
+    console.log('invalid Google Emails: '+JSON.stringify(googleEmailsInvalid))
+    console.log('invalid Onshape Emails: '+JSON.stringify(onshapeEmailsInvalid))
   }
   catch(error){
     console.log(error)
