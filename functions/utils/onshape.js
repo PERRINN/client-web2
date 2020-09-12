@@ -10,7 +10,6 @@ const emailUtils = require('../utils/email')
 module.exports = {
 
   joinPERRINNOnshapeTeam:(email)=>{
-    var email=email
     var method='POST'
     var url='https://cad.onshape.com/api/teams/559f8b25e4b056aae06c1b1d/members'
     var body={'email':email,'admin':false}

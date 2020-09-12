@@ -113,9 +113,10 @@ module.exports = {
         const userRecord=await admin.auth().getUser(user)
         if(userRecord)authEmail=userRecord.toJSON().email
       }
+      let userEmail=messageData.userEmail||userPreviousMessageData.userEmail||authEmail
       messageData.searchName=(messageData.name||userPreviousMessageData.name||'').toLowerCase()+' '+(messageData.familyName||userPreviousMessageData.familyName||'').toLowerCase()
       messageData.createdTimestamp=messageData.createdTimestamp||userPreviousMessageData.createdTimestamp||now
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userEmail:messageData.userEmail||userPreviousMessageData.userEmail||authEmail||null},{create:true})
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userEmail:userEmail||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{name:messageData.name||userPreviousMessageData.name||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{familyName:messageData.familyName||userPreviousMessageData.familyName||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userImageTimestamp:messageData.userImageTimestamp||userPreviousMessageData.userImageTimestamp||null},{create:true})
@@ -127,8 +128,6 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.name`]:messageData.name||userPreviousMessageData.name||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.familyName`]:messageData.familyName||userPreviousMessageData.familyName||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.imageUrlThumb`]:messageData.imageUrlThumbUser||userPreviousMessageData.imageUrlThumbUser||null},{create:true})
-      if (messageData.userEmail&&wallet.balance>0)googleUtils.joinPERRINNGoogleGroup(messageData.userEmail)
-      if (messageData.userEmail&&wallet.balance>0)onshapeUtils.joinPERRINNOnshapeTeam(messageData.userEmail)
       if(messageData.createdTimestamp==now){
         let sender='-L7jqFf8OuGlZrfEK6dT'
         let messageObj={
@@ -138,6 +137,12 @@ module.exports = {
           recipientList:['QYm5NATKa6MGD87UpNZCTl6IolX2',user]
         }
         await createMessageUtils.createMessageAFS(messageObj)
+      }
+
+      //membership benefits
+      if(wallet.balance>0){
+        googleUtils.joinPERRINNGoogleGroup(userEmail)
+        onshapeUtils.joinPERRINNOnshapeTeam(userEmail)
       }
 
       //message transaction out receiver
@@ -195,7 +200,7 @@ module.exports = {
 
       return {
         user:user,
-        userEmail:messageData.userEmail||userPreviousMessageData.userEmail||authEmail||null,
+        userEmail:userEmail||null,
         wallet:wallet
       }
 

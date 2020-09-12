@@ -6,7 +6,6 @@ const emailUtils = require('../utils/email')
 module.exports = {
 
   joinPERRINNGoogleGroup:(email)=>{
-    var email=email
     var SERVICE_ACCOUNT_EMAIL = 'perrinn-service-account@perrinn.iam.gserviceaccount.com'
     var SERVICE_ACCOUNT_KEY_FILE = './perrinn-73e7f16c6042.json'
     const jwt = new google.auth.JWT(
@@ -35,8 +34,7 @@ module.exports = {
     })
   },
 
-  getPERRINNGoogleGroup:(email)=>{
-    var email=email
+  getPERRINNGoogleGroup:()=>{
     var SERVICE_ACCOUNT_EMAIL = 'perrinn-service-account@perrinn.iam.gserviceaccount.com'
     var SERVICE_ACCOUNT_KEY_FILE = './perrinn-73e7f16c6042.json'
     const jwt = new google.auth.JWT(
