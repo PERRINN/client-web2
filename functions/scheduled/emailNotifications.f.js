@@ -3,7 +3,7 @@ const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
 const emailUtils = require('../utils/email')
 
-exports=module.exports=functions.pubsub.schedule('every 10 minutes').onRun(async(context) => {
+exports=module.exports=functions.pubsub.schedule('every 60 minutes').onRun(async(context) => {
   try{
     const lastMessages=await admin.firestore().collection('PERRINNMessages').orderBy('PERRINN.emailNotifications').where('lastMessage','==',true).where('verified','==',true).get()
     if(lastMessages==undefined)return null;
