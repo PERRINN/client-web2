@@ -21,12 +21,16 @@ module.exports = {
       userChain.nextMessage='none'
       userChain.previousMessage='none'
       userChain.index=1
+      userChain.newDay=true
+      userChain.newMonth=true
       const lastUserMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',user).where('verified','==',true).orderBy('serverTimestamp','desc').limit(2).get()
       lastUserMessages.forEach(message=>{
         if(message.id!=messageId&&userChain.previousMessage=='none'){
           userChain.previousMessage=message.id
           userPreviousMessageData=message.data()
           userChain.index=((userPreviousMessageData.userChain||{}).index+1)||1
+          userChain.newDay=Math.floor(now/86400000)!=Math.floor(((userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0)
+          userChain.newMonth=Math.floor(now/86400000/30)!=Math.floor(((userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24/30)||0)
           batch.update(admin.firestore().doc('PERRINNMessages/'+userChain.previousMessage),{"userChain.nextMessage":messageId||null},{create:true})
         }
       })
