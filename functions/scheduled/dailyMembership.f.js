@@ -30,6 +30,10 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     googleEmails.forEach(email=>{
       if(!membersEmails.includes(email))googleEmailsInvalid.push(email)
     })
+    let googleEmailsMissing=[]
+    membersEmails.forEach(email=>{
+      if(!googleEmails.includes(email))googleEmailsMissing.push(email)
+    })
     const onshapeUsers=await onshapeUtils.getPERRINNOnshapeTeam()
     let onshapeEmails=[]
     onshapeUsers.items.forEach(item=>{
@@ -39,12 +43,18 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     onshapeEmails.forEach(email=>{
       if(!membersEmails.includes(email))onshapeEmailsInvalid.push(email)
     })
+    let onshapeEmailsMissing=[]
+    membersEmails.forEach(email=>{
+      if(!onshapeEmails.includes(email))onshapeEmailsMissing.push(email)
+    })
     console.log(userCount+' users processed.')
     console.log(membersEmails.length+' PERRINN members.')
     console.log(googleEmails.length+' Google users.')
     console.log(onshapeEmails.length+' Onshape users.')
     console.log('invalid Google Emails: '+JSON.stringify(googleEmailsInvalid))
     console.log('invalid Onshape Emails: '+JSON.stringify(onshapeEmailsInvalid))
+    console.log('missing Google Emails: '+JSON.stringify(googleEmailsMissing))
+    console.log('missing Onshape Emails: '+JSON.stringify(onshapeEmailsMissing))
   }
   catch(error){
     console.log(error)
