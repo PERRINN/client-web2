@@ -136,8 +136,8 @@ module.exports = {
       let membership={}
       membership.dailyCost=costs.data().membershipDay
       if(wallet.balance>0){
-        googleUtils.joinPERRINNGoogleGroup(userEmail)
-        onshapeUtils.joinPERRINNOnshapeTeam(userEmail)
+        googleUtils.googleGroupMemberInsert(userEmail)
+        onshapeUtils.onshapeTeamMemberPost(userEmail)
         membership.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
         if((membership.days*membership.dailyCost)>wallet.balance)membership.days=wallet.balance/membership.dailyCost
       } else membership.days=0

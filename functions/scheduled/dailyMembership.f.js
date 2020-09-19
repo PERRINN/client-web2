@@ -21,7 +21,7 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       if (result.wallet.balance>0)membersEmails.push(result.userEmail)
       userCount=userCount+1
     }
-    const googleUsers=await googleUtils.getPERRINNGoogleGroup()
+    const googleUsers=await googleUtils.googleGroupMembersGet()
     let googleEmails=[]
     googleUsers.data.members.forEach(member=>{
       googleEmails.push(member.email)
@@ -30,11 +30,14 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     googleEmails.forEach(email=>{
       if(!membersEmails.includes(email))googleEmailsInvalid.push(email)
     })
+    for(const email of googleEmailsInvalid){
+      await googleUtils.googleGroupMemberDelete(email)
+    }
     let googleEmailsMissing=[]
     membersEmails.forEach(email=>{
       if(!googleEmails.includes(email))googleEmailsMissing.push(email)
     })
-    const onshapeUsers=await onshapeUtils.getPERRINNOnshapeTeam()
+    const onshapeUsers=await onshapeUtils.onshapeTeamMembersGet()
     let onshapeEmails=[]
     onshapeUsers.items.forEach(item=>{
       onshapeEmails.push(item.member.email)
