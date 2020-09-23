@@ -47,11 +47,10 @@ module.exports = {
     })
   },
 
-  onshapeTeamMemberDelete:(email)=>{
-    if(email=='perrinnlimited@gmail.com')return
+  onshapeTeamMemberDelete:(uid)=>{
+    if(uid=='55672346e4b01f24a4970c58')return
     var method='DELETE'
-    var url='https://cad.onshape.com/api/teams/559f8b25e4b056aae06c1b1d/members'
-    var body={'email':email}
+    var url='https://cad.onshape.com/api/teams/559f8b25e4b056aae06c1b1d/members/'+uid
     const accessKey=functions.config().onshape.accesskey
     const secretKey=functions.config().onshape.secretkey
     var urlObj = u.parse(url)
@@ -78,10 +77,9 @@ module.exports = {
         'Date':authDate,
         'On-Nonce':nonce
       },
-      json: true,
-      body: body
+      json: true
     }).catch(error=>{
-      console.log('email '+email+' error '+error)
+      console.log('uid '+uid+' error '+error)
       return
     })
   },

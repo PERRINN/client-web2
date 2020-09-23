@@ -39,13 +39,18 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     })
     const onshapeUsers=await onshapeUtils.onshapeTeamMembersGet()
     let onshapeEmails=[]
+    let onshapeUids=[]
     onshapeUsers.items.forEach(item=>{
       onshapeEmails.push(item.member.email)
+      onshapeUids.push(item.member.id)
     })
-    let onshapeEmailsInvalid=[]
+    let onshapeUidsInvalid=[]
     onshapeEmails.forEach(email=>{
-      if(!membersEmails.includes(email))onshapeEmailsInvalid.push(email)
+      if(!membersEmails.includes(email))onshapeUidsInvalid.push(onshapeUids[onshapeEmails.indexOf(email)])
     })
+    for(const uid of onshapeUidsInvalid){
+      await onshapeUtils.onshapeTeamMemberDelete(uid)
+    }
     let onshapeEmailsMissing=[]
     membersEmails.forEach(email=>{
       if(!onshapeEmails.includes(email))onshapeEmailsMissing.push(email)
@@ -55,7 +60,7 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     console.log(googleEmails.length+' Google users.')
     console.log(onshapeEmails.length+' Onshape users.')
     console.log('invalid Google Emails: '+JSON.stringify(googleEmailsInvalid))
-    console.log('invalid Onshape Emails: '+JSON.stringify(onshapeEmailsInvalid))
+    console.log('invalid Onshape Uids: '+JSON.stringify(onshapeUidsInvalid))
     console.log('missing Google Emails: '+JSON.stringify(googleEmailsMissing))
     console.log('missing Onshape Emails: '+JSON.stringify(onshapeEmailsMissing))
   }

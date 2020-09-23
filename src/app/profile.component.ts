@@ -16,7 +16,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
       <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 5px 0 5px;padding:0 3px 0 3px;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/membership','_blank')">More info about the membership</div>
       <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 5px 0 5px;padding:0 3px 0 3px;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['profile','QYm5NATKa6MGD87UpNZCTl6IolX2'])">Chat with Nicolas</div>
     </div>
-    <div *ngIf="id=='all'" style="clear:both;background:#f2f2f2;font-size:16px;padding:5px 15px 5px 15px">Team wide messages</div>
+    <div *ngIf="id=='all'" style="clear:both;background:#f2f2f2;font-size:14px;padding:5px 15px 5px 15px">PERRINN messages</div>
     <div *ngIf="id=='all'" class="seperator" style="width:100%;margin:0px"></div>
     <div *ngIf="id!='all'">
       <div style="clear:both;background-color:#f4f7fc"

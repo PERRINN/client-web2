@@ -8,10 +8,16 @@ const googleUtils = require('../utils/google')
 
 exports=module.exports=functions.firestore.document('toto/toto').onCreate(async(data,context)=>{
   try{
-    let googleEmailsInvalid=["alex.07.guerrero@gmail.com","dolbain@gmail.com","edytado@gmail.com","maj.lukas@googlemail.com","matteo.incorvaia@icloud.com","nicolas@perrinn.com","perrinnlimited@gmail.co","shao.pufang@gmail.com","victoryspecificationii@gmail.com"]
-    for(const email of googleEmailsInvalid){
-      await googleUtils.googleGroupMemberDelete(email)
-    }
+    const onshapeUsers=await onshapeUtils.onshapeTeamMembersGet()
+    console.log('users: '+JSON.stringify(onshapeUsers))
+    let onshapeEmails=[]
+    let onshapeUids=[]
+    onshapeUsers.items.forEach(item=>{
+      onshapeEmails.push(item.member.email)
+      onshapeUids.push(item.member.id)
+    })
+    console.log('emails: '+JSON.stringify(onshapeEmails))
+    console.log('uids: '+JSON.stringify(onshapeUids))
   }
   catch(error){
     console.log(error)

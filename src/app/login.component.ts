@@ -59,7 +59,7 @@ export class LoginComponent  {
     this.newUser = false;
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
-        this.router.navigate(['profile',auth.uid]);
+        this.router.navigate(['profile','all']);
       }
     });
   }
