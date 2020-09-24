@@ -53,13 +53,6 @@ import { AngularFireAuth } from '@angular/fire/auth'
       <div class="bounce2"></div>
       <div class="bounce3"></div>
     </div>
-    <div *ngIf="id!='all'&&(mode=='30days'||mode=='24months')">
-      <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0">Date</div>
-      <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0"></div>
-      <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0"></div>
-      <div style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0">Balance</div>
-      <div class="seperator" style="width:100%;margin:0px"></div>
-    </div>
     <ul class="listLight">
       <li *ngFor="let message of messages|async;let first=first;let last=last"
         (click)="router.navigate(['chat',message.payload.doc.data()?.chain])"
@@ -80,9 +73,18 @@ import { AngularFireAuth } from '@angular/fire/auth'
           <div class="seperator"></div>
         </div>
         <div *ngIf="id!='all'&&(mode=='30days'||mode=='24months')">
+          <div *ngIf="first">
+            <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0">Date</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Days</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Messages</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Change</div>
+            <div style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0">Balance</div>
+            <div class="seperator" style="width:100%;margin:0px"></div>
+          </div>
           <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd">{{(message.payload.doc.data()?.verifiedTimestamp?.seconds*1000)|date:'d MMM'}}</div>
-          <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.verifiedTimestamp?.seconds-previousTimestamp.seconds)/3600/24|number:'1.2-2'}}{{first?'':' days'}}</div>
-          <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.PERRINN?.wallet?.balance-previousBalance)|number:'1.2-2'}}</div>
+          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.verifiedTimestamp?.seconds-previousTimestamp.seconds)/3600/24|number:'1.2-2'}}</div>
+          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.userChain?.index-previousIndex)}}</div>
+          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.PERRINN?.wallet?.balance-previousBalance)|number:'1.2-2'}}</div>
           <div style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd">{{message.payload.doc.data()?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
           <div class="seperator" style="width:100%;margin:0px"></div>
         </div>
@@ -101,6 +103,7 @@ export class ProfileComponent {
   mode:string
   previousBalance:string
   previousTimestamp:string
+  previousIndex:string
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -204,6 +207,7 @@ export class ProfileComponent {
   storeMessageValues(message) {
     this.previousBalance=message.PERRINN.wallet.balance
     this.previousTimestamp=message.verifiedTimestamp
+    this.previousIndex=message.userChain.index
   }
 
 }
