@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Router, ActivatedRoute } from '@angular/router';
-import { UserInterfaceService } from './userInterface.service';
-import * as firebase from 'firebase/app';
-import { AngularFireAuth } from '@angular/fire/auth';
+import { Component } from '@angular/core'
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
+import { Router, ActivatedRoute } from '@angular/router'
+import { UserInterfaceService } from './userInterface.service'
+import * as firebase from 'firebase/app'
+import { AngularFireAuth } from '@angular/fire/auth'
 
 @Component({
   selector: 'profile',
@@ -39,6 +39,9 @@ import { AngularFireAuth } from '@angular/fire/auth';
             <div style="float:left;font-size:10px;color:#666">{{focusUserLastMessageObj?.userEmail}}</div>
             <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(focusUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</div>
             <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
+            <div style="float:left;font-size:10px;color:blue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='inbox'?'underline':'none'" (click)="mode='inbox';refreshMessages()">inbox</div>
+            <div style="float:left;font-size:10px;color:blue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='30days'?'underline':'none'" (click)="mode='30days';refreshMessages()">30 days</div>
+            <div style="float:left;font-size:10px;color:blue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='24months'?'underline':'none'" (click)="mode='24months';refreshMessages()">24 months</div>
             <div style="clear:both;float:left;font-size:10px;color:#999">Created {{focusUserLastMessageObj?.createdTimestamp|date:'MMMM yyyy'}}, {{focusUserLastMessageObj?.userChain?.index}} Messages, {{focusUserLastMessageObj?.membership?.daysTotal|number:'1.1-1'}} Membership days, Verified {{((nowSeconds-focusUserLastMessageObj?.verifiedTimestamp?.seconds)/3600/24)|number:'1.2-2'}} days ago</div>
           </div>
         </div>
@@ -50,34 +53,54 @@ import { AngularFireAuth } from '@angular/fire/auth';
       <div class="bounce2"></div>
       <div class="bounce3"></div>
     </div>
+    <div *ngIf="id!='all'&&(mode=='30days'||mode=='24months')">
+      <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0">Date</div>
+      <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0"></div>
+      <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0"></div>
+      <div style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0">Balance</div>
+      <div class="seperator" style="width:100%;margin:0px"></div>
+    </div>
     <ul class="listLight">
-      <li *ngFor="let message of lastMessages|async;let last=last"
+      <li *ngFor="let message of messages|async;let first=first;let last=last"
         (click)="router.navigate(['chat',message.payload.doc.data()?.chain])"
         [ngClass]="UI.isContentAccessible(message.payload.doc.data().user)?'clear':'encrypted'">
-        <div style="float:left;min-width:60px;min-height:40px">
-          <img [src]="message.payload.doc.data()?.imageUrlThumbUser" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:40px;border-radius:50%">
+        <div *ngIf="id=='all'||mode=='inbox'">
+          <div style="float:left;min-width:60px;min-height:40px">
+            <img [src]="message.payload.doc.data()?.imageUrlThumbUser" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:40px;border-radius:50%">
+          </div>
+          <div>
+            <div style="clear:both;float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
+            <div style="float:left;margin-top:5px;margin-left:5px;color:#111;font-size:11px">{{message.payload.doc.data()?.recipientList.length>1?'+'+(message.payload.doc.data()?.recipientList.length-1):''}}</div>
+            <div *ngIf="(nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)>43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'d MMM yyyy'}}</div>
+            <div *ngIf="(nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)<=43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
+            <div style="float:right;margin:9px 15px 0 0;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]" [style.background-color]="message.payload.doc.data()?.recipients?(message.payload.doc.data()?.recipients[UI.currentUser]==undefined?'lightblue':'red'):'lightblue'"></div>
+            <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
+            <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}{{(message.payload.doc.data()?.chatImageTimestamp!=''&&message.payload.doc.data()?.chatImageTimestamp!=undefined)?' (image)':''}}</div>
+          </div>
+          <div class="seperator"></div>
         </div>
-        <div>
-          <div style="clear:both;float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
-          <div style="float:left;margin-top:5px;margin-left:5px;color:#111;font-size:11px">{{message.payload.doc.data()?.recipientList.length>1?'+'+(message.payload.doc.data()?.recipientList.length-1):''}}</div>
-          <div *ngIf="(nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)>43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'d MMM yyyy'}}</div>
-          <div *ngIf="(nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)<=43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
-          <div style="float:right;margin:9px 15px 0 0;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]" [style.background-color]="message.payload.doc.data()?.recipients?(message.payload.doc.data()?.recipients[UI.currentUser]==undefined?'lightblue':'red'):'lightblue'"></div>
-          <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
-          <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}{{(message.payload.doc.data()?.chatImageTimestamp!=''&&message.payload.doc.data()?.chatImageTimestamp!=undefined)?' (image)':''}}</div>
+        <div *ngIf="id!='all'&&(mode=='30days'||mode=='24months')">
+          <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd">{{(message.payload.doc.data()?.verifiedTimestamp?.seconds*1000)|date:'d MMM'}}</div>
+          <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.verifiedTimestamp?.seconds-previousTimestamp.seconds)/3600/24|number:'1.2-2'}}{{first?'':' days'}}</div>
+          <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.PERRINN?.wallet?.balance-previousBalance)|number:'1.2-2'}}</div>
+          <div style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd">{{message.payload.doc.data()?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
+          <div class="seperator" style="width:100%;margin:0px"></div>
         </div>
-        <div class="seperator"></div>
+        {{storeMessageValues(message.payload.doc.data())}}
       </li>
     </ul>
   </div>
   `,
 })
 export class ProfileComponent {
-  lastMessages:Observable<any[]>;
-  nowSeconds:number;
-  scrollTeam:string;
-  focusUserLastMessageObj:any;
-  id:string;
+  messages:Observable<any[]>
+  nowSeconds:number
+  scrollTeam:string
+  focusUserLastMessageObj:any
+  id:string
+  mode:string
+  previousBalance:string
+  previousTimestamp:string
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -87,51 +110,76 @@ export class ProfileComponent {
     private route: ActivatedRoute
   ) {
     this.id=''
+    this.mode='inbox'
     this.UI.loading=false
     this.nowSeconds=Date.now()/1000
     this.scrollTeam=''
     this.route.params.subscribe(params => {
       this.id=params.id
       afs.collection<any>('PERRINNMessages',ref=>ref.where('user','==',this.id).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1)).valueChanges().subscribe(snapshot=>{
-        this.focusUserLastMessageObj=snapshot[0];
-      });
-      this.refreshMessages();
-    });
+        this.focusUserLastMessageObj=snapshot[0]
+      })
+      this.refreshMessages()
+    })
   }
 
   refreshMessages(){
     if(this.id=='all'){
       this.afAuth.user.subscribe((auth) => {
-        this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+        this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
           .where('lastMessage','==',true)
           .orderBy('serverTimestamp','desc')
           .limit(30)
-        ).snapshotChanges();
-      });
+        ).snapshotChanges()
+      })
+    }
+    else if(this.mode=='30days'){
+      this.afAuth.user.subscribe((auth) => {
+        this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+          .where('user','==',this.id)
+          .where('userChain.newDay','==',true)
+          .orderBy('serverTimestamp','desc')
+          .limit(30)
+        ).snapshotChanges().pipe(map(changes=>{
+          return changes.reverse().map(c=>({payload:c.payload}))
+        }))
+      })
+    }
+    else if(this.mode=='24months'){
+      this.afAuth.user.subscribe((auth) => {
+        this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+          .where('user','==',this.id)
+          .where('userChain.newMonth','==',true)
+          .orderBy('serverTimestamp','desc')
+          .limit(24)
+        ).snapshotChanges().pipe(map(changes=>{
+          return changes.reverse().map(c=>({payload:c.payload}))
+        }))
+      })
     }
     else{
       this.afAuth.user.subscribe((auth) => {
-        this.lastMessages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+        this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
           .where('recipientList','array-contains',this.id)
           .where('lastMessage','==',true)
           .orderBy('serverTimestamp','desc')
           .limit(30)
-        ).snapshotChanges();
-      });
+        ).snapshotChanges()
+      })
     }
   }
 
   showFullScreenImage(src) {
-    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement;
-    fullScreenImage.src = src;
-    fullScreenImage.style.visibility = 'visible';
+    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement
+    fullScreenImage.src = src
+    fullScreenImage.style.visibility = 'visible'
   }
 
   objectToArray(obj) {
-    if (obj == null) { return []; }
+    if (obj == null) { return [] }
     return Object.keys(obj).map(function(key) {
-      return [key, obj[key]];
-    });
+      return [key, obj[key]]
+    })
   }
 
   newMessageToUser() {
@@ -151,6 +199,11 @@ export class ProfileComponent {
       autoId+=chars.charAt(Math.floor(Math.random()*chars.length))
     }
     return autoId
+  }
+
+  storeMessageValues(message) {
+    this.previousBalance=message.PERRINN.wallet.balance
+    this.previousTimestamp=message.verifiedTimestamp
   }
 
 }
