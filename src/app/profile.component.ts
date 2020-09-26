@@ -58,8 +58,9 @@ import { AngularFireAuth } from '@angular/fire/auth'
         (click)="router.navigate(['chat',message.payload.doc.data()?.chain])"
         [ngClass]="UI.isContentAccessible(message.payload.doc.data().user)?'clear':'encrypted'">
         <div *ngIf="id=='all'||mode=='inbox'">
-          <div style="float:left;min-width:60px;min-height:40px">
-            <img [src]="message.payload.doc.data()?.imageUrlThumbUser" style="display:inline;float:left;margin: 7px 10px 7px 10px;object-fit:cover;height:40px;width:40px;border-radius:50%">
+          <div style="float:left;min-width:90px;min-height:40px">
+            <img [src]="message.payload.doc.data()?.imageUrlThumbUser" style="float:left;margin:7px 4px 7px 4px;object-fit:cover;height:40px;width:40px;border-radius:50%">
+            <img *ngIf="message.payload.doc.data()?.recipientList[1]" [src]="message.payload.doc.data()?.recipients[message.payload.doc.data()?.recipientList[1]]?.imageUrlThumb" style="float:left;margin:7px 4px 7px 4px;object-fit:cover;height:25px;width:25px;border-radius:50%">
           </div>
           <div>
             <div style="clear:both;float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
