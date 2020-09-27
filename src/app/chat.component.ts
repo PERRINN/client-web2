@@ -70,7 +70,7 @@ import * as firebase from 'firebase/app'
       <ul style="list-style:none;">
         <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index"
         [ngClass]="UI.isContentAccessible(message.payload.user)?'clear':'encrypted'">
-          <div *ngIf="previousMessageRead&&!(message.payload?.reads||[])[UI.currentUser]&&message.payload?.serverTimestamp?.seconds<nowSeconds">
+          <div *ngIf="previousMessageRead&&!(message.payload?.reads||[])[UI.currentUser]&&message.payload?.serverTimestamp?.seconds<UI.nowSeconds">
             <div style="margin:0 auto;text-align:center;margin-top:25px;color:#999;font-size:10px">Left here</div>
             <div class="seperator" style="width:100%;margin-bottom:25px"></div>
           </div>
@@ -83,8 +83,12 @@ import * as firebase from 'firebase/app'
           </div>
           <div [style.background-color]="(message.payload?.PERRINN?.wallet?.balance>message.payload?.PERRINN?.wallet?.previousBalance)?'#f2f5d0':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-radius:3px;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
             <div>
-              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
-              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
+              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first">
+                <div style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
+                <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)>43200" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
+                <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)<=43200&&(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)>3600" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)*1000|date:'h'}}h</div>
+                <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)<=3600" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{math.max(0,(UI.nowSeconds-message.payload?.serverTimestamp?.seconds))*1000|date:'m'}}m</div>
+              </div>
               <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
               <div style="clear:both;text-align:center">
                 <img class="imageWithZoom" *ngIf="message.payload?.chatImageTimestamp" [src]="message.payload?.chatImageUrlMedium" style="clear:both;width:70%;max-height:320px;object-fit:contain;margin:5px 10px 5px 5px;border-radius:3px" (click)="showFullScreenImage(message.payload?.chatImageUrlOriginal)">
@@ -157,11 +161,11 @@ export class ChatComponent {
   reads:any[]
   autoMessage:boolean
   chatSubjectEdit:string
-  nowSeconds:number
   chatLastMessageObj:any
   chatChain:string
   recipients:{}
   showChatDetails:boolean
+  math:any
 
   constructor(
     public afs: AngularFirestore,
@@ -170,10 +174,10 @@ export class ChatComponent {
     private route: ActivatedRoute,
     private storage: AngularFireStorage,
   ) {
+    this.math=Math
     this.showChatDetails=false
     this.UI.loading=true
     this.recipients={}
-    this.nowSeconds=Date.now()/1000
     this.reads=[]
     this.route.params.subscribe(params=>{
       this.chatChain=params.id

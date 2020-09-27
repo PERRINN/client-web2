@@ -33,6 +33,7 @@ import { AngularFireAuth } from '@angular/fire/auth'
             </div>
             <img *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" src="./../assets/App icons/driveLogo.png" style="float:left;width:15px;margin:5px;cursor:pointer" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
             <img *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:15px;margin:5px;cursor:pointer" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
+            <img *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" src="./../assets/App icons/googleMeet.png" style="float:left;width:15px;margin:5px;cursor:pointer" onclick="window.open('https://meet.google.com/rxn-vtfa-shq','_blank')">
             <div *ngIf="UI.currentUser!=focusUserLastMessageObj?.user" (click)="newMessageToUser()" style="float:right;font-size:10px;padding:2px 4px 2px 4px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">New message to {{focusUserLastMessageObj?.name}}</div>
           </div>
           <div style="clear:both">
@@ -42,7 +43,7 @@ import { AngularFireAuth } from '@angular/fire/auth'
             <div style="float:left;font-size:10px;color:blue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='inbox'?'underline':'none'" (click)="mode='inbox';refreshMessages()">inbox</div>
             <div style="float:left;font-size:10px;color:blue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='30days'?'underline':'none'" (click)="mode='30days';refreshMessages()">30 days</div>
             <div style="float:left;font-size:10px;color:blue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='24months'?'underline':'none'" (click)="mode='24months';refreshMessages()">24 months</div>
-            <div style="clear:both;float:left;font-size:10px;color:#999">Created {{focusUserLastMessageObj?.createdTimestamp|date:'MMMM yyyy'}}, {{focusUserLastMessageObj?.userChain?.index}} Messages, {{focusUserLastMessageObj?.membership?.daysTotal|number:'1.1-1'}} Membership days, Verified {{((nowSeconds-focusUserLastMessageObj?.verifiedTimestamp?.seconds)/3600/24)|number:'1.2-2'}} days ago</div>
+            <div style="clear:both;float:left;font-size:10px;color:#999">Created {{focusUserLastMessageObj?.createdTimestamp|date:'MMMM yyyy'}}, {{focusUserLastMessageObj?.userChain?.index}} Messages, {{focusUserLastMessageObj?.membership?.daysTotal|number:'1.1-1'}} Membership days, Verified {{((UI.nowSeconds-focusUserLastMessageObj?.verifiedTimestamp?.seconds)/3600/24)|number:'1.2-2'}} days ago</div>
           </div>
         </div>
         <div class="seperator" style="width:100%;margin:0px"></div>
@@ -65,8 +66,9 @@ import { AngularFireAuth } from '@angular/fire/auth'
           <div>
             <div style="clear:both;float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
             <div style="float:left;margin-top:5px;margin-left:5px;color:#111;font-size:11px">{{message.payload.doc.data()?.recipientList.length>1?'+'+(message.payload.doc.data()?.recipientList.length-1):''}}</div>
-            <div *ngIf="(nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)>43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'d MMM yyyy'}}</div>
-            <div *ngIf="(nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)<=43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
+            <div *ngIf="(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)>43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(message.payload.doc.data()?.serverTimestamp?.seconds*1000)|date:'d MMM yyyy'}}</div>
+            <div *ngIf="(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)<=43200&&(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)>3600" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)*1000|date:'h'}}h</div>
+            <div *ngIf="(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)<=3600" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:75px">{{math.max(0,(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds))*1000|date:'m'}}m</div>
             <div style="float:right;margin:9px 15px 0 0;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]" [style.background-color]="message.payload.doc.data()?.recipients?(message.payload.doc.data()?.recipients[UI.currentUser]==undefined?'lightblue':'red'):'lightblue'"></div>
             <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
             <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}{{(message.payload.doc.data()?.chatImageTimestamp!=''&&message.payload.doc.data()?.chatImageTimestamp!=undefined)?' (image)':''}}</div>
@@ -97,7 +99,6 @@ import { AngularFireAuth } from '@angular/fire/auth'
 })
 export class ProfileComponent {
   messages:Observable<any[]>
-  nowSeconds:number
   scrollTeam:string
   focusUserLastMessageObj:any
   id:string
@@ -105,6 +106,7 @@ export class ProfileComponent {
   previousBalance:string
   previousTimestamp:string
   previousIndex:string
+  math:any
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -113,10 +115,10 @@ export class ProfileComponent {
     public UI: UserInterfaceService,
     private route: ActivatedRoute
   ) {
+    this.math=Math
     this.id=''
     this.mode='inbox'
     this.UI.loading=false
-    this.nowSeconds=Date.now()/1000
     this.scrollTeam=''
     this.route.params.subscribe(params => {
       this.id=params.id
