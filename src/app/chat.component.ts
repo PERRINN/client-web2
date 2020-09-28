@@ -50,6 +50,24 @@ import * as firebase from 'firebase/app'
       </div>
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
+    <div>
+      <div style="float:left;font-size:12px;margin:10px;color:#777">Create an event</div>
+      <div style="float:left;font-size:12px;margin:10px;color:blue">{{eventSelectedDate==0?'':eventSelectedDate|date:'EEEE d MMM HH:mm'}}</div>
+      <input style="margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="eventDescription" placeholder="Description">
+      <div *ngIf="eventSelectedDate!=0&&eventDescription!=''" style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="createEvent()">Create event</div>
+      <ul class="listLight" style="float:left;width:200px;margin:10px 10px 150px 10px">
+        <li *ngFor="let date of eventDates;let first=first" (click)="first?eventSelectedDate=date:eventSelectedDate=(date+(eventSelectedDate/3600000/24-math.floor(eventSelectedDate/3600000/24))*3600000*24)" [class.selected]="math.floor(date/3600000/24)==math.floor(eventSelectedDate/3600000/24)">
+          <div *ngIf="math.round(date/3600000/24)==(date/3600000/24)||first" style="float:left;width:100px;min-height:10px">{{date|date:'EEEE'}}</div>
+          <div *ngIf="math.round(date/3600000/24)==(date/3600000/24)||first" style="float:left;min-height:10px">{{date|date:'d MMM'}}</div>
+        </li>
+      </ul>
+      <ul class="listLight" style="clear:none;float:left;width:100px;text-align:center;margin:10px 10px 150px 10px">
+        <li *ngFor="let date of eventDates;let first=first" (click)="eventSelectedDate=date" [class.selected]="eventSelectedDate==date">
+          <div *ngIf="math.floor(date/3600000/24)==math.floor(eventSelectedDate/3600000/24)">{{date|date:'HH:mm'}}</div>
+        </li>
+      </ul>
+      <div class="seperator" style="width:100%;margin:0px"></div>
+    </div>
   </div>
 
   <div class="sheet" id="chat_window" style="overflow-y:auto;height:100%" *ngIf="!showChatDetails" scrollable (scrollPosition)="scrollHandler($event)">
@@ -166,6 +184,9 @@ export class ChatComponent {
   recipients:{}
   showChatDetails:boolean
   math:any
+  eventDates:any
+  eventSelectedDate:any
+  eventDescription:string
 
   constructor(
     public afs: AngularFirestore,
@@ -174,6 +195,8 @@ export class ChatComponent {
     private route: ActivatedRoute,
     private storage: AngularFireStorage,
   ) {
+    this.eventDescription=''
+    this.eventSelectedDate=0
     this.math=Math
     this.showChatDetails=false
     this.UI.loading=true
@@ -195,6 +218,7 @@ export class ChatComponent {
       this.messageNumberDisplay=15
       this.chatSubjectEdit=''
       this.refreshMessages(params.id)
+      this.refreshEventDates()
     })
   }
 
@@ -207,6 +231,14 @@ export class ChatComponent {
       this.UI.loading=true
       this.messageNumberDisplay+=15
       this.refreshMessages(this.chatLastMessageObj.chain||this.chatChain)
+    }
+  }
+
+  refreshEventDates(){
+    var i
+    this.eventDates=[]
+    for(i=0;i<500;i++){
+      this.eventDates[i]=(Math.ceil(this.UI.nowSeconds/3600)+i)*3600000
     }
   }
 
@@ -293,6 +325,17 @@ export class ChatComponent {
         amount:amount
       }
     })
+    this.showChatDetails=false
+  }
+
+  createEvent() {
+    this.UI.createMessage({
+      text:this.eventDescription,
+      chain:this.chatLastMessageObj.chain||this.chatChain,
+      eventDate:this.eventSelectedDate
+    })
+    this.draftMessage=''
+    this.imageTimestamp=''
     this.showChatDetails=false
   }
 
