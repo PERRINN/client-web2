@@ -72,6 +72,10 @@ import { AngularFireAuth } from '@angular/fire/auth'
             <div style="float:right;margin:9px 15px 0 0;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]" [style.background-color]="message.payload.doc.data()?.recipients?(message.payload.doc.data()?.recipients[UI.currentUser]==undefined?'lightblue':'red'):'lightblue'"></div>
             <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
             <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}{{(message.payload.doc.data()?.chatImageTimestamp!=''&&message.payload.doc.data()?.chatImageTimestamp!=undefined)?' (image)':''}}</div>
+            <div *ngIf="message.payload.doc.data()?.eventDate" style="clear:both;float:left;margin:0 10px 0 0">{{message.payload.doc.data()?.eventDate|date:'EEEE d MMM HH:mm'}}</div>
+            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=(60*24)" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">{{math.floor(message.payload.doc.data()?.eventDate/60000/60/24-UI.nowSeconds/60/60/24)}} days</div>
+            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<(60*24)&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=60" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">{{math.floor(message.payload.doc.data()?.eventDate/60000/60-UI.nowSeconds/60/60)}} hours</div>
+            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<60&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=-60" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">{{math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)}} minutes</div>
           </div>
           <div class="seperator"></div>
         </div>

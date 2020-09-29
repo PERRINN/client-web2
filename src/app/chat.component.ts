@@ -170,14 +170,11 @@ export class ChatComponent {
   previousMessageServerTimestamp:any
   previousMessageUser:string
   previousMessageRead:boolean
-  isCurrentUserLeader:boolean
-  isCurrentUserMember:boolean
   showDetails:{}
   messages:Observable<any[]>
   teams:Observable<any[]>
   searchFilter:string
   reads:any[]
-  autoMessage:boolean
   chatSubjectEdit:string
   chatLastMessageObj:any
   chatChain:string
@@ -195,30 +192,22 @@ export class ChatComponent {
     private route: ActivatedRoute,
     private storage: AngularFireStorage,
   ) {
-    this.eventDescription=''
-    this.eventSelectedDate=0
     this.math=Math
-    this.showChatDetails=false
     this.UI.loading=true
     this.recipients={}
     this.reads=[]
     this.route.params.subscribe(params=>{
       this.chatChain=params.id
-      this.isCurrentUserLeader=false
-      this.isCurrentUserMember=false
       this.showDetails={}
       this.chatLastMessageObj={}
       this.previousMessageServerTimestamp={}
       this.previousMessageUser=''
       this.previousMessageRead=false
-      this.imageTimestamp=''
-      this.imageDownloadUrl=''
-      this.draftMessage=''
-      this.autoMessage=false
       this.messageNumberDisplay=15
       this.chatSubjectEdit=''
       this.refreshMessages(params.id)
       this.refreshEventDates()
+      this.resetChat()
     })
   }
 
@@ -310,7 +299,7 @@ export class ChatComponent {
       chain:this.chatLastMessageObj.chain||this.chatChain,
       chatSubject:this.chatSubjectEdit,
     })
-    this.showChatDetails=false
+    this.resetChat()
   }
 
   sendCoins(amount){
@@ -325,7 +314,7 @@ export class ChatComponent {
         amount:amount
       }
     })
-    this.showChatDetails=false
+    this.resetChat()
   }
 
   createEvent() {
@@ -334,9 +323,7 @@ export class ChatComponent {
       chain:this.chatLastMessageObj.chain||this.chatChain,
       eventDate:this.eventSelectedDate
     })
-    this.draftMessage=''
-    this.imageTimestamp=''
-    this.showChatDetails=false
+    this.resetChat()
   }
 
   addMessage() {
@@ -348,9 +335,7 @@ export class ChatComponent {
       chatImageUrlMedium:this.imageDownloadUrl,
       chatImageUrlOriginal:this.imageDownloadUrl
     })
-    this.draftMessage=''
-    this.imageTimestamp=''
-    this.showChatDetails=false
+    this.resetChat()
   }
 
   addRecipient(user,name,familyName) {
@@ -359,11 +344,7 @@ export class ChatComponent {
       chain:this.chatLastMessageObj.chain||this.chatChain,
       recipientList:[user]
     })
-    this.searchFilter=''
-    this.teams=null
-    this.draftMessage=''
-    this.imageTimestamp=''
-    this.showChatDetails=false
+    this.resetChat()
   }
 
   onImageChange(event:any) {
@@ -424,6 +405,17 @@ export class ChatComponent {
     } else {
       this.teams=null
     }
+  }
+
+  resetChat(){
+    this.searchFilter=''
+    this.teams=null
+    this.draftMessage=''
+    this.imageTimestamp=''
+    this.imageDownloadUrl=''
+    this.showChatDetails=false
+    this.eventDescription=''
+    this.eventSelectedDate=0
   }
 
 }
