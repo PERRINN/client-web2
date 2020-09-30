@@ -75,7 +75,8 @@ import { AngularFireAuth } from '@angular/fire/auth'
             <div *ngIf="message.payload.doc.data()?.eventDate" style="clear:both;float:left;margin:0 10px 0 0">{{message.payload.doc.data()?.eventDate|date:'EEEE d MMM HH:mm'}}</div>
             <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=(60*24)" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">{{math.floor(message.payload.doc.data()?.eventDate/60000/60/24-UI.nowSeconds/60/60/24)}} days</div>
             <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<(60*24)&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=60" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">{{math.floor(message.payload.doc.data()?.eventDate/60000/60-UI.nowSeconds/60/60)}} hours</div>
-            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<60&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=-60" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">{{math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)}} minutes</div>
+            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<60&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>0" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">{{math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)}} minutes</div>
+            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">Now</div>
           </div>
           <div class="seperator"></div>
         </div>
