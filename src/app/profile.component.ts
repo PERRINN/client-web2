@@ -31,9 +31,6 @@ import { AngularFireAuth } from '@angular/fire/auth'
               <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
               <span *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
             </div>
-            <img *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" src="./../assets/App icons/driveLogo.png" style="float:left;width:15px;margin:5px;cursor:pointer" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
-            <img *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" src="./../assets/App icons/onshapeLogo.png" style="float:left;width:15px;margin:5px;cursor:pointer" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
-            <img *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" src="./../assets/App icons/googleMeet.png" style="float:left;width:15px;margin:5px;cursor:pointer" onclick="window.open('https://meet.google.com/rxn-vtfa-shq','_blank')">
             <div *ngIf="UI.currentUser!=focusUserLastMessageObj?.user" (click)="newMessageToUser()" style="float:right;font-size:10px;padding:2px 4px 2px 4px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">New message to {{focusUserLastMessageObj?.name}}</div>
           </div>
           <div style="clear:both">
