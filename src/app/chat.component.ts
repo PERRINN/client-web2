@@ -20,17 +20,17 @@ import * as firebase from 'firebase/app'
     <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubjectEdit" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:#267cb5;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
-      <li *ngFor="let recipient of objectToArray(recipients)" (click)="router.navigate(['profile',recipient[0]])" style="cursor:pointer;float:left"
-      [ngClass]="UI.isContentAccessible(recipient[0])?'clear':'encrypted'">
-        <img [src]="recipient[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
-        <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{recipient[1]?.name}} {{recipient[1]?.familyName}}</div>
+      <li *ngFor="let recipient of chatLastMessageObj?.recipientList" (click)="router.navigate(['profile',recipient])" style="cursor:pointer;float:left"
+      [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">
+        <img [src]="chatLastMessageObj?.recipients[recipient]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
+        <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{chatLastMessageObj?.recipients[recipient]?.name}} {{chatLastMessageObj?.recipients[recipient]?.familyName}}</div>
       </li>
       <input id="searchInput" style="border:none" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="add people">
     </ul>
     <ul class="listLight">
       <li *ngFor="let team of teams | async"
       [ngClass]="UI.isContentAccessible(team.key)?'clear':'encrypted'">
-        <div *ngIf="!recipients[team.key]" style="padding:5px">
+        <div *ngIf="!chatLastMessageObj?.recipients[team.key]" style="padding:5px">
           <div style="float:left;width:175px">
             <img [src]="team?.values?.imageUrlThumbUser" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
             <span>{{team.values?.name}}</span>
@@ -74,8 +74,8 @@ import * as firebase from 'firebase/app'
     <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="showChatDetails=true">
       <div style="float:left;margin:0 5px 0 10px;min-height:40px">
         <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
-        <span *ngFor="let recipient of objectToArray(recipients);let last=last"
-        [ngClass]="UI.isContentAccessible(recipient[0])?'clear':'encrypted'">{{recipient[0]==UI.currentUser?'You':recipient[1]?.name}}{{recipient[0]==UI.currentUser?'':recipient[1].familyName!=undefinied?' '+recipient[1].familyName:''}}{{last?"":", "}}</span>
+        <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
+        [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{recipient==UI.currentUser?'':chatLastMessageObj?.recipients[recipient].familyName!=undefinied?' '+chatLastMessageObj?.recipients[recipient].familyName:''}}{{last?"":", "}}</span>
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
@@ -173,7 +173,6 @@ export class ChatComponent {
   chatSubjectEdit:string
   chatLastMessageObj:any
   chatChain:string
-  recipients:{}
   showChatDetails:boolean
   math:any
   eventDates:any
@@ -189,7 +188,6 @@ export class ChatComponent {
   ) {
     this.math=Math
     this.UI.loading=true
-    this.recipients={}
     this.reads=[]
     this.route.params.subscribe(params=>{
       this.chatChain=params.id
@@ -240,7 +238,6 @@ export class ChatComponent {
           this.reads.push(c.payload.doc.id)
           this.chatLastMessageObj=c.payload.doc.data()
           this.chatSubjectEdit=c.payload.doc.data()['chatSubject']
-          this.recipients=c.payload.doc.data()['recipients']
         }
       })
       batch.commit()
@@ -370,13 +367,6 @@ export class ChatComponent {
         this.addMessage()
         event.target.value=''
       })
-    })
-  }
-
-  objectToArray(obj) {
-    if (obj == null) { return [] }
-    return Object.keys(obj).map(function(key) {
-      return [key, obj[key]]
     })
   }
 

@@ -40,31 +40,6 @@ import * as firebase from 'firebase/app';
     <input [(ngModel)]="currentEmail" placeholder="Enter your PERRINN email">
     <div (click)="updateEmail()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update email</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
-    <div style="font-size:14px;margin:20px;color:#444">Children</div>
-    <div style="font-size:10px;margin:20px;color:#777">COINS from your wallet will automatically be used to keep your children's COIN balance positive.</div>
-    <ul style="color:#333;margin:20px">
-      <li *ngFor="let child of objectToArray(UI.currentUserLastMessageObj?.children)" (click)="router.navigate(['profile',child[0]])" style="cursor:pointer">
-        <img [src]="child[1]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px"
-        onerror="this.onerror=null;this.src='https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2F1585144867972Screen%20Shot%202018-03-16%20at%2015.05.10_180x180.png?GoogleAccessId=firebase-adminsdk-rh8x2%40perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=I3Kem9n6zYjSNijnKOx%2FAOUAg65GN3xf8OD1qD4uo%2BayOFblFIgfn81uPWRTzhGg14lJdyhz3Yx%2BiCXuYCIdYnduqMZcIjtHE6WR%2BPo74ckemuxIKx3N24tlBJ6DgkfgqwmIkw%2F%2FKotm8Cz%2Fq%2FbIZm%2FvAOi2dpBHqrHiIFXYb8AVYnhP1osUhVvyzapgYJEBZJcHur7v6uqrSKwQ4DfeHHinbJpvkX3wjM6Nxabi3kVABdGcGqMoAPGCTZJMzNj8xddAXuECbptQprd9LlnQOuL4tuDfLMAOUXTHmJVhJEBrquxQi8iPRjnLOvnqF8s2We0SOxprqEuwbZyxSgH05Q%3D%3D'">
-        <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{child[1]?.name}} {{child[1]?.familyName}}</div>
-      </li>
-    </ul>
-    <div *ngIf="!editChildren" style="color:blue;cursor:pointer;margin:20px" (click)="editChildren=!editChildren">Edit children</div>
-    <div *ngIf="editChildren">
-      <input id="searchInput" style="border:none" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="add a child">
-      <ul class="listLight">
-        <li *ngFor="let team of teams | async" >
-          <div style="float:left;width:175px;padding:5px">
-            <img [src]="team?.values?.imageUrlThumbUser" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px"
-            onerror="this.onerror=null;this.src='https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2F1585144867972Screen%20Shot%202018-03-16%20at%2015.05.10_180x180.png?GoogleAccessId=firebase-adminsdk-rh8x2%40perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=I3Kem9n6zYjSNijnKOx%2FAOUAg65GN3xf8OD1qD4uo%2BayOFblFIgfn81uPWRTzhGg14lJdyhz3Yx%2BiCXuYCIdYnduqMZcIjtHE6WR%2BPo74ckemuxIKx3N24tlBJ6DgkfgqwmIkw%2F%2FKotm8Cz%2Fq%2FbIZm%2FvAOi2dpBHqrHiIFXYb8AVYnhP1osUhVvyzapgYJEBZJcHur7v6uqrSKwQ4DfeHHinbJpvkX3wjM6Nxabi3kVABdGcGqMoAPGCTZJMzNj8xddAXuECbptQprd9LlnQOuL4tuDfLMAOUXTHmJVhJEBrquxQi8iPRjnLOvnqF8s2We0SOxprqEuwbZyxSgH05Q%3D%3D'">
-            <span>{{team.values?.name}}</span>
-            <span style="font-size:10px"> {{team.values?.familyName}}</span>
-          </div>
-          <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:#267cb5;color:white;border-style:none" (click)="addChild(team)">Add</div>
-        </li>
-      </ul>
-    </div>
-  <div class="seperator" style="width:100%;margin:0px"></div>
   <div class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div class="seperator" style="width:100%;margin-bottom:250px"></div>
   `,
@@ -72,7 +47,6 @@ import * as firebase from 'firebase/app';
 export class SettingsComponent {
   editName:boolean;
   editMembers:boolean;
-  editChildren:boolean;
   currentName:string;
   currentFamilyName:string;
   currentEmail:string;
@@ -88,7 +62,6 @@ export class SettingsComponent {
   ) {
     this.editName=false;
     this.editMembers=false;
-    this.editChildren=false;
     this.currentName=this.UI.currentUserLastMessageObj.name;
     this.currentFamilyName=this.UI.currentUserLastMessageObj.familyName;
     this.currentEmail=this.UI.currentUserLastMessageObj.userEmail||null;
