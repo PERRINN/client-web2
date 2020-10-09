@@ -75,7 +75,7 @@ import * as firebase from 'firebase/app'
       <div style="float:left;margin:0 5px 0 10px;min-height:40px">
         <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
         <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
-        [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{recipient==UI.currentUser?'':chatLastMessageObj?.recipients[recipient].familyName!=undefinied?' '+chatLastMessageObj?.recipients[recipient].familyName:''}}{{last?"":", "}}</span>
+        [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{recipient==UI.currentUser?'':chatLastMessageObj?.recipients[recipient]?.familyName!=undefinied?' '+chatLastMessageObj?.recipients[recipient]?.familyName:''}}{{last?"":", "}}</span>
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
