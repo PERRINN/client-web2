@@ -124,7 +124,7 @@ import * as firebase from 'firebase/app'
               <div *ngIf="message.payload?.userChain?.nextMessage=='none'&&message.payload?.PERRINN?.wallet?.balance!=undefined" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">C{{message.payload?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
             </div>
             <div *ngIf="messageShowActions.includes(message.key)">
-              <div style="float:left;padding:5px;color:#777;cursor:pointer;border-color:#ddd;border-style:solid;border-width:1px 1px 0 0" (click)="sendAgain(message.payload)">Send again</div>
+              <div style="float:left;padding:5px;color:#777;cursor:pointer;border-color:#ddd;border-style:solid;border-width:1px 1px 0 0" (click)="forwardHere(message.payload)">Forward here</div>
               <div style="float:left;padding:5px;color:#777;cursor:pointer;border-color:#ddd;border-style:solid;border-width:1px 1px 0 0" (click)="messageShowDetails.includes(message.key)?messageShowDetails.splice(messageShowDetails.indexOf(message.key),1):messageShowDetails.push(message.key)">Details</div>
             </div>
           </div>
@@ -321,7 +321,7 @@ export class ChatComponent {
     this.resetChat()
   }
 
-  sendAgain(messageObj){
+  forwardHere(messageObj){
     this.UI.createMessage(messageObj)
     this.resetChat()
   }
