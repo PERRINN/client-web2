@@ -322,7 +322,15 @@ export class ChatComponent {
   }
 
   forwardHere(messageObj){
-    this.UI.createMessage(messageObj)
+    this.UI.createMessage({
+      text:messageObj.text||null,
+      chain:this.chatLastMessageObj.chain||this.chatChain,
+      chatImageTimestamp:messageObj.chatImageTimestamp||null,
+      chatImageUrlThumb:messageObj.chatImageUrlThumb||null,
+      chatImageUrlMedium:messageObj.chatImageUrlMedium||null,
+      chatImageUrlOriginal:messageObj.chatImageUrlOriginal||null,
+      eventDate:messageObj.eventDate||null
+    })
     this.resetChat()
   }
 
