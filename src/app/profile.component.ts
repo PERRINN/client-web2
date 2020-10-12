@@ -136,6 +136,7 @@ export class ProfileComponent {
       this.afAuth.user.subscribe((auth) => {
         this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
           .where('lastMessage','==',true)
+          .where('verified','==',true)
           .orderBy('serverTimestamp','desc')
           .limit(30)
         ).snapshotChanges()
@@ -145,6 +146,7 @@ export class ProfileComponent {
       this.afAuth.user.subscribe((auth) => {
         this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
           .where('user','==',this.id)
+          .where('verified','==',true)
           .where('userChain.newDay','==',true)
           .orderBy('serverTimestamp','desc')
           .limit(30)
@@ -157,6 +159,7 @@ export class ProfileComponent {
       this.afAuth.user.subscribe((auth) => {
         this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
           .where('user','==',this.id)
+          .where('verified','==',true)
           .where('userChain.newMonth','==',true)
           .orderBy('serverTimestamp','desc')
           .limit(24)
@@ -169,6 +172,7 @@ export class ProfileComponent {
       this.afAuth.user.subscribe((auth) => {
         this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
           .where('recipientList','array-contains',this.id)
+          .where('verified','==',true)
           .where('lastMessage','==',true)
           .orderBy('serverTimestamp','desc')
           .limit(30)
