@@ -70,12 +70,15 @@ import { AngularFireAuth } from '@angular/fire/auth'
             <div style="float:right;margin:9px 15px 0 0;width:12px;height:12px;border-radius:6px" *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]" [style.background-color]="message.payload.doc.data()?.recipients?(message.payload.doc.data()?.recipients[UI.currentUser]==undefined?'lightblue':'red'):'lightblue'"></div>
             <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
             <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}{{(message.payload.doc.data()?.chatImageTimestamp!=''&&message.payload.doc.data()?.chatImageTimestamp!=undefined)?' (image)':''}}</div>
-            <div *ngIf="message.payload.doc.data()?.eventDescription" style="clear:both;float:left;margin:0 5px 0 0">{{message.payload.doc.data()?.eventDescription}} /</div>
-            <div *ngIf="message.payload.doc.data()?.eventDate" style="float:left;margin:0 10px 0 0">{{message.payload.doc.data()?.eventDate|date:'EEEE d MMM HH:mm'}}</div>
-            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=(60*24)" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000/60/24-UI.nowSeconds/60/60/24)}}d</div>
-            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<(60*24)&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=60" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000/60-UI.nowSeconds/60/60)}}h</div>
-            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<60&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>0" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)}}m</div>
-            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">Now</div>
+            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="width:80%">
+              <img style="float:left;width:17px;opacity:.6;;margin:0 5px 0 0" src="./../assets/App icons/calendar_today-24px.svg">
+              <div style="float:left;margin:0 5px 0 0">{{message.payload.doc.data()?.eventDescription}} /</div>
+              <div style="float:left;margin:0 10px 0 0">{{message.payload.doc.data()?.eventDate|date:'EEEE d MMM HH:mm'}}</div>
+              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=(60*24)" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000/60/24-UI.nowSeconds/60/60/24)}}d</div>
+              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<(60*24)&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=60" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000/60-UI.nowSeconds/60/60)}}h</div>
+              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<60&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>0" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)}}m</div>
+              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:#2a5aa8;color:white;padding:0 5px 0 5px">Now</div>
+            </div>
           </div>
           <div class="seperator"></div>
         </div>
