@@ -314,9 +314,10 @@ export class ChatComponent {
 
   createEvent() {
     this.UI.createMessage({
-      text:this.eventDescription,
+      text:'new event',
       chain:this.chatLastMessageObj.chain||this.chatChain,
-      eventDate:this.eventSelectedDate
+      eventDate:this.eventSelectedDate,
+      eventDescription:this.eventDescription
     })
     this.resetChat()
   }
@@ -329,7 +330,8 @@ export class ChatComponent {
       chatImageUrlThumb:messageObj.chatImageUrlThumb||null,
       chatImageUrlMedium:messageObj.chatImageUrlMedium||null,
       chatImageUrlOriginal:messageObj.chatImageUrlOriginal||null,
-      eventDate:messageObj.eventDate||null
+      eventDate:messageObj.eventDate||null,
+      eventDescription:messageObj.eventDescription||null
     })
     this.resetChat()
   }
