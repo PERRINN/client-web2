@@ -22,17 +22,17 @@ import * as firebase from 'firebase/app'
     <ul style="color:#333;margin:10px">
       <li *ngFor="let recipient of chatLastMessageObj?.recipientList" (click)="router.navigate(['profile',recipient])" style="cursor:pointer;float:left"
       [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">
-        <img [src]="chatLastMessageObj?.recipients[recipient]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:3px;margin:3px 3px 3px 10px">
-        <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{chatLastMessageObj?.recipients[recipient]?.name}} {{chatLastMessageObj?.recipients[recipient]?.familyName}}</div>
+        <img [src]="chatLastMessageObj?.recipients[recipient]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:50%;margin:3px 3px 3px 10px">
+        <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{chatLastMessageObj?.recipients[recipient]?.name}}</div>
       </li>
-      <input id="searchInput" style="border:none" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="add people">
     </ul>
+    <input style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Add people">
     <ul class="listLight">
       <li *ngFor="let team of teams | async"
       [ngClass]="UI.isContentAccessible(team.key)?'clear':'encrypted'">
         <div *ngIf="!(chatLastMessageObj?.recipients||{})[team.key]" style="padding:5px">
           <div style="float:left;width:175px">
-            <img [src]="team?.values?.imageUrlThumbUser" style="display: inline; float:left; margin: 0 5px 0 10px; opacity: 1; object-fit: cover; height:25px; width:25px">
+            <img [src]="team?.values?.imageUrlThumbUser" style="display:inline;float:left;margin: 0 5px 0 10px;opacity: 1;object-fit:cover;height:25px;width:25px;border-radius:50%">
             <span>{{team.values?.name}}</span>
             <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
@@ -51,9 +51,8 @@ import * as firebase from 'firebase/app'
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <div>
-      <div style="float:left;font-size:12px;margin:10px;color:#777">Event</div>
-      <div style="float:left;font-size:12px;margin:10px;color:blue">{{eventDate==0?'':eventDate|date:'EEEE d MMM HH:mm'}}</div>
-      <input style="margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="eventDescription" placeholder="Description">
+      <input style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="eventDescription" placeholder="Event description">
+      <div style="font-size:12px;margin:10px;color:blue">{{eventDate==0?'':eventDate|date:'EEEE d MMM HH:mm'}}</div>
       <div *ngIf="eventDate!=chatLastMessageObj?.eventDate||eventDescription!=chatLastMessageObj?.eventDescription" style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="saveEvent()">Save event</div>
       <ul class="listLight" style="float:left;width:200px;margin:10px 10px 150px 10px">
         <li *ngFor="let date of eventDates;let first=first" (click)="first?eventDate=date:eventDate=(date+(eventDate/3600000/24-math.floor(eventDate/3600000/24))*3600000*24)" [class.selected]="math.floor(date/3600000/24)==math.floor(eventDate/3600000/24)">
@@ -75,7 +74,7 @@ import * as firebase from 'firebase/app'
       <div style="float:left;margin:0 5px 0 10px;min-height:40px">
         <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
         <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
-        [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{recipient==UI.currentUser?'':chatLastMessageObj?.recipients[recipient]?.familyName!=undefinied?' '+chatLastMessageObj?.recipients[recipient]?.familyName:''}}{{last?"":", "}}</span>
+        [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{last?"":", "}}</span>
         <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="clear:both">
           <img style="float:left;width:17px;opacity:.6;;margin:0 5px 0 0" src="./../assets/App icons/calendar_today-24px.svg">
           <div style="float:left;margin:0 5px 0 0">{{eventDescription}} /</div>
