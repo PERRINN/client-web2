@@ -132,7 +132,7 @@ module.exports = {
       wallet.balance=Math.round((Number(wallet.balance)-Number((messageData.transactionOut||{}).amount||0))*100000)/100000
       wallet.balance=Math.round((Number(wallet.balance)+Number((messageData.transactionIn||{}).amount||0))*100000)/100000
 
-      //PERRINN membership
+      //interest
       let interest={}
       interest.rateYear=costs.data().interestRateYear
       interest.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
