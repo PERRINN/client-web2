@@ -137,7 +137,7 @@ module.exports = {
       interest.rateYear=costs.data().interestRateYear
       interest.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
       interest.amountBase=wallet.balance-(interest.days*costs.data().membershipDay/2)
-      interest.amount=wallet.balance*(Math.exp(interest.rateYear/365*interest.days)-1)
+      interest.amount=Math.max(0,interest.amountBase*(Math.exp(interest.rateYear/365*interest.days)-1))
       interest.amountCummulate=((userPreviousMessageData.interest||{}).amountCummulate||0)+interest.amount
       wallet.balance=Math.round((Number(wallet.balance)+Number(interest.amount||0))*100000)/100000
 
