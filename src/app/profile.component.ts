@@ -101,7 +101,7 @@ import { AngularFireAuth } from '@angular/fire/auth'
           <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.PERRINN?.wallet?.balance-previousBalance)|number:'1.2-2'}}</div>
           <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(previousMembershipAmountCummulate-message.payload.doc.data()?.membership?.amountCummulate||0)|number:'1.2-2'}}</div>
           <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(previousAmountWriteCummulate-message.payload.doc.data()?.messagingCost?.amountWriteCummulate||0)|number:'1.2-2'}}</div>
-          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.interest?.amountCummulate||0-previousAmountInterestCummulate)|number:'1.2-2'}}</div>
+          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.interest?.amountCummulate||0)-previousAmountInterestCummulate)|number:'1.2-2'}}</div>
           <div class="seperator" style="width:100%;margin:0px"></div>
         </div>
         {{storeMessageValues(message.payload.doc.data())}}
