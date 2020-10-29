@@ -116,6 +116,7 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.receiverName":transactionOutReceiverLastMessageData.name||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.receiverFamilyName":transactionOutReceiverLastMessageData.familyName||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.receiverImageUrlThumb":transactionOutReceiverLastMessageData.imageUrlThumbUser||null},{create:true})
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.amountCummulate":Number((userPreviousMessageData.transactionOut||{}).amountCummulate||0)+Number((messageData.transactionOut||{}).amount||0)},{create:true})
 
       //message transaction in donor
       const transactionInDonorLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',(messageData.transactionIn||{}).donor||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
@@ -123,6 +124,7 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorName":transactionInDonorLastMessageData.name||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorFamilyName":transactionInDonorLastMessageData.familyName||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorImageUrlThumb":transactionInDonorLastMessageData.imageUrlThumbUser||null},{create:true})
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.amountCummulate":Number((userPreviousMessageData.transactionIn||{}).amountCummulate||0)+Number((messageData.transactionIn||{}).amount||0)},{create:true})
 
       //message wallet
       let wallet={}
@@ -131,8 +133,6 @@ module.exports = {
       wallet.balance=Math.round((Number(wallet.balance)-Number(amountMessaging))*100000)/100000
       wallet.balance=Math.round((Number(wallet.balance)-Number((messageData.transactionOut||{}).amount||0))*100000)/100000
       wallet.balance=Math.round((Number(wallet.balance)+Number((messageData.transactionIn||{}).amount||0))*100000)/100000
-      wallet.amountTransactionInCummulate=Number(((userPreviousMessageData.PERRINN||{}).wallet||{}).amountTransactionInCummulate||0)+Number((messageData.transactionIn||{}).amount||0)
-      wallet.amountTransactionOutCummulate=Number(((userPreviousMessageData.PERRINN||{}).wallet||{}).amountTransactionOutCummulate||0)+Number((messageData.transactionOut||{}).amount||0)
 
       //interest
       let interest={}

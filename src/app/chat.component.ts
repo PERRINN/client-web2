@@ -119,6 +119,10 @@ import * as firebase from 'firebase/app'
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">userChain: {{message.payload?.userChain|json}}</div>
                 <div class="seperator" style="width:100%"></div>
+                <div style="color:#666;font-size:10px">transactionOut: {{message.payload?.transactionOut|json}}</div>
+                <div class="seperator" style="width:100%"></div>
+                <div style="color:#666;font-size:10px">transactionIn: {{message.payload?.transactionIn|json}}</div>
+                <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">membership: {{message.payload?.membership|json}}</div>
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">interest: {{message.payload?.interest|json}}</div>
