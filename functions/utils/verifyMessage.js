@@ -131,6 +131,8 @@ module.exports = {
       wallet.balance=Math.round((Number(wallet.balance)-Number(amountMessaging))*100000)/100000
       wallet.balance=Math.round((Number(wallet.balance)-Number((messageData.transactionOut||{}).amount||0))*100000)/100000
       wallet.balance=Math.round((Number(wallet.balance)+Number((messageData.transactionIn||{}).amount||0))*100000)/100000
+      wallet.amountTransactionInCummulate=Number(((userPreviousMessageData.PERRINN||{}).wallet||{}).amountTransactionInCummulate||0)+Number((messageData.transactionIn||{}).amount||0)
+      wallet.amountTransactionOutCummulate=Number(((userPreviousMessageData.PERRINN||{}).wallet||{}).amountTransactionOutCummulate||0)+Number((messageData.transactionOut||{}).amount||0)
 
       //interest
       let interest={}
