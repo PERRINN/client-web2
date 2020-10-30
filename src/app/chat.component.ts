@@ -69,7 +69,7 @@ import * as firebase from 'firebase/app'
     </div>
   </div>
 
-  <div class="sheet" id="chat_window" style="overflow-y:auto;height:100%" *ngIf="!showChatDetails" scrollable (scrollPosition)="scrollHandler($event)">
+  <div class="sheet" id="chat_window" style="overflow-y:auto;height:100%" *ngIf="!showChatDetails" scrollable>
     <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="showChatDetails=true">
       <div style="float:left;margin:0 5px 0 10px;min-height:40px">
         <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
@@ -96,7 +96,8 @@ import * as firebase from 'firebase/app'
       <ul style="list-style:none;">
         <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index"
         [ngClass]="UI.isContentAccessible(message.payload.user)?'clear':'encrypted'">
-          <div *ngIf="isMessageNewTimeGroup(message.payload?.serverTimestamp)||first" style="padding:70px 15px 15px 15px">
+          <div *ngIf="isMessageNewTimeGroup(message.payload?.serverTimestamp)||first" style="padding:50px 15px 15px 15px">
+            <div *ngIf="first" style="color:blue;width:200px;padding:15px;margin:0 auto;text-align:center;cursor:pointer" (click)="loadMore()">Load more</div>
             <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'fullDate'}}</div>
           </div>
           <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="clear:both;width:100%;height:15px"></div>
@@ -225,12 +226,10 @@ export class ChatComponent {
     this.refreshSearchLists()
   }
 
-  scrollHandler(e: string) {
-    if (e === 'top') {
-      this.UI.loading=true
-      this.messageNumberDisplay+=15
-      this.refreshMessages(this.chatLastMessageObj.chain||this.chatChain)
-    }
+  loadMore() {
+    this.UI.loading=true
+    this.messageNumberDisplay+=15
+    this.refreshMessages(this.chatLastMessageObj.chain||this.chatChain)
   }
 
   refreshEventDates(){

@@ -97,6 +97,7 @@ module.exports = {
         if(recipient.docs[0]!=undefined)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient.docs[0].data().user}.name`]:(recipient.docs[0].data()||{}).name||null},{create:true})
         if(recipient.docs[0]!=undefined)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient.docs[0].data().user}.familyName`]:(recipient.docs[0].data()||{}).familyName||null},{create:true})
         if(recipient.docs[0]!=undefined)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient.docs[0].data().user}.imageUrlThumb`]:(recipient.docs[0].data()||{}).imageUrlThumbUser||null},{create:true})
+        if(recipient.docs[0]!=undefined)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient.docs[0].data().user}.unreadMessages`]:((chatPreviousMessageData.reads||{})[recipient.docs[0].data().user]||null)?1:(((((chatPreviousMessageData.recipients||{})[recipient.docs[0].data().user]||{}).unreadMessages||1)+1)||null)},{create:true})
       })
 
       //email notifications
@@ -177,31 +178,6 @@ module.exports = {
       //message event
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{eventDate:messageData.eventDate||chatPreviousMessageData.eventDate||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{eventDescription:messageData.eventDescription||chatPreviousMessageData.eventDescription||null},{create:true})
-
-      //child topup
-  //    if(userObj.data().lastMessageBalance<1&&(userObj.data().parents!={})){
-  //      let parents=toolsUtils.objectToArray(userObj.data().parents)
-  //      let sender=parents[0][0]
-  //      let amount=5-userObj.data().lastMessageBalance
-  //      let messageObj={
-  //        user:sender,
-  //        text:"Automatic top up: "+amount+" COINS.",
-  //        recipientList:[sender,user],
-  //        process:{
-  //          inputs:{
-  //            amount:amount,
-  //            receiver:user,
-  //            receiverName:userObj.data().name,
-  //            receiverFamilyName:userObj.data().familyName
-  //          },
-  //          function:{
-  //            name:'transactionOut'
-  //          },
-  //          inputsComplete:true
-  //        }
-  //      }
-  //      createMessageUtils.createMessageAFS(messageObj)
-
 
       //message objects
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userChain:userChain},{create:true})
