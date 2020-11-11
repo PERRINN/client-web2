@@ -102,6 +102,7 @@ module.exports = {
 
       //email notifications
       if((messageData.PERRINN||{}).emailNotifications)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.emailNotifications":messageData.recipientList},{create:true})
+      if((messageData.PERRINN||{}).emailNotifications)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{emailNotifications:messageData.recipientList},{create:true})
 
       //messaging cost
       const costs=await admin.firestore().doc('appSettings/costs').get()
@@ -183,6 +184,7 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userChain:userChain},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{membership:membership},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{interest:interest},{create:true})
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{wallet:wallet},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.wallet":wallet},{create:true})
 
       //message verified
@@ -194,7 +196,9 @@ module.exports = {
       return {
         user:user,
         userEmail:userEmail||null,
-        wallet:wallet
+        wallet:wallet,
+        membership:membership,
+        interest:interest
       }
 
     }

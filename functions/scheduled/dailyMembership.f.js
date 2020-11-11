@@ -10,59 +10,71 @@ const runtimeOpts={timeoutSeconds:540,memory:'1GB'}
 
 exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 hours').onRun(async(context) => {
   try{
-    let userCount=0
-    let membersEmails=[]
+    let statistics={}
+    statistics.wallet={}
+    statistics.interest={}
+    statistics.membership={}
+    statistics.membersEmails=[]
+    statistics.googleEmails=[]
+    statistics.googleEmailsInvalid=[]
+    statistics.googleEmailsMissing=[]
+    statistics.onshapeEmails=[]
+    statistics.onshapeUids=[]
+    statistics.onshapeUidsInvalid=[]
+    statistics.onshapeEmailsMissing=[]
     const listUsersResult=await admin.auth().listUsers()
     for(const userRecord of listUsersResult.users){
       let messageRef=''
       let messageData={}
       let lastUserMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',userRecord.uid).orderBy('serverTimestamp','desc').limit(1).get()
       let result=await verifyMessageUtils.verifyMessage(lastUserMessage.docs[0].id,lastUserMessage.docs[0].data())
-      if (result.wallet.balance>0)membersEmails.push(result.userEmail)
-      userCount=userCount+1
+      if (result.wallet.balance>0)statistics.membersEmails.push(result.userEmail)
+      statistics.wallet.balance=((statistics.wallet||{}).balance||0)+result.wallet.balance
+      statistics.interest.amount=((statistics.interest||{}).amount||0)+result.interest.amount
+      statistics.interest.amountCummulate=((statistics.interest||{}).amountCummulate||0)+result.interest.amountCummulate
+      statistics.membership.amount=((statistics.membership||{}).amount||0)+result.membership.amount
+      statistics.membership.amountCummulate=((statistics.membership||{}).amountCummulate||0)+result.membership.amountCummulate
+      statistics.userCount=(statistics.userCount||0)+1
     }
     const googleUsers=await googleUtils.googleGroupMembersGet()
-    let googleEmails=[]
     googleUsers.data.members.forEach(member=>{
-      googleEmails.push(member.email)
+      statistics.googleEmails.push(member.email)
     })
-    let googleEmailsInvalid=[]
-    googleEmails.forEach(email=>{
-      if(!membersEmails.includes(email))googleEmailsInvalid.push(email)
+    statistics.googleEmails.forEach(email=>{
+      if(!statistics.membersEmails.includes(email))statistics.googleEmailsInvalid.push(email)
     })
-    for(const email of googleEmailsInvalid){
+    for(const email of statistics.googleEmailsInvalid){
       await googleUtils.googleGroupMemberDelete(email)
     }
-    let googleEmailsMissing=[]
-    membersEmails.forEach(email=>{
-      if(!googleEmails.includes(email))googleEmailsMissing.push(email)
+    statistics.membersEmails.forEach(email=>{
+      if(!statistics.googleEmails.includes(email))statistics.googleEmailsMissing.push(email)
     })
     const onshapeUsers=await onshapeUtils.onshapeTeamMembersGet()
-    let onshapeEmails=[]
-    let onshapeUids=[]
     onshapeUsers.items.forEach(item=>{
-      onshapeEmails.push(item.member.email)
-      onshapeUids.push(item.member.id)
+      statistics.onshapeEmails.push(item.member.email)
+      statistics.onshapeUids.push(item.member.id)
     })
-    let onshapeUidsInvalid=[]
-    onshapeEmails.forEach(email=>{
-      if(!membersEmails.includes(email))onshapeUidsInvalid.push(onshapeUids[onshapeEmails.indexOf(email)])
+    statistics.onshapeEmails.forEach(email=>{
+      if(!statistics.membersEmails.includes(email))statistics.onshapeUidsInvalid.push(statistics.onshapeUids[statistics.onshapeEmails.indexOf(email)])
     })
-    for(const uid of onshapeUidsInvalid){
+    for(const uid of statistics.onshapeUidsInvalid){
       await onshapeUtils.onshapeTeamMemberDelete(uid)
     }
-    let onshapeEmailsMissing=[]
-    membersEmails.forEach(email=>{
-      if(!onshapeEmails.includes(email))onshapeEmailsMissing.push(email)
+    statistics.membersEmails.forEach(email=>{
+      if(!statistics.onshapeEmails.includes(email))statistics.onshapeEmailsMissing.push(email)
     })
-    console.log(userCount+' users processed.')
-    console.log(membersEmails.length+' PERRINN members.')
-    console.log(googleEmails.length+' Google users.')
-    console.log(onshapeEmails.length+' Onshape users.')
-    console.log('invalid Google Emails: '+JSON.stringify(googleEmailsInvalid))
-    console.log('invalid Onshape Uids: '+JSON.stringify(onshapeUidsInvalid))
-    console.log('missing Google Emails: '+JSON.stringify(googleEmailsMissing))
-    console.log('missing Onshape Emails: '+JSON.stringify(onshapeEmailsMissing))
+    statistics.serverTimestamp=admin.firestore.FieldValue.serverTimestamp()
+    await admin.firestore().collection('statistics').add(statistics);
+
+    console.log(statistics.userCount+' users processed.')
+    console.log(statistics.membersEmails.length+' PERRINN members.')
+    console.log(statistics.googleEmails.length+' Google users.')
+    console.log(statistics.onshapeEmails.length+' Onshape users.')
+    console.log('invalid Google Emails: '+JSON.stringify(statistics.googleEmailsInvalid))
+    console.log('invalid Onshape Uids: '+JSON.stringify(statistics.onshapeUidsInvalid))
+    console.log('missing Google Emails: '+JSON.stringify(statistics.googleEmailsMissing))
+    console.log('missing Onshape Emails: '+JSON.stringify(statistics.onshapeEmailsMissing))
+
   }
   catch(error){
     console.log(error)
