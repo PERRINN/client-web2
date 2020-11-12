@@ -56,15 +56,6 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.name`]:messageData.name||userPreviousMessageData.name||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.familyName`]:messageData.familyName||userPreviousMessageData.familyName||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.imageUrlThumb`]:messageData.imageUrlThumbUser||userPreviousMessageData.imageUrlThumbUser||null},{create:true})
-      if(messageData.createdTimestamp==now){
-        let sender='-L7jqFf8OuGlZrfEK6dT'
-        let messageObj={
-          user:sender,
-          text:"Welcome to PERRINN! If you have any question please ask here. We will be happy to help.",
-          chain:user
-        }
-        await createMessageUtils.createMessageAFS(messageObj)
-      }
 
       //chat chain
       let chatPreviousMessageData={}
@@ -105,12 +96,11 @@ module.exports = {
       if((messageData.PERRINN||{}).emailNotifications)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{emailNotifications:messageData.recipientList},{create:true})
 
       //messaging cost
+      let messagingCost={}
       const costs=await admin.firestore().doc('appSettings/costs').get()
-      let amountWrite=costs.data().messageWrite
-      let amountMessaging=Math.round(Number(amountWrite)*100000)/100000
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"messagingCost.amount":amountMessaging||0},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"messagingCost.amountWrite":amountWrite||0},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"messagingCost.amountWriteCummulate":((userPreviousMessageData.messagingCost||{}).amountWriteCummulate||0)+amountWrite||0},{create:true})
+      messagingCost.amountWrite=costs.data().messageWrite||0
+      messagingCost.amount=Math.round(Number(messagingCost.amountWrite)*100000)/100000
+      messagingCost.amountWriteCummulate=((userPreviousMessageData.messagingCost||{}).amountWriteCummulate||0)+(messagingCost.amountWrite||0)
 
       //message transaction out receiver
       const transactionOutReceiverLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',(messageData.transactionOut||{}).receiver||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
@@ -132,9 +122,10 @@ module.exports = {
       let wallet={}
       wallet.previousBalance=((userPreviousMessageData.PERRINN||{}).wallet||{}).balance||0
       wallet.balance=wallet.previousBalance
-      wallet.balance=Math.round((Number(wallet.balance)-Number(amountMessaging))*100000)/100000
+      wallet.balance=Math.round((Number(wallet.balance)-Number(messagingCost.amount))*100000)/100000
       wallet.balance=Math.round((Number(wallet.balance)-Number((messageData.transactionOut||{}).amount||0))*100000)/100000
       wallet.balance=Math.round((Number(wallet.balance)+Number((messageData.transactionIn||{}).amount||0))*100000)/100000
+      wallet.balance=Math.max(0,wallet.balance)
 
       //interest
       let interest={}
@@ -182,6 +173,7 @@ module.exports = {
 
       //message objects
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userChain:userChain},{create:true})
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{messagingCost:messagingCost},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{membership:membership},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{interest:interest},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{wallet:wallet},{create:true})
@@ -198,6 +190,7 @@ module.exports = {
         userEmail:userEmail||null,
         wallet:wallet,
         membership:membership,
+        messagingCost:messagingCost,
         interest:interest
       }
 
