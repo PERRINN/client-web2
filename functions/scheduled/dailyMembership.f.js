@@ -14,6 +14,7 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     statistics.wallet={}
     statistics.interest={}
     statistics.messagingCost={}
+    statistics.purchaseCOIN={}
     statistics.membership={}
     statistics.membersEmails=[]
     statistics.googleEmails=[]
@@ -35,6 +36,8 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       statistics.interest.amountCummulate=((statistics.interest||{}).amountCummulate||0)+result.interest.amountCummulate
       statistics.messagingCost.amount=((statistics.messagingCost||{}).amount||0)+result.messagingCost.amount
       statistics.messagingCost.amountWriteCummulate=((statistics.messagingCost||{}).amountWriteCummulate||0)+result.messagingCost.amountWriteCummulate
+      statistics.purchaseCOIN.amount=((statistics.purchaseCOIN||{}).amount||0)+result.purchaseCOIN.amount
+      statistics.purchaseCOIN.amountCummulate=((statistics.purchaseCOIN||{}).amountCummulate||0)+result.purchaseCOIN.amountCummulate
       statistics.membership.amount=((statistics.membership||{}).amount||0)+result.membership.amount
       statistics.membership.amountCummulate=((statistics.membership||{}).amountCummulate||0)+result.membership.amountCummulate
       statistics.userCount=(statistics.userCount||0)+1

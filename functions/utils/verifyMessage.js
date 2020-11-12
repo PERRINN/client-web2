@@ -37,7 +37,7 @@ module.exports = {
 
       //user data
       let authEmail=''
-      if(!(messageData.userEmail||userPreviousMessageData.userEmail||(user=='-L7jqFf8OuGlZrfEK6dT'))){
+      if(!(messageData.userEmail||userPreviousMessageData.userEmail)){
         const userRecord=await admin.auth().getUser(user)
         if(userRecord)authEmail=userRecord.toJSON().email
       }
@@ -118,6 +118,12 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorImageUrlThumb":transactionInDonorLastMessageData.imageUrlThumbUser||null},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.amountCummulate":Number((userPreviousMessageData.transactionIn||{}).amountCummulate||0)+Number((messageData.transactionIn||{}).amount||0)},{create:true})
 
+      //COIN Purchase
+      let purchaseCOIN={}
+      purchaseCOIN.chargeID=(messageData.purchaseCOIN||{}).chargeID||null
+      purchaseCOIN.amount=(messageData.purchaseCOIN||{}).amount||0
+      purchaseCOIN.amountCummulate=((userPreviousMessageData.purchaseCOIN||{}).amountCummulate||0)+purchaseCOIN.amount
+
       //message wallet
       let wallet={}
       wallet.previousBalance=((userPreviousMessageData.PERRINN||{}).wallet||{}).balance||0
@@ -125,6 +131,7 @@ module.exports = {
       wallet.balance=Math.round((Number(wallet.balance)-Number(messagingCost.amount))*100000)/100000
       wallet.balance=Math.round((Number(wallet.balance)-Number((messageData.transactionOut||{}).amount||0))*100000)/100000
       wallet.balance=Math.round((Number(wallet.balance)+Number((messageData.transactionIn||{}).amount||0))*100000)/100000
+      wallet.balance=Math.round((Number(wallet.balance)+Number(purchaseCOIN.amount))*100000)/100000
       wallet.balance=Math.max(0,wallet.balance)
 
       //interest
@@ -174,6 +181,7 @@ module.exports = {
       //message objects
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userChain:userChain},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{messagingCost:messagingCost},{create:true})
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{purchaseCOIN:purchaseCOIN},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{membership:membership},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{interest:interest},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{wallet:wallet},{create:true})
@@ -189,6 +197,7 @@ module.exports = {
         user:user,
         userEmail:userEmail||null,
         wallet:wallet,
+        purchaseCOIN:purchaseCOIN,
         membership:membership,
         messagingCost:messagingCost,
         interest:interest

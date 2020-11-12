@@ -19,13 +19,12 @@ exports=module.exports=functions.firestore.document('PERRINNTeams/{user}/payment
     return stripeObj.charges.create(charge, {idempotency_key})
     .then(response=>{
       if (response.outcome.seller_message=='Payment complete.'){
-        let sender='-L7jqFf8OuGlZrfEK6dT'
         let messageObj={
-          user:sender,
+          user:context.params.user,
           chain:context.params.user,
-          text:"Thank you for purchasing "+val.amountCOINSPurchased+" new COINS.",
-          transactionOut:{
-            receiver:context.params.user,
+          text:"Purchased "+val.amountCOINSPurchased+" new COINS.",
+          purchaseCOIN:{
+            chargID:context.params.chargeID,
             amount:val.amountCOINSPurchased
           }
         }
