@@ -35,12 +35,21 @@ import * as firebase from 'firebase/app';
     <input *ngIf="editName" [(ngModel)]="currentFamilyName" placeholder="Family name">
     <div *ngIf="editName" (click)="updateName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update name</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
+    <img style="float:left;margin:15px;width:30px;opacity:.6" src="./../assets/App icons/email-24px.svg">
     <div style="font-size:14px;margin:20px;color:#444">Your PERRINN email</div>
     <div style="font-size:10px;margin:20px;color:#777">Use this email to receive notifications, connect to other PERRINN apps like Onshape, Google Drive and Google Meet (calendar events and meetings). This email can be the one you use to log into PERRINN.com or any other email. This email is visible by other PERRINN members.</div>
     <input [(ngModel)]="currentEmail" placeholder="Enter your PERRINN email">
     <div (click)="updateEmail()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update email</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
-  <div class="buttonDiv" style="color:red;margin-top:10px;margin-bottom:10px" (click)="this.logout();router.navigate(['login']);">logout</div>
+    <img style="float:left;margin:15px;width:30px;opacity:.6" src="./../assets/App icons/admin_panel_settings-24px.svg">
+    <div style="font-size:14px;margin:20px;color:#444">Your PERRINN contract</div>
+    <div style="font-size:10px;margin:20px;color:#777">This contract is between you and PERRINN team. New COINS are credited to you based on the settings below. When these settings are changed, they will need to be approved before taking effect.</div>
+    <input [(ngModel)]="contractTitle" placeholder="Title">
+    <input [(ngModel)]="contractValue" placeholder="Value">
+    <input [(ngModel)]="contractDuration" placeholder="Duration">
+    <div (click)="updateContract()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update contract</div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
+  <div class="buttonDiv" style="color:red;margin-top:25px;margin-bottom:25px" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div class="seperator" style="width:100%;margin-bottom:250px"></div>
   `,
 })
@@ -50,6 +59,9 @@ export class SettingsComponent {
   currentName:string;
   currentFamilyName:string;
   currentEmail:string;
+  contractTitle:string;
+  contractValue:number;
+  contractDuration:number;
   searchFilter:string;
   teams:Observable<any[]>;
 
@@ -65,6 +77,9 @@ export class SettingsComponent {
     this.currentName=this.UI.currentUserLastMessageObj.name;
     this.currentFamilyName=this.UI.currentUserLastMessageObj.familyName;
     this.currentEmail=this.UI.currentUserLastMessageObj.userEmail||null;
+    this.contractTitle=(this.UI.currentUserLastMessageObj.contract||{}).title||null;
+    this.contractValue=(this.UI.currentUserLastMessageObj.contract||{}).value||null;
+    this.contractDuration=(this.UI.currentUserLastMessageObj.contract||{}).duration||null;
   }
 
   logout() {
@@ -94,6 +109,10 @@ export class SettingsComponent {
       userEmail:this.currentEmail
     })
     this.router.navigate(['chat',this.UI.currentUser])
+  }
+
+  updateContract(){
+    
   }
 
   addChild(team){

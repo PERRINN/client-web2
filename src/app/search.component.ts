@@ -11,7 +11,7 @@ import * as firebase from 'firebase/app';
   template:`
   <div class="sheet">
   <input id="searchInput" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Search">
-  <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshSearchByCOINLists()">COIN holders' list</div>
+  <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshMembersList()">Members' list</div>
   <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   <div class='sheet'>
@@ -71,10 +71,11 @@ export class SearchComponent  {
     }
   }
 
-  refreshSearchByCOINLists() {
+  refreshMembersList() {
     this.messages = this.afs.collection('PERRINNMessages', ref => ref
     .where('userChain.nextMessage','==','none')
     .where('verified','==',true)
+    .where('PERRINN.wallet.balance','>',0)
     .orderBy('PERRINN.wallet.balance',"desc")
     .limit(20))
     .snapshotChanges().pipe(map(changes => {

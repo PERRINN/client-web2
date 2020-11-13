@@ -22,7 +22,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
           <div *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="float:left;margin:8px;font-size:12px">C{{UI.currentUserLastMessageObj.PERRINN.wallet.balance|number:'1.2-2'}}</div>
         </div>
         <div style="float:left;width:100px;text-align:center;height:33px;cursor:pointer;line-height:31px;font-size:10px;color:#267cb5;border-style:solid;border-width:0 1px 0 0;border-color:#ddd" (click)="newMessage()">New message</div>
-        <img class='editButton' style="float:right;width:20px" (click)="router.navigate(['settings'])" src="./../assets/App icons/settings.png">
+        <img class='editButton' style="float:right;width:20px;opacity:.6" (click)="router.navigate(['settings'])" src="./../assets/App icons/settings-24px.svg">
         <div style="float:right;height:33px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd"></div>
         <img *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance>0" class='editButton' style="float:right;width:20px" src="./../assets/App icons/onshapeLogo.png" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
         <img *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance>0" class='editButton' style="float:right;width:20px" src="./../assets/App icons/driveLogo.png" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
