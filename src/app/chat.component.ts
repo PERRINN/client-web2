@@ -124,13 +124,19 @@ import * as firebase from 'firebase/app'
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">transactionIn: {{message.payload?.transactionIn|json}}</div>
                 <div class="seperator" style="width:100%"></div>
+                <div style="color:#666;font-size:10px">instantContractOut: {{message.payload?.instantContractOut|json}}</div>
+                <div class="seperator" style="width:100%"></div>
+                <div style="color:#666;font-size:10px">instantContractIn: {{message.payload?.instantContractIn|json}}</div>
+                <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">messagingCost: {{message.payload?.messagingCost|json}}</div>
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">COIN purchase: {{message.payload?.purchaseCOIN|json}}</div>
                 <div class="seperator" style="width:100%"></div>
+                <div style="color:#666;font-size:10px">interest: {{message.payload?.interest|json}}</div>
+                <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">membership: {{message.payload?.membership|json}}</div>
                 <div class="seperator" style="width:100%"></div>
-                <div style="color:#666;font-size:10px">interest: {{message.payload?.interest|json}}</div>
+                <div style="color:#666;font-size:10px">contract: {{message.payload?.contract|json}}</div>
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">wallet: {{message.payload?.PERRINN?.wallet|json}}</div>
                 <div class="seperator" style="width:100%"></div>

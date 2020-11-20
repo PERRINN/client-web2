@@ -44,8 +44,8 @@ import * as firebase from 'firebase/app';
     <img style="float:left;margin:15px;width:30px;opacity:.6" src="./../assets/App icons/admin_panel_settings-24px.svg">
     <div style="font-size:14px;margin:20px;color:#444">Your PERRINN contract</div>
     <div style="font-size:10px;margin:20px;color:#777">This contract is between you and PERRINN team. New COINS are credited to you based on the settings below. When these settings are updated, they will need to be approved before taking effect. You or PERRINN has the right to cancel this contract at any time.</div>
-    <input [(ngModel)]="contractTitle" placeholder="Title">
-    <input [(ngModel)]="contractDailyRate" placeholder="Daily rate">
+    <input [(ngModel)]="contractPosition" placeholder="Position">
+    <input [(ngModel)]="contractRateDay" placeholder="Daily rate">
     <div (click)="updateContract()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update contract</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   <div class="buttonDiv" style="color:red;margin-top:25px;margin-bottom:25px" (click)="this.logout();router.navigate(['login']);">logout</div>
@@ -58,8 +58,8 @@ export class SettingsComponent {
   currentName:string;
   currentFamilyName:string;
   currentEmail:string;
-  contractTitle:string;
-  contractDailyRate:number;
+  contractPosition:string;
+  contractRateDay:number;
   searchFilter:string;
   teams:Observable<any[]>;
 
@@ -75,8 +75,8 @@ export class SettingsComponent {
     this.currentName=this.UI.currentUserLastMessageObj.name
     this.currentFamilyName=this.UI.currentUserLastMessageObj.familyName
     this.currentEmail=this.UI.currentUserLastMessageObj.userEmail||null
-    this.contractTitle=(this.UI.currentUserLastMessageObj.contract||{}).title||null
-    this.contractDailyRate=(this.UI.currentUserLastMessageObj.contract||{}).dailyRate||null
+    this.contractPosition=(this.UI.currentUserLastMessageObj.contract||{}).title||null
+    this.contractRateDay=(this.UI.currentUserLastMessageObj.contract||{}).rateDay||null
   }
 
   logout() {
