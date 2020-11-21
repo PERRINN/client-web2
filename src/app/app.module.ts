@@ -13,6 +13,8 @@ import { SearchComponent }  from './search.component';
 import { BuyCoinsComponent }  from './buyCoins.component';
 import { LinkyModule } from 'angular-linky';
 
+import { PipeModule }    from './pipes.module';
+
 import { UserInterfaceService } from './userInterface.service';
 import { ScrollableDirective } from './scrollable.directive';
 
@@ -57,6 +59,7 @@ export const firebaseConfig = {
     AppRoutingModule,
     LinkyModule,
     Ng2ImgMaxModule,
+    PipeModule.forRoot(),
   ],
   providers: [
     UserInterfaceService,

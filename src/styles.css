@@ -354,6 +354,9 @@ iframe {
 .messageFooter:hover {
   color:#ccc;
 }
+.tableRow:hover {
+  background-color:#eee;
+}
 img {
   image-orientation:from-image;
 }

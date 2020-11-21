@@ -22,7 +22,7 @@ import * as firebase from 'firebase/app';
         <img [src]="message?.values.imageUrlThumbUser" style="display:inline;float:left;margin:0 10px 0 10px;opacity:1;object-fit:cover;height:40px;width:40px;border-radius:50%">
         <span>{{message.values?.name}}</span>
         <span style="font-size:10px"> {{message.values?.familyName}}</span>
-        <div style="font-size:12px;color:#999">C{{(message.values?.PERRINN?.wallet?.balance?message.values?.PERRINN?.wallet?.balance:0)|number:'1.2-2'}}</div>
+        <div style="font-size:12px;color:#999">{{(message.values?.PERRINN?.wallet?.balance?message.values?.PERRINN?.wallet?.balance:0)|number:'1.2-2'}}</div>
       </div>
     </li>
   </ul>

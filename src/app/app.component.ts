@@ -19,7 +19,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
       <div *ngIf="UI.currentUser" style="max-width:800px;margin:0 auto">
         <div style="float:left;width:110px;height:33px;cursor:pointer;border-style:solid;border-width:0 1px 0 0;border-color:#ddd" (click)="router.navigate(['profile',UI.currentUser])">
           <img *ngIf="UI.currentUserLastMessageObj?.imageUrlThumbUser" [src]="UI.currentUserLastMessageObj.imageUrlThumbUser" style="display:inline;float:left;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
-          <div *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="float:left;margin:8px;font-size:12px">C{{UI.currentUserLastMessageObj.PERRINN.wallet.balance|number:'1.2-2'}}</div>
+          <div *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="float:left;margin:8px;font-size:12px">{{UI.currentUserLastMessageObj.PERRINN.wallet.balance|number:'1.2-2'}}</div>
         </div>
         <div style="float:left;width:100px;text-align:center;height:33px;cursor:pointer;line-height:31px;font-size:10px;color:#267cb5;border-style:solid;border-width:0 1px 0 0;border-color:#ddd" (click)="newMessage()">New message</div>
         <img class='editButton' style="float:right;width:20px;opacity:.6" (click)="router.navigate(['settings'])" src="./../assets/App icons/settings-24px.svg">

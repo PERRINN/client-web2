@@ -18,7 +18,7 @@ import * as firebase from 'firebase/app';
   <span style="font-size:18px;line-height:30px;margin:15px;font-family:sans-serif;">{{UI.currentUserLastMessageObj?.name}} {{UI.currentUserLastMessageObj?.familyName}}</span>
   <span *ngIf='UI.currentUserIsMember' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:10px">Member</span>
   <br/>
-  <span style="font-size:16px;line-height:30px;margin:15px;font-family:sans-serif">Balance: C{{(UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</span>
+  <span style="font-size:16px;line-height:30px;margin:15px;font-family:sans-serif">Balance: {{(UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</span>
   <span style="font-size:10px;color:green;padding:2px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['buyCoins'])">Buy new COINS</span>
   <br/>
   <div class="seperator" style="width:100%;margin:0px"></div>

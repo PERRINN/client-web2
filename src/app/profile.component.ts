@@ -5,7 +5,6 @@ import { map } from 'rxjs/operators'
 import { Router, ActivatedRoute } from '@angular/router'
 import { UserInterfaceService } from './userInterface.service'
 import * as firebase from 'firebase/app'
-import { AngularFireAuth } from '@angular/fire/auth'
 
 @Component({
   selector: 'profile',
@@ -97,20 +96,20 @@ import { AngularFireAuth } from '@angular/fire/auth'
             <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Interest</div>
             <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Membership</div>
             <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Contract</div>
-            <div class="seperator" style="width:100%;margin:0px"></div>
           </div>
-          <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd">{{(message.payload.doc.data()?.verifiedTimestamp?.seconds*1000)|date:'d MMM'}}</div>
-          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.verifiedTimestamp?.seconds-previousTimestamp.seconds)/3600/24|number:'1.2-2'}}</div>
-          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.userChain?.index-previousIndex)}}</div>
-          <div style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd">{{message.payload.doc.data()?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
-          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.PERRINN?.wallet?.balance-previousBalance)|number:'1.2-2'}}</div>
-          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.purchaseCOIN?.amountCummulate||0)-previousPurchaseCOINAmountCummulate)|number:'1.2-2'}}</div>
-          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.transactionIn?.amountCummulate||0)-(message.payload.doc.data()?.transactionOut?.amountCummulate||0)-previousAmountTransactionCummulate)|number:'1.2-2'}}</div>
-          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(previousAmountWriteCummulate-message.payload.doc.data()?.messagingCost?.amountWriteCummulate||0)|number:'1.2-2'}}</div>
-          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.interest?.amountCummulate||0)-previousAmountInterestCummulate)|number:'1.2-2'}}</div>
-          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(previousMembershipAmountCummulate-(message.payload.doc.data()?.membership?.amountCummulate||0))|number:'1.2-2'}}</div>
-          <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.contract?.amountCummulate||0)-previousContractAmountCummulate)|number:'1.2-2'}}</div>
-          <div class="seperator" style="width:100%;margin:0px"></div>
+          <div class="tableRow">
+            <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd">{{(message.payload.doc.data()?.verifiedTimestamp?.seconds*1000)|date:'d MMM'}}</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.verifiedTimestamp?.seconds-previousTimestamp.seconds)/3600/24|number:'1.2-2'}}</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.userChain?.index-previousIndex)}}</div>
+            <div style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd">{{message.payload.doc.data()?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.PERRINN?.wallet?.balance-previousBalance)|number:'1.2-2'}}</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.purchaseCOIN?.amountCummulate||0)-previousPurchaseCOINAmountCummulate)|blankIfZero|number:'1.2-2'}}</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.transactionIn?.amountCummulate||0)-(message.payload.doc.data()?.transactionOut?.amountCummulate||0)-previousAmountTransactionCummulate)|blankIfZero|number:'1.2-2'}}</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(previousAmountWriteCummulate-message.payload.doc.data()?.messagingCost?.amountWriteCummulate||0)|blankIfZero|number:'1.2-2'}}</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.interest?.amountCummulate||0)-previousAmountInterestCummulate)|blankIfZero|number:'1.2-2'}}</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':(previousMembershipAmountCummulate-(message.payload.doc.data()?.membership?.amountCummulate||0))|blankIfZero|number:'1.2-2'}}</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.contract?.amountCummulate||0)-previousContractAmountCummulate)|blankIfZero|number:'1.2-2'}}</div>
+          </div>
         </div>
         {{storeMessageValues(message.payload.doc.data())}}
       </li>
@@ -136,7 +135,6 @@ export class ProfileComponent {
   math:any
 
   constructor(
-    public afAuth: AngularFireAuth,
     public afs: AngularFirestore,
     public router: Router,
     public UI: UserInterfaceService,
@@ -158,63 +156,53 @@ export class ProfileComponent {
 
   refreshMessages(){
     if(this.id=='all'){
-      this.afAuth.user.subscribe((auth) => {
-        this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
-          .where('lastMessage','==',true)
-          .where('verified','==',true)
-          .orderBy('serverTimestamp','desc')
-          .limit(30)
-        ).snapshotChanges()
-      })
+      this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+        .where('lastMessage','==',true)
+        .where('verified','==',true)
+        .orderBy('serverTimestamp','desc')
+        .limit(30)
+      ).snapshotChanges()
     }
     else if(this.mode=='30days'){
-      this.afAuth.user.subscribe((auth) => {
-        this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
-          .where('user','==',this.id)
-          .where('verified','==',true)
-          .where('userChain.newDay','==',true)
-          .orderBy('serverTimestamp','desc')
-          .limit(30)
-        ).snapshotChanges().pipe(map(changes=>{
-          return changes.reverse().map(c=>({payload:c.payload}))
-        }))
-      })
+      this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+        .where('user','==',this.id)
+        .where('verified','==',true)
+        .where('userChain.newDay','==',true)
+        .orderBy('serverTimestamp','desc')
+        .limit(30)
+      ).snapshotChanges().pipe(map(changes=>{
+        return changes.reverse().map(c=>({payload:c.payload}))
+      }))
     }
     else if(this.mode=='24months'){
-      this.afAuth.user.subscribe((auth) => {
-        this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
-          .where('user','==',this.id)
-          .where('verified','==',true)
-          .where('userChain.newMonth','==',true)
-          .orderBy('serverTimestamp','desc')
-          .limit(24)
-        ).snapshotChanges().pipe(map(changes=>{
-          return changes.reverse().map(c=>({payload:c.payload}))
-        }))
-      })
+      this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+        .where('user','==',this.id)
+        .where('verified','==',true)
+        .where('userChain.newMonth','==',true)
+        .orderBy('serverTimestamp','desc')
+        .limit(24)
+      ).snapshotChanges().pipe(map(changes=>{
+        return changes.reverse().map(c=>({payload:c.payload}))
+      }))
     }
     else if(this.mode=='chain'){
-      this.afAuth.user.subscribe((auth) => {
-        this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
-          .where('user','==',this.id)
-          .where('verified','==',true)
-          .orderBy('serverTimestamp','desc')
-          .limit(30)
-        ).snapshotChanges().pipe(map(changes=>{
-          return changes.reverse().map(c=>({payload:c.payload}))
-        }))
-      })
+      this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+        .where('user','==',this.id)
+        .where('verified','==',true)
+        .orderBy('serverTimestamp','desc')
+        .limit(30)
+      ).snapshotChanges().pipe(map(changes=>{
+        return changes.reverse().map(c=>({payload:c.payload}))
+      }))
     }
     else{
-      this.afAuth.user.subscribe((auth) => {
-        this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
-          .where('recipientList','array-contains',this.id)
-          .where('verified','==',true)
-          .where('lastMessage','==',true)
-          .orderBy('serverTimestamp','desc')
-          .limit(30)
-        ).snapshotChanges()
-      })
+      this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
+        .where('recipientList','array-contains',this.id)
+        .where('verified','==',true)
+        .where('lastMessage','==',true)
+        .orderBy('serverTimestamp','desc')
+        .limit(30)
+      ).snapshotChanges()
     }
   }
 
