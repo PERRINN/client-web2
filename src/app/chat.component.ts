@@ -45,7 +45,8 @@ import * as firebase from 'firebase/app'
     <div *ngIf="chatLastMessageObj?.recipientList&&chatLastMessageObj?.recipientList.length==2&&chatLastMessageObj?.recipientList.includes(UI.currentUser)">
       <div style="font-size:12px;margin:10px;color:#777">Send COINS to {{(chatLastMessageObj?.recipientList[0]==UI.currentUser)?(chatLastMessageObj?.recipients[chatLastMessageObj?.recipientList[1]].name):(chatLastMessageObj?.recipients[chatLastMessageObj?.recipientList[0]].name)}}</div>
       <input style="width:100px;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="500" (keyup)="inputsValid=checkInputs()" [(ngModel)]="amount" placeholder="Amount">
-      <div *ngIf="amount>0&&amount<=UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="clear:both;width:200px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="sendCoins(amount)">
+      <input style="width:150px;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="500" [(ngModel)]="code" placeholder="Code (optional)">
+      <div *ngIf="amount>0&&amount<=UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="clear:both;width:200px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:#267cb5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="sendCoins(amount,code)">
         Send {{amount}} Coins to {{(chatLastMessageObj?.recipientList[0]==UI.currentUser)?(chatLastMessageObj?.recipients[chatLastMessageObj?.recipientList[1]].name):(chatLastMessageObj?.recipients[chatLastMessageObj?.recipientList[0]].name)}}
       </div>
     </div>
@@ -315,16 +316,17 @@ export class ChatComponent {
     this.resetChat()
   }
 
-  sendCoins(amount){
+  sendCoins(amount,code){
     let user=''
     if (this.chatLastMessageObj.recipientList[0]==this.UI.currentUser)user=this.chatLastMessageObj.recipientList[1]
     else user=this.chatLastMessageObj.recipientList[0]
     this.UI.createMessage({
-      text:'sending '+amount+' COINS',
+      text:'sending '+amount+' COINS'+((code||null)?' using code ':'')+((code||null)?code:''),
       chain:this.chatLastMessageObj.chain||this.chatChain,
       transactionOut:{
         user:user,
-        amount:amount
+        amount:amount,
+        code:code||null
       }
     })
     this.resetChat()

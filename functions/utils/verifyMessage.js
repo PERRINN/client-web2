@@ -112,6 +112,7 @@ module.exports = {
         transactionOut.familyName=transactionOutUserLastMessageData.familyName||null
         transactionOut.imageUrlThumb=transactionOutUserLastMessageData.imageUrlThumbUser||null
         transactionOut.amount=Number((messageData.transactionOut||{}).amount||0)
+        transactionOut.code=(messageData.transactionOut||{}).code||null
         transactionOut.amountCummulate=Number((userPreviousMessageData.transactionOut||{}).amountCummulate||0)+transactionOut.amount
         //message transaction in
         let transactionIn={}
@@ -123,6 +124,7 @@ module.exports = {
         transactionIn.familyName=transactionInUserLastMessageData.familyName||null
         transactionIn.imageUrlThumb=transactionInUserLastMessageData.imageUrlThumbUser||null
         transactionIn.amount=Number((messageData.transactionIn||{}).amount||0)
+        if(transactionOut.code=='PERRINN'&&user=='QYm5NATKa6MGD87UpNZCTl6IolX2')transactionIn.amount=transactionOut.amount
         transactionIn.amountCummulate=Number((userPreviousMessageData.transactionIn||{}).amountCummulate||0)+transactionIn.amount
         if(transactionIn.message&&transactionIn.amount>0&&transactionIn.user)batch.update(admin.firestore().doc('PERRINNMessages/'+transactionIn.message),{"transactionOut.message":messageId},{create:true})
         //COIN Purchase
