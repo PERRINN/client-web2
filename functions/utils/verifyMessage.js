@@ -37,7 +37,7 @@ module.exports = {
 
       //user data
       let authEmail=''
-      if(!(messageData.userEmail||userPreviousMessageData.userEmail)){
+      if(!(messageData.userEmail||userPreviousMessageData.userEmail)&&(user!='-L7jqFf8OuGlZrfEK6dT')){
         const userRecord=await admin.auth().getUser(user)
         if(userRecord)authEmail=userRecord.toJSON().email
       }
@@ -114,6 +114,7 @@ module.exports = {
         transactionOut.amount=Number((messageData.transactionOut||{}).amount||0)
         transactionOut.amountCummulate=Number((userPreviousMessageData.transactionOut||{}).amountCummulate||0)+transactionOut.amount
         //message transaction in
+        let transactionIn={}
         const transactionInUserLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',(messageData.transactionIn||{}).user||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
         let transactionInUserLastMessageData=(transactionInUserLastMessages.docs[0]!=undefined)?(transactionInUserLastMessages.docs[0]||{}).data():{}
         transactionIn.user=(messageData.transactionIn||{}).user||null
