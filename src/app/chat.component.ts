@@ -124,10 +124,6 @@ import * as firebase from 'firebase/app'
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">transactionIn: {{message.payload?.transactionIn|json}}</div>
                 <div class="seperator" style="width:100%"></div>
-                <div style="color:#666;font-size:10px">instantContractOut: {{message.payload?.instantContractOut|json}}</div>
-                <div class="seperator" style="width:100%"></div>
-                <div style="color:#666;font-size:10px">instantContractIn: {{message.payload?.instantContractIn|json}}</div>
-                <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">messagingCost: {{message.payload?.messagingCost|json}}</div>
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">COIN purchase: {{message.payload?.purchaseCOIN|json}}</div>
@@ -320,14 +316,14 @@ export class ChatComponent {
   }
 
   sendCoins(amount){
-    let receiver=''
-    if (this.chatLastMessageObj.recipientList[0]==this.UI.currentUser)receiver=this.chatLastMessageObj.recipientList[1]
-    else receiver=this.chatLastMessageObj.recipientList[0]
+    let user=''
+    if (this.chatLastMessageObj.recipientList[0]==this.UI.currentUser)user=this.chatLastMessageObj.recipientList[1]
+    else user=this.chatLastMessageObj.recipientList[0]
     this.UI.createMessage({
       text:'sending '+amount+' COINS',
       chain:this.chatLastMessageObj.chain||this.chatChain,
       transactionOut:{
-        receiver:receiver,
+        user:user,
         amount:amount
       }
     })

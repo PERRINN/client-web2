@@ -71,8 +71,8 @@ module.exports = {
       })
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{lastMessage:chatLastMessage})
 
-      //message recipientList (merge with user, trasnactionOut receiver, previous chat list and remove duplicates and remove undefined)
-      messageData.recipientList=[user].concat([(messageData.transactionOut||{}).receiver]||[]).concat(messageData.recipientList||[]).concat(chatPreviousMessageData.recipientList||[])
+      //message recipientList (merge with user, transactionOut user, previous chat list and remove duplicates and remove undefined)
+      messageData.recipientList=[user].concat([(messageData.transactionOut||{}).user]||[]).concat(messageData.recipientList||[]).concat(chatPreviousMessageData.recipientList||[])
       messageData.recipientList=messageData.recipientList.filter((item,pos)=>messageData.recipientList.indexOf(item)===pos)
       messageData.recipientList.indexOf('undefined')!=-1&&messageData.recipientList.splice(messageData.recipientList.indexOf('undefined'),1)
       if(messageData.chain==user)messageData.recipientList=[user]
@@ -102,20 +102,28 @@ module.exports = {
         messagingCost.amountWrite=costs.data().messageWrite||0
         messagingCost.amount=Math.round(Number(messagingCost.amountWrite)*100000)/100000
         messagingCost.amountWriteCummulate=((userPreviousMessageData.messagingCost||{}).amountWriteCummulate||0)+(messagingCost.amountWrite||0)
-        //message transaction out receiver
-        const transactionOutReceiverLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',(messageData.transactionOut||{}).receiver||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
-        let transactionOutReceiverLastMessageData=(transactionOutReceiverLastMessages.docs[0]!=undefined)?(transactionOutReceiverLastMessages.docs[0]||{}).data():{}
-        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.receiverName":transactionOutReceiverLastMessageData.name||null},{create:true})
-        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.receiverFamilyName":transactionOutReceiverLastMessageData.familyName||null},{create:true})
-        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.receiverImageUrlThumb":transactionOutReceiverLastMessageData.imageUrlThumbUser||null},{create:true})
-        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionOut.amountCummulate":Number((userPreviousMessageData.transactionOut||{}).amountCummulate||0)+Number((messageData.transactionOut||{}).amount||0)},{create:true})
-        //message transaction in donor
-        const transactionInDonorLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',(messageData.transactionIn||{}).donor||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
-        let transactionInDonorLastMessageData=(transactionInDonorLastMessages.docs[0]!=undefined)?(transactionInDonorLastMessages.docs[0]||{}).data():{}
-        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorName":transactionInDonorLastMessageData.name||null},{create:true})
-        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorFamilyName":transactionInDonorLastMessageData.familyName||null},{create:true})
-        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.donorImageUrlThumb":transactionInDonorLastMessageData.imageUrlThumbUser||null},{create:true})
-        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"transactionIn.amountCummulate":Number((userPreviousMessageData.transactionIn||{}).amountCummulate||0)+Number((messageData.transactionIn||{}).amount||0)},{create:true})
+        //message transaction out
+        let transactionOut={}
+        const transactionOutUserLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',(messageData.transactionOut||{}).user||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+        let transactionOutUserLastMessageData=(transactionOutUserLastMessages.docs[0]!=undefined)?(transactionOutUserLastMessages.docs[0]||{}).data():{}
+        transactionOut.user=(messageData.transactionOut||{}).user||null
+        transactionOut.message=(messageData.transactionOut||{}).message||null
+        transactionOut.name=transactionOutUserLastMessageData.name||null
+        transactionOut.familyName=transactionOutUserLastMessageData.familyName||null
+        transactionOut.imageUrlThumb=transactionOutUserLastMessageData.imageUrlThumbUser||null
+        transactionOut.amount=Number((messageData.transactionOut||{}).amount||0)
+        transactionOut.amountCummulate=Number((userPreviousMessageData.transactionOut||{}).amountCummulate||0)+transactionOut.amount
+        //message transaction in
+        const transactionInUserLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',(messageData.transactionIn||{}).user||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+        let transactionInUserLastMessageData=(transactionInUserLastMessages.docs[0]!=undefined)?(transactionInUserLastMessages.docs[0]||{}).data():{}
+        transactionIn.user=(messageData.transactionIn||{}).user||null
+        transactionIn.message=(messageData.transactionIn||{}).message||null
+        transactionIn.name=transactionInUserLastMessageData.name||null
+        transactionIn.familyName=transactionInUserLastMessageData.familyName||null
+        transactionIn.imageUrlThumb=transactionInUserLastMessageData.imageUrlThumbUser||null
+        transactionIn.amount=Number((messageData.transactionIn||{}).amount||0)
+        transactionIn.amountCummulate=Number((userPreviousMessageData.transactionIn||{}).amountCummulate||0)+transactionIn.amount
+        if(transactionIn.message&&transactionIn.amount>0&&transactionIn.user)batch.update(admin.firestore().doc('PERRINNMessages/'+transactionIn.message),{"transactionOut.message":messageId},{create:true})
         //COIN Purchase
         let purchaseCOIN={}
         purchaseCOIN.chargeID=(messageData.purchaseCOIN||{}).chargeID||null
@@ -126,8 +134,8 @@ module.exports = {
         wallet.previousBalance=((userPreviousMessageData.PERRINN||{}).wallet||{}).balance||0
         wallet.balance=wallet.previousBalance
         wallet.balance=Math.round((Number(wallet.balance)-Number(messagingCost.amount))*100000)/100000
-        wallet.balance=Math.round((Number(wallet.balance)-Number((messageData.transactionOut||{}).amount||0))*100000)/100000
-        wallet.balance=Math.round((Number(wallet.balance)+Number((messageData.transactionIn||{}).amount||0))*100000)/100000
+        wallet.balance=Math.round((Number(wallet.balance)-Number(transactionOut.amount))*100000)/100000
+        wallet.balance=Math.round((Number(wallet.balance)+Number(transactionIn.amount))*100000)/100000
         wallet.balance=Math.round((Number(wallet.balance)+Number(purchaseCOIN.amount))*100000)/100000
         wallet.balance=Math.max(0,wallet.balance)
 
@@ -146,6 +154,12 @@ module.exports = {
         wallet.balance=Math.round((Number(wallet.balance)+Number(interest.amount||0))*100000)/100000
 
       //*******TIME BASED CREDIT/DEBIT**********************
+        //PERRINN contract
+        contract.days=contract.rateDay>0?((now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0):0
+        contract.daysTotal=((userPreviousMessageData.contract||{}).daysTotal||0)+contract.days
+        contract.amount=contract.days*contract.rateDay
+        contract.amountCummulate=((userPreviousMessageData.contract||{}).amountCummulate||0)+contract.amount
+        wallet.balance=Math.round((Number(wallet.balance)+Number(contract.amount||0))*100000)/100000
         //PERRINN membership
         if(wallet.balance>0){
           googleUtils.googleGroupMemberInsert(userEmail)
@@ -156,12 +170,7 @@ module.exports = {
         membership.daysTotal=((userPreviousMessageData.membership||{}).daysTotal||0)+membership.days
         membership.amount=membership.days*membership.dailyCost
         membership.amountCummulate=((userPreviousMessageData.membership||{}).amountCummulate||0)+membership.amount
-        //PERRINN contract
-        contract.days=contract.rateDay>0?((now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0):0
-        contract.daysTotal=((userPreviousMessageData.contract||{}).daysTotal||0)+contract.days
-        contract.amount=contract.days*contract.rateDay
-        contract.amountCummulate=((userPreviousMessageData.contract||{}).amountCummulate||0)+contract.amount
-        wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount||0)+Number(contract.amount||0))*100000)/100000
+        wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount||0))*100000)/100000
 
       //*******MESSAGE WRITES**********************
         //message chat Subject
@@ -174,6 +183,8 @@ module.exports = {
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userChain:userChain},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{messagingCost:messagingCost},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{purchaseCOIN:purchaseCOIN},{create:true})
+        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{transactionOut:transactionOut},{create:true})
+        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{transactionIn:transactionIn},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{membership:membership},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{contract:contract},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{interest:interest},{create:true})
@@ -185,30 +196,17 @@ module.exports = {
 
         await batch.commit()
 
-      //*******RECEIVER MESSAGES CREATION**********
-        //message transaction out receiver
-        if((messageData.transactionOut||{}).receiver&&!(messageData.transactionOut||{}).receiverName){
+      //*******MESSAGES CREATION**********
+        //transaction out
+        if(!transactionOut.message&&transactionOut.amount>0&&transactionOut.user){
           createMessageUtils.createMessageAFS({
-            user:messageData.transactionOut.receiver,
-            text:((messageData.transactionOut||{}).amount||0)+" COINS received",
+            user:transactionOut.user,
+            text:transactionOut.amount+" COINS received",
             chain:messageData.chain,
             transactionIn:{
-              donorUser:user,
-              donorMessage:messageId,
-              amount:(messageData.transactionOut||{}).amount||0
-            }
-          })
-        }
-        //message instant contract receiver
-        if((messageData.instantContractOut||{}).receiver&&!(messageData.instantContractOut||{}).receiverName){
-          createMessageUtils.createMessageAFS({
-            user:messageData.instantContractOut.receiver,
-            text:((messageData.instantContractOut||{}).amount||0)+" COINS received",
-            chain:messageData.chain,
-            instantContractIn:{
-              donorUser:user,
-              donorMessage:messageId,
-              amount:(messageData.instantContractOut||{}).amount||0
+              user:user,
+              message:messageId,
+              amount:transactionOut.amount
             }
           })
         }
@@ -217,6 +215,8 @@ module.exports = {
         user:user,
         userEmail:userEmail||null,
         wallet:wallet,
+        transactionIn:transactionIn,
+        transactionOut:transactionOut,
         purchaseCOIN:purchaseCOIN,
         membership:membership,
         contract:contract,

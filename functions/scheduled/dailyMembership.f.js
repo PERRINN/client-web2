@@ -14,6 +14,8 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     statistics.wallet={}
     statistics.interest={}
     statistics.messagingCost={}
+    statistics.transactionIn={}
+    statistics.transactionOut={}
     statistics.purchaseCOIN={}
     statistics.membership={}
     statistics.membersEmails=[]
@@ -36,6 +38,10 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       statistics.interest.amountCummulate=((statistics.interest||{}).amountCummulate||0)+result.interest.amountCummulate
       statistics.messagingCost.amount=((statistics.messagingCost||{}).amount||0)+result.messagingCost.amount
       statistics.messagingCost.amountWriteCummulate=((statistics.messagingCost||{}).amountWriteCummulate||0)+result.messagingCost.amountWriteCummulate
+      statistics.transactionIn.amount=((statistics.transactionIn||{}).amount||0)+result.transactionIn.amount
+      statistics.transactionIn.amountCummulate=((statistics.transactionIn||{}).amountCummulate||0)+result.transactionIn.amountCummulate
+      statistics.transactionOut.amount=((statistics.transactionOut||{}).amount||0)+result.transactionOut.amount
+      statistics.transactionOut.amountCummulate=((statistics.transactionOut||{}).amountCummulate||0)+result.transactionOut.amountCummulate
       statistics.purchaseCOIN.amount=((statistics.purchaseCOIN||{}).amount||0)+result.purchaseCOIN.amount
       statistics.purchaseCOIN.amountCummulate=((statistics.purchaseCOIN||{}).amountCummulate||0)+result.purchaseCOIN.amountCummulate
       statistics.membership.amount=((statistics.membership||{}).amount||0)+result.membership.amount
