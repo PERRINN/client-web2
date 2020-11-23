@@ -14,6 +14,14 @@ module.exports = {
 
     try{
 
+      //contract Signature
+      if((messageData.contractSignature||{}).user||null){
+        const contractSignatureUserLastMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',messageData.contractSignature.user).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+        await admin.firestore().doc('PERRINNMessages/'+(contractSignatureUserLastMessage.docs[0]||{}).id).update({
+          "contract.message":messageId
+        })
+      }
+
       //user chain
       let userChain={}
       let userPreviousMessageData={}
@@ -71,10 +79,11 @@ module.exports = {
       })
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{lastMessage:chatLastMessage})
 
-      //message recipientList (merge with user, transactionOut user, previous chat list and remove duplicates and remove undefined)
+      //message recipientList (merge with user, transactionOut user, previous chat list and remove duplicates and remove undefined and null)
       messageData.recipientList=[user].concat([(messageData.transactionOut||{}).user]||[]).concat(messageData.recipientList||[]).concat(chatPreviousMessageData.recipientList||[])
       messageData.recipientList=messageData.recipientList.filter((item,pos)=>messageData.recipientList.indexOf(item)===pos)
       messageData.recipientList.indexOf('undefined')!=-1&&messageData.recipientList.splice(messageData.recipientList.indexOf('undefined'),1)
+      messageData.recipientList.indexOf(null)!=-1&&messageData.recipientList.splice(messageData.recipientList.indexOf(null),1)
       if(messageData.chain==user)messageData.recipientList=[user]
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{recipientList:messageData.recipientList||[]},{create:true})
 
@@ -143,25 +152,45 @@ module.exports = {
         wallet.balance=Math.max(0,wallet.balance)
 
       //*******TIME BASED INTEREST*************************
-        //interest
         let membership={}
         membership.dailyCost=costs.data().membershipDay
+        //contract
         let contract={}
         contract.rateDay=(messageData.contract||{}).rateDay||(userPreviousMessageData.contract||{}).rateDay||0
+        contract.position=(messageData.contract||{}).position||(userPreviousMessageData.contract||{}).position||null
+        contract.message=(messageData.contract||{}).message||(userPreviousMessageData.contract||{}).message||null
+        if(contract.rateDay!=((userPreviousMessageData.contract||{}).rateDay||0)||contract.position!=((userPreviousMessageData.contract||{}).position||null))contract.createdTimestamp=now
+        else contract.createdTimestamp=(userPreviousMessageData.contract||{}).createdTimestamp||null
+        contract.days=0
+        contract.amount=0
+        contract.signed=false
+        if(contract.rateDay>0&&contract.position&&contract.message&&contract.createdTimestamp){
+          const contractSignatureMessage=await admin.firestore().doc('PERRINNMessages/'+contract.message).get()
+          let contractSignatureMessageData=(contractSignatureMessage!=undefined)?(contractSignatureMessage||{}).data():{}
+          if(contractSignatureMessageData.user=='QYm5NATKa6MGD87UpNZCTl6IolX2'
+            &&((contractSignatureMessageData.contractSignature||{}).user||null)==user
+            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).createdTimestamp||null)==contract.createdTimestamp
+            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).rateDay||null)==contract.rateDay
+            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).position||null)==contract.position
+          ){
+            contract.signed=true
+            contract.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
+            contract.amount=contract.days*contract.rateDay
+          }
+        }
+        contract.daysTotal=((userPreviousMessageData.contract||{}).daysTotal||0)+contract.days
+        contract.amountCummulate=((userPreviousMessageData.contract||{}).amountCummulate||0)+contract.amount
+        //interest
         let interest={}
         interest.rateYear=costs.data().interestRateYear
         interest.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
-        interest.amountBase=wallet.balance-(interest.days*membership.dailyCost/2)+(interest.days*contract.rateDay/2)
+        interest.amountBase=wallet.balance-interest.days*membership.dailyCost/2+contract.amount/2
         interest.amount=Math.max(0,interest.amountBase*(Math.exp(interest.rateYear/365*interest.days)-1))
         interest.amountCummulate=((userPreviousMessageData.interest||{}).amountCummulate||0)+interest.amount
         wallet.balance=Math.round((Number(wallet.balance)+Number(interest.amount||0))*100000)/100000
 
       //*******TIME BASED CREDIT/DEBIT**********************
         //PERRINN contract
-        contract.days=contract.rateDay>0?((now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0):0
-        contract.daysTotal=((userPreviousMessageData.contract||{}).daysTotal||0)+contract.days
-        contract.amount=contract.days*contract.rateDay
-        contract.amountCummulate=((userPreviousMessageData.contract||{}).amountCummulate||0)+contract.amount
         wallet.balance=Math.round((Number(wallet.balance)+Number(contract.amount||0))*100000)/100000
         //PERRINN membership
         if(wallet.balance>0){

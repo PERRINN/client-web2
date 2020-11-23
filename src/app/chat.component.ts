@@ -105,7 +105,7 @@ import * as firebase from 'firebase/app'
           <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first)" style="float:left;width:60px;min-height:10px">
             <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:50%; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['profile',message.payload?.user])">
           </div>
-          <div [style.background-color]="(message.payload?.PERRINN?.wallet?.balance>message.payload?.PERRINN?.wallet?.previousBalance)?'#f2f5d0':(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
+          <div [style.background-color]="(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
             <div>
               <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first">
                 <div style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>

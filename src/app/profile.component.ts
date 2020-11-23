@@ -29,6 +29,9 @@ import * as firebase from 'firebase/app'
               <span >{{focusUserLastMessageObj?.name}}</span>
               <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
               <span *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
+              <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:white;background-color:navy;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">{{focusUserLastMessageObj?.contract?.position}} {{focusUserLastMessageObj?.contract?.rateDay}} COINS/day</span>
+              <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:navy">Waiting for contract signature</span>
+              <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed&&UI.currentUser=='QYm5NATKa6MGD87UpNZCTl6IolX2'" style="margin:15px;font-size:10px;color:blue;cursor:pointer" (click)=signContract()>Sign contract</span>
             </div>
             <div *ngIf="UI.currentUser!=focusUserLastMessageObj?.user" (click)="newMessageToUser()" style="float:right;font-size:10px;padding:2px 4px 2px 4px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">New message to {{focusUserLastMessageObj?.name}}</div>
           </div>
@@ -241,6 +244,18 @@ export class ProfileComponent {
     this.previousAmountWriteCummulate=message.messagingCost.amountWriteCummulate||0
     this.previousAmountInterestCummulate=(message.interest||{}).amountCummulate||0
     this.previousAmountTransactionCummulate=((message.transactionIn||{}).amountCummulate||0)-((message.transactionOut||{}).amountCummulate||0)
+  }
+
+  signContract(){
+    this.UI.createMessage({
+      chain:this.focusUserLastMessageObj.user,
+      text:'Contract signature for position: '+((this.focusUserLastMessageObj.contract||{}).position||null)+', rate: '+((this.focusUserLastMessageObj.contract||{}).rateDay||0)+' COINS per day',
+      contractSignature:{
+        user:this.focusUserLastMessageObj.user,
+        contract:this.focusUserLastMessageObj.contract||{}
+      }
+    })
+    this.router.navigate(['chat',this.focusUserLastMessageObj.user])
   }
 
 }
