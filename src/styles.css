@@ -63,7 +63,7 @@ body {
   height: 12px;
   width: 12px;
   background-color: red;
-  border-radius: 5px;
+  border-radius:3px;
   position: absolute;
   top: 1px;
   left: 34px;
@@ -75,7 +75,7 @@ body {
   text-align: center;
   font-size: 10px;
   padding: 3px;
-  border-radius: 5px;
+  border-radius:3px;
   width: 130px;
   margin: 10px;
   user-select: none;
@@ -86,7 +86,7 @@ body {
   text-align: center;
   font-size: 10px;
   padding: 3px;
-  border-radius: 5px;
+  border-radius:3px;
   width: 130px;
   margin: 10px;
   user-select: none;
@@ -114,7 +114,7 @@ body {
   height: 12px;
   width: 12px;
   background-color: red;
-  border-radius: 6px;
+  border-radius:3px;
   position: absolute;
   top: 0px;
   right: 0px;
@@ -129,7 +129,7 @@ body {
   text-align:center;
   border-style:solid;
   border-width:thin;
-  border-radius:10px;
+  border-radius:3px;
   user-select: none;
 }
 .listLight .selected {
@@ -145,7 +145,7 @@ body {
   text-align:center;
   border-style:solid;
   border-width:thin;
-  border-radius:4px;
+  border-radius:3px;
   user-select: none;
 }
 button {
@@ -159,7 +159,7 @@ button {
   color: white;
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
-  border-radius: 4px;
+  border-radius:3px;
   text-align:center;
   user-select: none;
 }
@@ -171,7 +171,7 @@ input {
   box-sizing: border-box;
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
-  border-radius: 4px;
+  border-radius:3px;
 }
 .textAreaInput {
   resize: none;
@@ -183,7 +183,7 @@ input {
   box-sizing: border-box;
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
-  border-radius: 4px;
+  border-radius:3px;
 }
 .cornerButton {
   border-style:solid;
@@ -282,7 +282,7 @@ hr {
 .sheetBadge {
   width:280px;
   margin: 10px auto;
-  border-radius:10px;
+  border-radius:3px;
   background-color: white;
 }
 input[type=number]::-webkit-inner-spin-button,
