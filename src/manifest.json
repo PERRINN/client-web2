@@ -2,7 +2,7 @@
   "short_name": "PERRINN",
   "name": "PERRINN. We are a Team.",
   "start_url": "/",
-  "theme_color": "#2a5aa8",
+  "theme_color": "navy",
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait",
