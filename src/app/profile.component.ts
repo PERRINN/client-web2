@@ -29,8 +29,8 @@ import * as firebase from 'firebase/app'
               <span >{{focusUserLastMessageObj?.name}}</span>
               <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
               <span *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
-              <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:white;background-color:navy;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">{{focusUserLastMessageObj?.contract?.position}} {{focusUserLastMessageObj?.contract?.rateDay}} COINS/day</span>
-              <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:navy">Waiting for contract signature</span>
+              <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:white;background-color:midnightblue;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">{{focusUserLastMessageObj?.contract?.position}} {{focusUserLastMessageObj?.contract?.rateDay}} COINS/day</span>
+              <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed&&UI.currentUser=='QYm5NATKa6MGD87UpNZCTl6IolX2'" style="margin:15px;font-size:10px;color:blue;cursor:pointer" (click)=signContract()>Sign contract</span>
             </div>
             <div *ngIf="UI.currentUser!=focusUserLastMessageObj?.user" (click)="newMessageToUser()" style="float:right;font-size:10px;padding:2px 4px 2px 4px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">New message to {{focusUserLastMessageObj?.name}}</div>
@@ -78,10 +78,10 @@ import * as firebase from 'firebase/app'
               <img style="float:left;width:17px;opacity:.6;margin:0 5px 0 0" src="./../assets/App icons/event-24px.svg">
               <div style="float:left;margin:0 5px 0 0">{{message.payload.doc.data()?.eventDescription}} /</div>
               <div style="float:left;margin:0 10px 0 0">{{message.payload.doc.data()?.eventDate|date:'EEEE d MMM HH:mm'}}</div>
-              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=(60*24)" style="float:left;background-color:navy;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000/60/24-UI.nowSeconds/60/60/24)}}d</div>
-              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<(60*24)&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=60" style="float:left;background-color:navy;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000/60-UI.nowSeconds/60/60)}}h</div>
-              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<60&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>0" style="float:left;background-color:navy;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)}}m</div>
-              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:navy;color:white;padding:0 5px 0 5px">Now</div>
+              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=(60*24)" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000/60/24-UI.nowSeconds/60/60/24)}}d</div>
+              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<(60*24)&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=60" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000/60-UI.nowSeconds/60/60)}}h</div>
+              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<60&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>0" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)}}m</div>
+              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">Now</div>
             </div>
           </div>
           <div class="seperator"></div>
