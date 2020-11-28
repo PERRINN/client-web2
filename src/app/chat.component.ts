@@ -80,9 +80,7 @@ import * as firebase from 'firebase/app'
           <img style="float:left;width:17px;opacity:.6;;margin:0 5px 0 0" src="./../assets/App icons/event-24px.svg">
           <div style="float:left;margin:0 5px 0 0">{{eventDescription}} /</div>
           <div style="float:left;margin:0 10px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
-          <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)>=(60*24)" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{math.floor(eventDate/60000/60/24-UI.nowSeconds/60/60/24)}}d</div>
-          <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<(60*24)&&math.floor(eventDate/60000-UI.nowSeconds/60)>=60" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{math.floor(eventDate/60000/60-UI.nowSeconds/60/60)}}h</div>
-          <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<60&&math.floor(eventDate/60000-UI.nowSeconds/60)>0" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{math.floor(eventDate/60000-UI.nowSeconds/60)}}m</div>
+          <div style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(eventDate/1000-UI.nowSeconds)}}</div>
           <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">Now</div>
         </div>
       </div>
@@ -110,8 +108,7 @@ import * as firebase from 'firebase/app'
               <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first">
                 <div style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
                 <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)>43200" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
-                <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)<=43200&&(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)>3600" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)*1000|date:'h'}}h</div>
-                <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)<=3600" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{math.max(0,(UI.nowSeconds-message.payload?.serverTimestamp?.seconds))*1000|date:'m'}}m</div>
+                <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)<=43200" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{secondsToDhmDetail1(math.max(0,(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)))}}</div>
               </div>
               <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
               <div style="clear:both;text-align:center">
@@ -414,6 +411,28 @@ export class ChatComponent {
     } else {
       this.teams=null
     }
+  }
+
+  secondsToDhmDetail2(seconds){
+    seconds= Number(seconds)
+    var d=Math.floor(seconds/(3600*24))
+    var h=Math.floor(seconds%(3600*24)/3600)
+    var m=Math.floor(seconds%3600/60)
+    var dDisplay=d>0?d+'d ':''
+    var hDisplay=h>0?h+'h ':''
+    var mDisplay=(m>0&&d==0)?m+'m ':''
+    return dDisplay+hDisplay+mDisplay
+  }
+
+  secondsToDhmDetail1(seconds){
+    seconds= Number(seconds)
+    var d=Math.floor(seconds/(3600*24))
+    var h=Math.floor(seconds%(3600*24)/3600)
+    var m=Math.floor(seconds%3600/60)
+    var dDisplay=d>0?d+'d ':''
+    var hDisplay=(h>0&&d==0)?h+'h ':''
+    var mDisplay=(m>0&&d==0&&h==0)?m+'m ':''
+    return dDisplay+hDisplay+mDisplay
   }
 
   resetChat(){

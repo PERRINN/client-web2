@@ -66,9 +66,7 @@ import * as firebase from 'firebase/app'
           <div>
             <div style="clear:both;float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
             <div style="float:left;margin-top:5px;margin-left:5px;color:#111;font-size:11px">{{message.payload.doc.data()?.recipientList.length>1?'+'+(message.payload.doc.data()?.recipientList.length-1):''}}</div>
-            <div *ngIf="(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)>43200" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:40px">{{math.round(UI.nowSeconds/3600/24-message.payload.doc.data()?.serverTimestamp?.seconds/3600/24)}}d</div>
-            <div *ngIf="(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)<=43200&&(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)>3600" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:40px">{{(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)*1000|date:'h'}}h</div>
-            <div *ngIf="(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)<=3600" style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:40px">{{math.max(0,(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds))*1000|date:'m'}}m</div>
+            <div style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:40px">{{secondsToDhmDetail1(math.max(0,(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)))}}</div>
             <div *ngIf="message.payload.doc.data()?.reads==undefinied?true:!message.payload.doc.data()?.reads[UI.currentUser]" style="float:right;margin:9px 15px 0 0;min-width:17px;height:17px;border-radius:50%;line-height:17px;font-size:10px;text-align:center;color:white" [style.background-color]="message.payload.doc.data()?.recipients?(message.payload.doc.data()?.recipients[UI.currentUser]==undefined?'lightblue':'red'):'lightblue'">
               {{message.payload.doc.data()?.recipients[UI.currentUser]?.unreadMessages}}
             </div>
@@ -78,9 +76,7 @@ import * as firebase from 'firebase/app'
               <img style="float:left;width:17px;opacity:.6;margin:0 5px 0 0" src="./../assets/App icons/event-24px.svg">
               <div style="float:left;margin:0 5px 0 0">{{message.payload.doc.data()?.eventDescription}} /</div>
               <div style="float:left;margin:0 10px 0 0">{{message.payload.doc.data()?.eventDate|date:'EEEE d MMM HH:mm'}}</div>
-              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=(60*24)" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000/60/24-UI.nowSeconds/60/60/24)}}d</div>
-              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<(60*24)&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>=60" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000/60-UI.nowSeconds/60/60)}}h</div>
-              <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<60&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>0" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)}}m</div>
+              <div style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(message.payload.doc.data()?.eventDate/1000-UI.nowSeconds)}}</div>
               <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">Now</div>
             </div>
           </div>
@@ -210,9 +206,9 @@ export class ProfileComponent {
   }
 
   showFullScreenImage(src) {
-    const fullScreenImage = document.getElementById('fullScreenImage') as HTMLImageElement
-    fullScreenImage.src = src
-    fullScreenImage.style.visibility = 'visible'
+    const fullScreenImage=document.getElementById('fullScreenImage') as HTMLImageElement
+    fullScreenImage.src=src
+    fullScreenImage.style.visibility='visible'
   }
 
   newMessageToUser() {
@@ -256,6 +252,28 @@ export class ProfileComponent {
       }
     })
     this.router.navigate(['chat',this.focusUserLastMessageObj.user])
+  }
+
+  secondsToDhmDetail2(seconds){
+    seconds= Number(seconds)
+    var d=Math.floor(seconds/(3600*24))
+    var h=Math.floor(seconds%(3600*24)/3600)
+    var m=Math.floor(seconds%3600/60)
+    var dDisplay=d>0?d+'d ':''
+    var hDisplay=h>0?h+'h ':''
+    var mDisplay=(m>0&&d==0)?m+'m ':''
+    return dDisplay+hDisplay+mDisplay
+  }
+
+  secondsToDhmDetail1(seconds){
+    seconds= Number(seconds)
+    var d=Math.floor(seconds/(3600*24))
+    var h=Math.floor(seconds%(3600*24)/3600)
+    var m=Math.floor(seconds%3600/60)
+    var dDisplay=d>0?d+'d ':''
+    var hDisplay=(h>0&&d==0)?h+'h ':''
+    var mDisplay=(m>0&&d==0&&h==0)?m+'m ':''
+    return dDisplay+hDisplay+mDisplay
   }
 
 }
