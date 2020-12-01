@@ -17,7 +17,7 @@ import * as firebase from 'firebase/app';
   <br/>
   <span style="font-size:18px;line-height:30px;margin:15px;font-family:sans-serif;">{{UI.currentUserLastMessageObj?.name}} {{UI.currentUserLastMessageObj?.familyName}}</span>
   <span *ngIf='UI.currentUserIsMember' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:10px">Member</span>
-  <span *ngIf="UI.currentUserLastMessageObj?.contract?.signed" style="color:white;background-color:midnightblue;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">{{UI.currentUserLastMessageObj?.contract?.position}} {{(UI.currentUserLastMessageObj?.contract?.level||0)*(UI.currentUserLastMessageObj?.contract?.availability||0)}} COINS/day</span>
+  <span *ngIf="UI.currentUserLastMessageObj?.contract?.signed" style="color:white;background-color:midnightblue;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">{{UI.currentUserLastMessageObj?.contract?.position}} {{(UI.currentUserLastMessageObj?.contract?.level||0)*(UI.currentUserLastMessageObj?.contract?.frequency||0)}} COINS/day</span>
   <span *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&!UI.currentUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
   <br/>
   <span style="font-size:16px;line-height:30px;margin:15px;font-family:sans-serif">Balance: {{(UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</span>
@@ -45,12 +45,12 @@ import * as firebase from 'firebase/app';
       <img style="float:left;margin:15px;width:30px;opacity:.6" src="./../assets/App icons/admin_panel_settings-24px.svg">
       <div style="font-size:14px;margin:20px;color:#444">Your PERRINN contract</div>
       <div style="font-size:10px;margin:20px;color:#777">This contract is between you and PERRINN team. New COINS are credited to you based on the settings below. When these settings are updated, they will need to be approved before taking effect. You or PERRINN can cancel this contract at any time.</div>
-      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Your position</div>
-      <input [(ngModel)]="contractPosition" placeholder="Your position">
-      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Your level of experience [1-10]</div>
-      <input [(ngModel)]="contractLevel" placeholder="Your level of experience [1-10]">
-      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Your availability [1-10]</div>
-      <input [(ngModel)]="contractAvailability" placeholder="Your availability [1-10]">
+      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Contract position</div>
+      <input [(ngModel)]="contract.position" placeholder="Contract position">
+      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Contract level [1-10]</div>
+      <input [(ngModel)]="contract.level" placeholder="Contract level [1-10]">
+      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Contract frequency [1-10]</div>
+      <input [(ngModel)]="contract.frequency" placeholder="Contract frequency [1-10]">
       <div *ngIf="!UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">No contract registered.</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">Contract number: {{UI.currentUserLastMessageObj?.contract?.createdTimestamp}}</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&!UI.currentUserLastMessageObj?.contract?.signed" style="float:left;margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</div>
@@ -65,9 +65,7 @@ export class SettingsComponent {
   name:string;
   familyName:string;
   currentEmail:string;
-  contractPosition:string;
-  contractLevel:string;
-  contractAvailability:string;
+  contract:any;
   searchFilter:string;
   teams:Observable<any[]>;
 
@@ -78,13 +76,14 @@ export class SettingsComponent {
     private storage: AngularFireStorage,
     public UI: UserInterfaceService
   ) {
+    this.contract={}
     this.editMembers=false
     this.name=this.UI.currentUserLastMessageObj.name
     this.familyName=this.UI.currentUserLastMessageObj.familyName
     this.currentEmail=this.UI.currentUserLastMessageObj.userEmail||null
-    this.contractPosition=(this.UI.currentUserLastMessageObj.contract||{}).position||null
-    this.contractLevel=(this.UI.currentUserLastMessageObj.contract||{}).level||null
-    this.contractAvailability=(this.UI.currentUserLastMessageObj.contract||{}).availability||null
+    this.contract.position=(this.UI.currentUserLastMessageObj.contract||{}).position||null
+    this.contract.level=(this.UI.currentUserLastMessageObj.contract||{}).level||null
+    this.contract.frequency=(this.UI.currentUserLastMessageObj.contract||{}).frequency||null
   }
 
   logout() {
@@ -114,14 +113,14 @@ export class SettingsComponent {
   }
 
   updateContract(){
-    if(!this.contractPosition||!this.contractLevel||!this.contractAvailability)return
+    if(!this.contract.position||!this.contract.level||!this.contract.frequency)return
     this.UI.createMessage({
       chain:this.UI.currentUser,
-      text:'Updating my contract details to position: '+this.contractPosition+', level: '+this.contractLevel+', availability: '+this.contractAvailability,
+      text:'Updating my contract details to position: '+this.contract.position+', level: '+this.contract.level+', frequency: '+this.contract.frequency,
       contract:{
-        position:this.contractPosition,
-        level:this.contractLevel,
-        availability:this.contractAvailability
+        position:this.contract.position,
+        level:this.contract.level,
+        frequency:this.contract.frequency
       }
     })
     this.router.navigate(['chat',this.UI.currentUser])

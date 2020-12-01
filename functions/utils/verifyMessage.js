@@ -158,14 +158,14 @@ module.exports = {
         let contract={}
         contract.position=(messageData.contract||{}).position||(userPreviousMessageData.contract||{}).position||null
         contract.level=(messageData.contract||{}).level||(userPreviousMessageData.contract||{}).level||0
-        contract.availability=(messageData.contract||{}).availability||(userPreviousMessageData.contract||{}).availability||0
+        contract.frequency=(messageData.contract||{}).frequency||(userPreviousMessageData.contract||{}).frequency||0
         contract.message=(messageData.contract||{}).message||(userPreviousMessageData.contract||{}).message||null
-        if(contract.level!=((userPreviousMessageData.contract||{}).level||0)||contract.availability!=((userPreviousMessageData.contract||{}).availability||0)||contract.position!=((userPreviousMessageData.contract||{}).position||null))contract.createdTimestamp=now
+        if(contract.level!=((userPreviousMessageData.contract||{}).level||0)||contract.frequency!=((userPreviousMessageData.contract||{}).frequency||0)||contract.position!=((userPreviousMessageData.contract||{}).position||null))contract.createdTimestamp=now
         else contract.createdTimestamp=(userPreviousMessageData.contract||{}).createdTimestamp||null
         contract.days=0
         contract.amount=0
         contract.signed=false
-        if(contract.level>0&&contract.availability>0&&contract.position&&contract.message&&contract.createdTimestamp){
+        if(contract.level>0&&contract.frequency>0&&contract.position&&contract.message&&contract.createdTimestamp){
           const contractSignatureMessage=await admin.firestore().doc('PERRINNMessages/'+contract.message).get()
           let contractSignatureMessageData=(contractSignatureMessage!=undefined)?(contractSignatureMessage||{}).data():{}
           if(contractSignatureMessageData.user=='QYm5NATKa6MGD87UpNZCTl6IolX2'
@@ -173,11 +173,11 @@ module.exports = {
             &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).createdTimestamp||null)==contract.createdTimestamp
             &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).position||null)==contract.position
             &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).level||null)==contract.level
-            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).availability||null)==contract.availability
+            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).frequency||null)==contract.frequency
           ){
             contract.signed=true
             contract.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
-            contract.amount=contract.days*contract.level*contract.availability
+            contract.amount=contract.days*contract.level*contract.frequency
           }
         }
         contract.daysTotal=((userPreviousMessageData.contract||{}).daysTotal||0)+contract.days
