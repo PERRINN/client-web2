@@ -420,7 +420,7 @@ export class ChatComponent {
     var m=Math.floor(seconds%3600/60)
     var dDisplay=d>0?d+'d ':''
     var hDisplay=h>0?h+'h ':''
-    var mDisplay=(m>0&&d==0)?m+'m ':''
+    var mDisplay=(m>=0&&d==0)?m+'m ':''
     return dDisplay+hDisplay+mDisplay
   }
 
@@ -431,7 +431,7 @@ export class ChatComponent {
     var m=Math.floor(seconds%3600/60)
     var dDisplay=d>0?d+'d ':''
     var hDisplay=(h>0&&d==0)?h+'h ':''
-    var mDisplay=(m>0&&d==0&&h==0)?m+'m ':''
+    var mDisplay=(m>=0&&d==0&&h==0)?m+'m ':''
     return dDisplay+hDisplay+mDisplay
   }
 
