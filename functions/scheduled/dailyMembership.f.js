@@ -5,6 +5,7 @@ const emailUtils = require('../utils/email')
 const verifyMessageUtils = require('../utils/verifyMessage')
 const onshapeUtils = require('../utils/onshape')
 const googleUtils = require('../utils/google')
+const createMessageUtils = require('../utils/createMessage')
 
 const runtimeOpts={timeoutSeconds:540,memory:'1GB'}
 
@@ -77,6 +78,22 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     })
     statistics.serverTimestamp=admin.firestore.FieldValue.serverTimestamp()
     await admin.firestore().collection('statistics').add(statistics);
+
+    let messageText=
+      statistics.userCount+' users registered. '+
+      statistics.membersEmails.length+' members. '+
+      Math.round(statistics.wallet.balance)+' COINS in circulation. '+
+      Math.round(statistics.interest.amountCummulate)+' COINS created from interest. '+
+      Math.round(statistics.messagingCost.amountWriteCummulate)+' COINS burned by messaging. '+
+      Math.round(statistics.purchaseCOIN.amountCummulate)+' COINS purchased. '+
+      Math.round(statistics.membership.amountCummulate)+' COINS burned from membership. '
+
+    createMessageUtils.createMessageAFS({
+      user:'-L7jqFf8OuGlZrfEK6dT',
+      text:messageText,
+      chain:'PERRINNStatistics',
+      chatSubject:'PERRINN statistics'
+    })
 
     console.log(statistics.userCount+' users processed.')
     console.log(statistics.membersEmails.length+' PERRINN members.')
