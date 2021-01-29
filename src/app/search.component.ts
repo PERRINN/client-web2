@@ -77,7 +77,7 @@ export class SearchComponent  {
     .where('verified','==',true)
     .where('PERRINN.wallet.balance','>',0)
     .orderBy('PERRINN.wallet.balance',"desc")
-    .limit(20))
+    .limit(50))
     .snapshotChanges().pipe(map(changes => {
       return changes.map(c => ({
         key:c.payload.doc.id,
