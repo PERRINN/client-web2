@@ -14,14 +14,6 @@ module.exports = {
 
     try{
 
-      //contract Signature
-      if((messageData.contractSignature||{}).user||null){
-        const contractSignatureUserLastMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',messageData.contractSignature.user).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
-        await admin.firestore().doc('PERRINNMessages/'+(contractSignatureUserLastMessage.docs[0]||{}).id).update({
-          "contract.message":messageId
-        })
-      }
-
       //user chain
       let userChain={}
       let userPreviousMessageData={}
@@ -174,7 +166,7 @@ module.exports = {
         contract.days=0
         contract.amount=0
         contract.signed=false
-        if(contract.level>0&&contract.frequency>0&&contract.position&&contract.message&&contract.createdTimestamp){
+        if(contract.level&&contract.frequency&&contract.position&&contract.message&&contract.createdTimestamp){
           const contractSignatureMessage=await admin.firestore().doc('PERRINNMessages/'+contract.message).get()
           let contractSignatureMessageData=(contractSignatureMessage!=undefined)?(contractSignatureMessage||{}).data():{}
           if(contractSignatureMessageData.user=='QYm5NATKa6MGD87UpNZCTl6IolX2'
@@ -250,6 +242,19 @@ module.exports = {
               user:user,
               message:messageId,
               amount:transactionOut.amount
+            }
+          })
+        }
+
+        //contract Signature
+        if((messageData.contractSignature||{}).user||null){
+          const contractSignatureUserLastMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',messageData.contractSignature.user).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
+          createMessageUtils.createMessageAFS({
+            user:messageData.contractSignature.user,
+            text:'Contract signature activation',
+            chain:messageData.contractSignature.user,
+            contract:{
+              message:messageId
             }
           })
         }

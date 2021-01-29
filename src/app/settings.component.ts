@@ -45,12 +45,13 @@ import * as firebase from 'firebase/app';
       <img style="float:left;margin:15px;width:30px;opacity:.6" src="./../assets/App icons/admin_panel_settings-24px.svg">
       <div style="font-size:14px;margin:20px;color:#444">Your PERRINN contract</div>
       <div style="font-size:10px;margin:20px;color:#777">This contract is between you and PERRINN team. New COINS are credited to you based on the settings below. When these settings are updated, they will need to be approved before taking effect. You or PERRINN can cancel this contract at any time.</div>
-      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Contract position</div>
+      <div style="font-size:10px;margin:20px;color:blue;cursor:pointer" (click)="router.navigate(['chat','ACuUWECdynuUUncuAZ4z'])">More info to help you setup your contract here</div>
+      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Position</div>
       <input [(ngModel)]="contract.position" placeholder="Contract position">
-      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Contract level [1-10]</div>
-      <input [(ngModel)]="contract.level" placeholder="Contract level [1-10]">
-      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Contract frequency [1-10]</div>
-      <input [(ngModel)]="contract.frequency" placeholder="Contract frequency [1-10]">
+      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Level</div>
+      <input [(ngModel)]="contract.level" placeholder="Contract level">
+      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Frequency</div>
+      <input [(ngModel)]="contract.frequency" placeholder="Contract frequency">
       <div *ngIf="!UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">No contract registered.</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">Contract number: {{UI.currentUserLastMessageObj?.contract?.createdTimestamp}}</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&!UI.currentUserLastMessageObj?.contract?.signed" style="float:left;margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</div>
