@@ -29,7 +29,8 @@ import * as firebase from 'firebase/app'
               <span >{{focusUserLastMessageObj?.name}}</span>
               <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
               <span *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
-              <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:white;background-color:midnightblue;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">{{displayContract(focusUserLastMessageObj?.contract)}}</span>
+              <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:white;background-color:midnightblue;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px">{{focusUserLastMessageObj?.contract?.position}}</span>
+              <span *ngIf="focusUserLastMessageObj?.contract?.signed&&(focusUserLastMessageObj?.contract?.level*focusUserLastMessageObj?.contract?.frequency)>0" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">{{focusUserLastMessageObj?.contract?.level*focusUserLastMessageObj?.contract?.frequency}} C/d</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed&&UI.currentUser=='QYm5NATKa6MGD87UpNZCTl6IolX2'" style="margin:15px;font-size:10px;color:blue;cursor:pointer" (click)=signContract()>Sign contract</span>
             </div>
@@ -274,11 +275,6 @@ export class ProfileComponent {
     var hDisplay=(h>0&&d==0)?h+'h ':''
     var mDisplay=(m>=0&&d==0&&h==0)?m+'m ':''
     return dDisplay+hDisplay+mDisplay
-  }
-
-  displayContract(contract){
-    var rate=(contract.level*contract.frequency)>0?contract.level*contract.frequency+' C/d':''
-    return contract.position+' '+rate
   }
 
 }

@@ -19,7 +19,7 @@ import * as firebase from 'firebase/app';
     <li *ngFor="let message of messages | async" style="float:left;padding:5px"
     [ngClass]="UI.isContentAccessible(message.values.user)?'clear':'encrypted'">
       <div style="float:left;width:250px;height:115px" (click)="router.navigate(['profile',message.values.user])">
-        <img [src]="message?.values.imageUrlThumbUser" style="display:inline;float:left;margin:0 10px 0 10px;opacity:1;object-fit:cover;height:70px;width:70px;border-radius:50%">
+        <img [src]="message?.values.imageUrlThumbUser" style="float:left;margin:0 10px 0 10px;opacity:1;object-fit:cover;height:50px;width:50px;border-radius:50%">
         <span>{{message.values?.name}}</span>
         <span style="font-size:10px"> {{message.values?.familyName}}</span>
         <div *ngIf="message?.values?.PERRINN?.wallet?.balance>0" style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:9px;height:14px;line-height:10px;width:45px">Member</div>
@@ -27,7 +27,8 @@ import * as firebase from 'firebase/app';
           <span style="float:left;font-size:10px;color:green;margin-right:5px">{{(message.values?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</span>
           <span style="float:left;font-size:8px;color:green;line-height:22px">COINS</span>
         </div>
-        <span *ngIf="message?.values?.contract?.signed" style="color:white;background-color:midnightblue;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px">{{displayContract(message?.values?.contract)}}</span>
+        <span *ngIf="message?.values?.contract?.signed" style="color:white;background-color:midnightblue;margin:10px 0 0 10px;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px">{{message?.values?.contract?.position}}</span>
+        <span *ngIf="message?.values?.contract?.signed&&(message?.values?.contract?.level*message?.values?.contract?.frequency)>0" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">{{message?.values?.contract?.level*message?.values?.contract?.frequency}} C/d</span>
       </div>
     </li>
   </ul>
@@ -89,11 +90,6 @@ export class SearchComponent  {
         values:c.payload.doc.data(),
       }));
     }));
-  }
-
-  displayContract(contract){
-    var rate=(contract.level*contract.frequency)>0?contract.level*contract.frequency+' C/d':''
-    return contract.position+' '+rate
   }
 
 }
