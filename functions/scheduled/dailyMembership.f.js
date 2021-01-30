@@ -14,6 +14,7 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     let statistics={}
     statistics.wallet={}
     statistics.interest={}
+    statistics.contract={}
     statistics.messagingCost={}
     statistics.transactionIn={}
     statistics.transactionOut={}
@@ -37,6 +38,8 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       statistics.wallet.balance=((statistics.wallet||{}).balance||0)+result.wallet.balance
       statistics.interest.amount=((statistics.interest||{}).amount||0)+result.interest.amount
       statistics.interest.amountCummulate=((statistics.interest||{}).amountCummulate||0)+result.interest.amountCummulate
+      statistics.contract.amount=((statistics.contract||{}).amount||0)+result.contract.amount
+      statistics.contract.amountCummulate=((statistics.contract||{}).amountCummulate||0)+result.contract.amountCummulate
       statistics.messagingCost.amount=((statistics.messagingCost||{}).amount||0)+result.messagingCost.amount
       statistics.messagingCost.amountWriteCummulate=((statistics.messagingCost||{}).amountWriteCummulate||0)+result.messagingCost.amountWriteCummulate
       statistics.transactionIn.amount=((statistics.transactionIn||{}).amount||0)+result.transactionIn.amount
@@ -83,10 +86,11 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       statistics.userCount+' users registered. '+
       statistics.membersEmails.length+' members. '+
       Math.round(statistics.wallet.balance)+' COINS in circulation. '+
-      Math.round(statistics.interest.amountCummulate)+' COINS created from interest. '+
-      Math.round(statistics.messagingCost.amountWriteCummulate)+' COINS burned by messaging. '+
       Math.round(statistics.purchaseCOIN.amountCummulate)+' COINS purchased. '+
-      Math.round(statistics.membership.amountCummulate)+' COINS burned from membership. '
+      Math.round(statistics.interest.amountCummulate)+' COINS created from interest. '+
+      Math.round(statistics.contract.amountCummulate)+' COINS created from contract. '+
+      Math.round(statistics.membership.amountCummulate)+' COINS burned by membership. '+
+      Math.round(statistics.messagingCost.amountWriteCummulate)+' COINS burned by messaging. '
 
     createMessageUtils.createMessageAFS({
       user:'-L7jqFf8OuGlZrfEK6dT',
