@@ -26,7 +26,7 @@ import * as firebase from 'firebase/app';
   <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   <div class='sheet'>
-    <div style="color:blue;;cursor:pointer;margin:20px">
+    <div style="color:midnightblue;cursor:pointer;margin:20px">
       <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
       <label class="buttonUploadImage" for="chatImage" id="buttonFile">
       <div>Upload new profile picture</div>
@@ -34,18 +34,18 @@ import * as firebase from 'firebase/app';
     </div>
       <input [(ngModel)]="name" placeholder="First name">
       <input [(ngModel)]="familyName" placeholder="Family name">
-      <div (click)="updateName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update name</div>
+      <div (click)="updateName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update name</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
       <img style="float:left;margin:15px;width:30px;opacity:.6" src="./../assets/App icons/email-24px.svg">
       <div style="font-size:14px;margin:20px;color:#444">Your PERRINN email</div>
       <div style="font-size:10px;margin:20px;color:#777">Use this email to receive notifications, connect to other PERRINN apps like Onshape, Google Drive and Google Meet (calendar events and meetings). This email can be the one you use to log into PERRINN.com or any other email. This email is visible by other PERRINN members.</div>
       <input [(ngModel)]="currentEmail" placeholder="Enter your PERRINN email">
-      <div (click)="updateEmail()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update email</div>
+      <div (click)="updateEmail()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update email</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
       <img style="float:left;margin:15px;width:30px;opacity:.6" src="./../assets/App icons/admin_panel_settings-24px.svg">
       <div style="font-size:14px;margin:20px;color:#444">Your PERRINN contract</div>
       <div style="font-size:10px;margin:20px;color:#777">This contract is between you and PERRINN team. New COINS are credited to you based on the settings below. When these settings are updated, they will need to be approved before taking effect. You or PERRINN can cancel this contract at any time.</div>
-      <div style="font-size:10px;margin:20px;color:blue;cursor:pointer" (click)="router.navigate(['chat','ACuUWECdynuUUncuAZ4z'])">More info to help you setup your contract here</div>
+      <div style="font-size:10px;margin:20px;color:midnightblue;cursor:pointer" (click)="router.navigate(['chat','ACuUWECdynuUUncuAZ4z'])">More info to help you setup your contract here</div>
       <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Position</div>
       <input [(ngModel)]="contract.position" placeholder="Contract position">
       <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Level</div>
@@ -55,7 +55,7 @@ import * as firebase from 'firebase/app';
       <div *ngIf="!UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">No contract registered.</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">Contract number: {{UI.currentUserLastMessageObj?.contract?.createdTimestamp}}</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&!UI.currentUserLastMessageObj?.contract?.signed" style="float:left;margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</div>
-      <div (click)="updateContract()" style="clear:both;font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:#4287f5;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update contract</div>
+      <div (click)="updateContract()" style="clear:both;font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update contract</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
   <div class="buttonDiv" style="color:red;margin-top:25px;margin-bottom:25px" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div class="seperator" style="width:100%;margin-bottom:250px"></div>

@@ -15,11 +15,11 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
           <img src="./../assets/App icons/teamExperience.jpg" style="width:95%;margin:10px 0 10px 0">
           <img src="./../assets/App icons/PERRINN logo.png" style="width:95%;margin:10px 0 10px 0">
           <div [hidden]="UI.currentUser!=null">
-          <div style="text-align:right; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="newUser=!newUser;messageUser=''">{{newUser?"Already have an account?":"Need a new account?"}}</div>
+          <div style="text-align:right; font-size:10px; cursor:pointer; color:midnightblue; padding:10px;" (click)="newUser=!newUser;messageUser=''">{{newUser?"Already have an account?":"Need a new account?"}}</div>
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *" (keyup)="messageUser=''" autofocus required/>
           <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *" (keyup)="messageUser=''" required/>
           <button *ngIf="!newUser" type="submit" (click)="login(email,password)">Login</button>
-          <div *ngIf="!newUser" style="text-align:center; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="resetPassword(email)">Forgot password?</div>
+          <div *ngIf="!newUser" style="text-align:center; font-size:10px; cursor:pointer; color:midnightblue; padding:10px;" (click)="resetPassword(email)">Forgot password?</div>
           <div *ngIf="newUser">
           <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *" (keyup)="messageUser=''"/>
           <input maxlength="500" [(ngModel)]="name" name="name" type="text" placeholder="First name *" (keyup)="messageUser=''"/>

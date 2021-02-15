@@ -27,7 +27,7 @@ module.exports = {
         to: email,
         subject: 'You have a new message',
         html: `
-          <a  class=”link” href="https://www.perrinn.com" target="_blank" style="padding:20px;text-decoration:none;text-align:center;font-size:14px;margin:50px;color:white;background-color:#267cb5;cursor:pointer">Go to PERRINN.com</a>
+          <a  class=”link” href="https://www.perrinn.com" target="_blank" style="padding:20px;text-decoration:none;text-align:center;font-size:14px;margin:50px;color:white;background-color:'midnightblue';cursor:pointer">Go to PERRINN.com</a>
         `
       }
       if(email!='')return transporter.sendMail(mailOptions)
@@ -46,7 +46,7 @@ module.exports = {
       to: email,
       subject: 'Backend error',
       html: `
-        <a  class=”link” href="https://console.firebase.google.com/u/0/project/perrinn-d5fc1/functions/logs?severity=DEBUG" target="_blank" style="padding:20px;text-decoration:none;text-align:center;font-size:14px;margin:50px;color:white;background-color:#267cb5;cursor:pointer">Go to backend</a>
+        <a  class=”link” href="https://console.firebase.google.com/u/0/project/perrinn-d5fc1/functions/logs?severity=DEBUG" target="_blank" style="padding:20px;text-decoration:none;text-align:center;font-size:14px;margin:50px;color:white;background-color:'midnightblue';cursor:pointer">Go to backend</a>
       `
     }
     return transporter.sendMail(mailOptions)

@@ -299,7 +299,7 @@ input[type=number]::-webkit-outer-spin-button {
 	z-index: -1;
 }
 .inputfile + label {
-    color: blue;
+    color: midnightblue;
     cursor: pointer;
 }
 progress {
@@ -371,7 +371,7 @@ img:hover {
 .chatButton{
   cursor:pointer;
   font-size:14px;
-  color:blue;
+  color:midnightblue;
   text-align:center;
   width:70px;
   margin:2px;

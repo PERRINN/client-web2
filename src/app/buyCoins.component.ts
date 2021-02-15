@@ -41,7 +41,7 @@ import * as firebase from 'firebase/app';
   <div [hidden]='!enteringCardDetails'>
   <div class="module form-module" style="border-style:solid;border-width:1px;border-color:#ddd">
   <div class="top">
-    <div style="text-align:left; font-size:10px; cursor:pointer; color:blue; padding:10px;" (click)="selectingCurrency=true;enteringCardDetails=false">back</div>
+    <div style="text-align:left; font-size:10px; cursor:pointer; color:midnightblue; padding:10px;" (click)="selectingCurrency=true;enteringCardDetails=false">back</div>
   </div>
   <div class="form">
   <form>

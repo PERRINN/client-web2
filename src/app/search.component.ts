@@ -11,7 +11,7 @@ import * as firebase from 'firebase/app';
   template:`
   <div class="sheet">
   <input id="searchInput" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Search">
-  <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:#267cb5" (click)="refreshMembersList()">Members' list</div>
+  <div class="buttonDiv" *ngIf="searchFilter==''" style="margin:10px;width:150px;font-size:11px;color:midnightblue" (click)="refreshMembersList()">Members list</div>
   <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   <div class='sheet'>
@@ -24,11 +24,11 @@ import * as firebase from 'firebase/app';
         <span style="font-size:10px"> {{message.values?.familyName}}</span>
         <div *ngIf="message?.values?.PERRINN?.wallet?.balance>0" style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:9px;height:14px;line-height:10px;width:45px">Member</div>
         <div>
-          <span style="float:left;font-size:10px;color:green;margin-right:5px">{{(message.values?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</span>
+          <span style="float:left;font-size:11px;color:green;margin-right:5px">{{(message.values?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</span>
           <span style="float:left;font-size:8px;color:green;line-height:22px">COINS</span>
         </div>
         <span *ngIf="message?.values?.contract?.signed" style="color:white;background-color:midnightblue;margin:10px 0 0 10px;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px">{{message?.values?.contract?.position}}</span>
-        <span *ngIf="message?.values?.contract?.signed&&(message?.values?.contract?.level*message?.values?.contract?.frequency)>0" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">{{message?.values?.contract?.level*message?.values?.contract?.frequency}} C/d</span>
+        <div *ngIf="message?.values?.contract?.signed&&(message?.values?.contract?.level*message?.values?.contract?.frequency)>0" style="color:midnightblue;margin:0 0 0 10px;padding:2px 4px 2px 4px;font-size:10px;line-height:10px">{{message?.values?.contract?.level*message?.values?.contract?.frequency}} C/d</div>
       </div>
     </li>
   </ul>
