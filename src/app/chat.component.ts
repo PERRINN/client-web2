@@ -17,7 +17,7 @@ import * as firebase from 'firebase/app'
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <input [(ngModel)]="chatSubject" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="Edit subject">
-    <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubject" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:'midnightblue';border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
+    <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubject" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
       <li *ngFor="let recipient of chatLastMessageObj?.recipientList" (click)="router.navigate(['profile',recipient])" style="cursor:pointer;float:left"
@@ -36,7 +36,7 @@ import * as firebase from 'firebase/app'
             <span>{{team.values?.name}}</span>
             <span style="font-size:10px"> {{team.values?.familyName}}</span>
           </div>
-          <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:'midnightblue';color:white;border-style:none" (click)="addRecipient(team.values.user,team.values.name,team.values.familyName)">Add</div>
+          <div class="buttonDiv" style="float:left;width:50px;font-size:11px;background-color:midnightblue;color:white;border-style:none" (click)="addRecipient(team.values.user,team.values.name,team.values.familyName)">Add</div>
         </div>
       </li>
     </ul>
@@ -46,7 +46,7 @@ import * as firebase from 'firebase/app'
       <div style="font-size:12px;margin:10px;color:#777">Send COINS to {{(chatLastMessageObj?.recipientList[0]==UI.currentUser)?(chatLastMessageObj?.recipients[chatLastMessageObj?.recipientList[1]].name):(chatLastMessageObj?.recipients[chatLastMessageObj?.recipientList[0]].name)}}</div>
       <input style="width:100px;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="500" (keyup)="inputsValid=checkInputs()" [(ngModel)]="amount" placeholder="Amount">
       <input style="width:150px;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="500" [(ngModel)]="code" placeholder="Code (optional)">
-      <div *ngIf="amount>0&&amount<=UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="clear:both;width:200px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:'midnightblue';border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="sendCoins(amount,code)">
+      <div *ngIf="amount>0&&amount<=UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="clear:both;width:200px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="sendCoins(amount,code)">
         Send {{amount}} Coins to {{(chatLastMessageObj?.recipientList[0]==UI.currentUser)?(chatLastMessageObj?.recipients[chatLastMessageObj?.recipientList[1]].name):(chatLastMessageObj?.recipients[chatLastMessageObj?.recipientList[0]].name)}}
       </div>
     </div>
@@ -54,7 +54,7 @@ import * as firebase from 'firebase/app'
     <div>
       <input style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="eventDescription" placeholder="Event description">
       <div style="font-size:12px;margin:10px;color:midnightblue">{{eventDate==0?'':eventDate|date:'EEEE d MMM HH:mm'}}</div>
-      <div *ngIf="eventDate!=chatLastMessageObj?.eventDate||eventDescription!=chatLastMessageObj?.eventDescription" style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:'midnightblue';border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="saveEvent()">Save event</div>
+      <div *ngIf="eventDate!=chatLastMessageObj?.eventDate||eventDescription!=chatLastMessageObj?.eventDescription" style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="saveEvent()">Save event</div>
       <ul class="listLight" style="float:left;width:200px;margin:10px 10px 150px 10px">
         <li *ngFor="let date of eventDates;let first=first" (click)="first?eventDate=date:eventDate=(date+(eventDate/3600000/24-math.floor(eventDate/3600000/24))*3600000*24)" [class.selected]="math.floor(date/3600000/24)==math.floor(eventDate/3600000/24)">
           <div *ngIf="math.round(date/3600000/24)==(date/3600000/24)||first" style="float:left;width:100px;min-height:10px">{{date|date:'EEEE'}}</div>
