@@ -81,7 +81,7 @@ import * as firebase from 'firebase/app'
           <div style="float:left;margin:0 5px 0 0">{{eventDescription}} /</div>
           <div style="float:left;margin:0 10px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
           <div [style.background-color]="(math.floor((eventDate/1000-UI.nowSeconds)/60)>60*24)?'midnightblue':'darkorange'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(eventDate/1000-UI.nowSeconds)}}</div>
-          <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:midnightblue;color:white;padding:0 5px 0 5px">Now</div>
+          <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:darkorange;color:white;padding:0 5px 0 5px">Now</div>
         </div>
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
