@@ -39,6 +39,7 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       statistics.interest.amount=((statistics.interest||{}).amount||0)+result.interest.amount
       statistics.interest.amountCummulate=((statistics.interest||{}).amountCummulate||0)+result.interest.amountCummulate
       statistics.contract.amount=((statistics.contract||{}).amount||0)+result.contract.amount
+      statistics.contract.rateDay=((statistics.contract||{}).rateDay||0)+result.contract.rateDay
       statistics.contract.amountCummulate=((statistics.contract||{}).amountCummulate||0)+result.contract.amountCummulate
       statistics.messagingCost.amount=((statistics.messagingCost||{}).amount||0)+result.messagingCost.amount
       statistics.messagingCost.amountWriteCummulate=((statistics.messagingCost||{}).amountWriteCummulate||0)+result.messagingCost.amountWriteCummulate
@@ -88,7 +89,7 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       Math.round(statistics.wallet.balance)+' COINS in circulation. '+
       Math.round(statistics.purchaseCOIN.amountCummulate)+' COINS purchased. '+
       Math.round(statistics.interest.amountCummulate)+' COINS created from interest. '+
-      Math.round(statistics.contract.amountCummulate)+' COINS created from contract. '+
+      Math.round(statistics.contract.rateDay)+' COINS/day created from contract. '+
       Math.round(statistics.membership.amountCummulate)+' COINS burned by membership. '+
       Math.round(statistics.messagingCost.amountWriteCummulate)+' COINS burned by messaging. '
 

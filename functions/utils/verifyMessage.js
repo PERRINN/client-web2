@@ -165,6 +165,7 @@ module.exports = {
         else contract.createdTimestamp=(userPreviousMessageData.contract||{}).createdTimestamp||null
         contract.days=0
         contract.amount=0
+        contract.rateDay=0
         contract.signed=false
         if(contract.level&&contract.frequency&&contract.position&&contract.message&&contract.createdTimestamp){
           const contractSignatureMessage=await admin.firestore().doc('PERRINNMessages/'+contract.message).get()
@@ -178,7 +179,8 @@ module.exports = {
           ){
             contract.signed=true
             contract.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
-            contract.amount=contract.days*contract.level*contract.frequency
+            contract.rateDay=contract.level*contract.frequency
+            contract.amount=contract.days*contract.rateDay
           }
         }
         contract.daysTotal=((userPreviousMessageData.contract||{}).daysTotal||0)+contract.days
