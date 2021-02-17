@@ -54,6 +54,7 @@ import * as firebase from 'firebase/app';
       <input [(ngModel)]="contract.frequency" placeholder="Contract frequency">
       <div *ngIf="!UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">No contract registered.</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">Contract number: {{UI.currentUserLastMessageObj?.contract?.createdTimestamp}}</div>
+      <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&UI.currentUserLastMessageObj?.contract?.signed" style="float:left;margin:15px;font-size:10px;color:midnightblue">Signature valid for level {{UI.currentUserLastMessageObj?.contract?.signedLevel}} maximum and frequency {{UI.currentUserLastMessageObj?.contract?.signedFrequency}} maximum</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&!UI.currentUserLastMessageObj?.contract?.signed" style="float:left;margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</div>
       <div (click)="updateContract()" style="clear:both;font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update contract</div>
     <div class="seperator" style="width:100%;margin:0px"></div>

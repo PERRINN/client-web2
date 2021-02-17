@@ -172,12 +172,13 @@ module.exports = {
           let contractSignatureMessageData=(contractSignatureMessage!=undefined)?(contractSignatureMessage||{}).data():{}
           if(contractSignatureMessageData.user=='QYm5NATKa6MGD87UpNZCTl6IolX2'
             &&((contractSignatureMessageData.contractSignature||{}).user||null)==user
-            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).createdTimestamp||null)==contract.createdTimestamp
-            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).position||null)==contract.position
-            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).level||null)==contract.level
-            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).frequency||null)==contract.frequency
+            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).createdTimestamp||null)<=contract.createdTimestamp
+            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).level||null)>=contract.level
+            &&(((contractSignatureMessageData.contractSignature||{}).contract||{}).frequency||null)>=contract.frequency
           ){
             contract.signed=true
+            contract.signedLevel=((contractSignatureMessageData.contractSignature||{}).contract||{}).level||null
+            contract.signedFrequency=((contractSignatureMessageData.contractSignature||{}).contract||{}).frequency||null
             contract.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
             contract.rateDay=contract.level*contract.frequency
             contract.amount=contract.days*contract.rateDay
