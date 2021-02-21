@@ -11,14 +11,35 @@ import * as firebase from 'firebase/app'
   selector: 'chat',
   template: `
 
-  <div class="sheet" *ngIf="showChatDetails">
-    <div style="background:#f2f2f2">
-      <div (click)="showChatDetails=false" style="float:left;font-size:12px;line-height:20px;margin:10px;color:midnightblue;cursor:pointer">< messages</div>
+  <div class="sheet">
+    <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="showChatDetails=!showChatDetails">
+      <div *ngIf="!showChatDetails" style="float:left;margin:0 5px 0 10px;min-height:40px">
+        <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
+        <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
+        [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{last?"":", "}}</span>
+        <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="clear:both">
+          <img style="float:left;width:17px;opacity:.6;;margin:0 5px 0 0" src="./../assets/App icons/event-24px.svg">
+          <div style="float:left;margin:0 5px 0 0">{{eventDescription}} /</div>
+          <div style="float:left;margin:0 10px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
+          <div [style.background-color]="(math.floor((eventDate/1000-UI.nowSeconds)/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(eventDate/1000-UI.nowSeconds)}}</div>
+          <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:red;color:white;padding:0 5px 0 5px">Now</div>
+        </div>
+      </div>
+      <div *ngIf="showChatDetails" style="background:#f2f2f2">
+        <div (click)="showChatDetails=false" style="float:left;font-size:12px;line-height:20px;margin:10px;color:midnightblue;cursor:pointer">< messages</div>
+      </div>
+      <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
+  </div>
+
+
+  <div class="sheet" *ngIf="showChatDetails||!chatLastMessageObj?.chatSubject" style="padding-top:40px">
+    <input [(ngModel)]="chatSubject" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="What is the subject of this chat?">
+    <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubject&&chatSubject" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
-    <input [(ngModel)]="chatSubject" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="Edit subject">
-    <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubject" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
-    <div class="seperator" style="width:100%;margin:0px"></div>
+  </div>
+
+  <div class="sheet" *ngIf="showChatDetails">
     <ul style="color:#333;margin:10px">
       <li *ngFor="let recipient of chatLastMessageObj?.recipientList" (click)="router.navigate(['profile',recipient])" style="cursor:pointer;float:left"
       [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">
@@ -71,21 +92,6 @@ import * as firebase from 'firebase/app'
   </div>
 
   <div class="sheet" id="chat_window" style="overflow-y:auto;height:100%" *ngIf="!showChatDetails" scrollable>
-    <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="showChatDetails=true">
-      <div style="float:left;margin:0 5px 0 10px;min-height:40px">
-        <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
-        <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
-        [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{last?"":", "}}</span>
-        <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="clear:both">
-          <img style="float:left;width:17px;opacity:.6;;margin:0 5px 0 0" src="./../assets/App icons/event-24px.svg">
-          <div style="float:left;margin:0 5px 0 0">{{eventDescription}} /</div>
-          <div style="float:left;margin:0 10px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
-          <div [style.background-color]="(math.floor((eventDate/1000-UI.nowSeconds)/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(eventDate/1000-UI.nowSeconds)}}</div>
-          <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:red;color:white;padding:0 5px 0 5px">Now</div>
-        </div>
-      </div>
-      <div class="seperator" style="width:100%;margin:0px"></div>
-    </div>
     <div class="spinner" *ngIf="UI.loading">
       <div class="bounce1"></div>
       <div class="bounce2"></div>
