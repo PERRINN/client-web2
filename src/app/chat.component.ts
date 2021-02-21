@@ -33,7 +33,7 @@ import * as firebase from 'firebase/app'
   </div>
 
 
-  <div class="sheet" *ngIf="showChatDetails||!chatLastMessageObj?.chatSubject" style="padding-top:40px">
+  <div class="sheet" *ngIf="showChatDetails||chatLastMessageObj?.chatSubject==null" style="padding-top:40px">
     <input [(ngModel)]="chatSubject" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="What is the subject of this chat?">
     <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubject&&chatSubject" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
