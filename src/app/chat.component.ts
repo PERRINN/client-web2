@@ -26,7 +26,7 @@ import * as firebase from 'firebase/app'
         </div>
       </div>
       <div *ngIf="showChatDetails" style="background:#f2f2f2">
-        <div (click)="showChatDetails=false" style="float:left;font-size:12px;line-height:20px;margin:10px;color:midnightblue;cursor:pointer">< messages</div>
+        <div style="float:left;font-size:12px;line-height:20px;margin:10px;color:midnightblue;cursor:pointer">< messages</div>
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
