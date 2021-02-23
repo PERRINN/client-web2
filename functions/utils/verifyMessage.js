@@ -93,8 +93,8 @@ module.exports = {
       })
 
       //email notifications
-      if((messageData.PERRINN||{}).emailNotifications)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.emailNotifications":messageData.recipientList},{create:true})
-      if((messageData.PERRINN||{}).emailNotifications)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{emailNotifications:messageData.recipientList},{create:true})
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{emailNotificationsList:messageData.recipientList},{create:true})
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{emailNotificationsStatus:messageData.emailNotificationsStatus||'pending'},{create:true})
 
       //*******INSTANT CREDIT/DEBIT*********************
         //messaging cost

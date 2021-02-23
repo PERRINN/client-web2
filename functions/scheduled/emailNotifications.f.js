@@ -3,19 +3,20 @@ const admin = require('firebase-admin')
 try { admin.initializeApp() } catch (e) {}
 const emailUtils = require('../utils/email')
 
-exports=module.exports=functions.pubsub.schedule('every 60 minutes').onRun(async(context) => {
+exports=module.exports=functions.pubsub.schedule('every 10 minutes').onRun(async(context) => {
   try{
-    const lastMessages=await admin.firestore().collection('PERRINNMessages').orderBy('PERRINN.emailNotifications').where('lastMessage','==',true).where('verified','==',true).get()
+    const timestampGate=Date.now()-3600000
+    const lastMessages=await admin.firestore().collection('PERRINNMessages').orderBy('createdTimestamp').where('createdTimestamp','<',timestampGate).where('lastMessage','==',true).where('emailNotificationsStatus','==','pending').where('verified','==',true).get()
     if(lastMessages==undefined)return null;
     var batch=admin.firestore().batch();
     var usersToBeNotified=[];
     lastMessages.forEach(message=>{
       var reads={};
       if(message.data().reads!=undefined)reads=message.data().reads;
-      (message.data().PERRINN.emailNotifications||[]).forEach(user=>{
+      (message.data().emailNotificationsList||[]).forEach(user=>{
         if(!usersToBeNotified.includes(user)&&reads[user]==undefined)usersToBeNotified.push(user);
       })
-      batch.update(admin.firestore().collection('PERRINNMessages').doc(message.id),{"PERRINN.emailNotifications":admin.firestore.FieldValue.delete()});
+      batch.update(admin.firestore().collection('PERRINNMessages').doc(message.id),{emailNotificationsStatus:'complete'});
     })
     usersToBeNotified.forEach(user=>{
       emailUtils.sendNewMessageEmail(user)
