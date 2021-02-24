@@ -363,11 +363,6 @@ img {
 img:hover {
   opacity: 0.95;
 }
-.editButton {
-  width:25px;
-  margin:5px 10px 5px 10px;
-  cursor:pointer;
-}
 .chatButton{
   cursor:pointer;
   font-size:14px;

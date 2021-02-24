@@ -51,7 +51,7 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       statistics.purchaseCOIN.amount=((statistics.purchaseCOIN||{}).amount||0)+result.purchaseCOIN.amount
       statistics.purchaseCOIN.amountCummulate=((statistics.purchaseCOIN||{}).amountCummulate||0)+result.purchaseCOIN.amountCummulate
       statistics.membership.amount=((statistics.membership||{}).amount||0)+result.membership.amount
-      statistics.membership.rateDay=((statistics.membership.rateDay||{})||0)+result.membership.dailyCost*(result.wallet.balance>0)
+      if(result.wallet.balance>0)statistics.membership.rateDay=((statistics.membership.rateDay||{})||0)+result.membership.dailyCost
       statistics.membership.amountCummulate=((statistics.membership||{}).amountCummulate||0)+result.membership.amountCummulate
       statistics.userCount=(statistics.userCount||0)+1
     }

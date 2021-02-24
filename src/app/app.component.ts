@@ -21,12 +21,13 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
           <img *ngIf="UI.currentUserLastMessageObj?.imageUrlThumbUser" [src]="UI.currentUserLastMessageObj.imageUrlThumbUser" style="display:inline;float:left;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
           <div *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="float:left;margin:8px;font-size:12px">{{UI.currentUserLastMessageObj.PERRINN.wallet.balance|number:'1.2-2'}}</div>
         </div>
-        <div style="float:left;width:100px;text-align:center;height:33px;cursor:pointer;line-height:31px;font-size:11px;color:midnightblue;border-style:solid;border-width:0 1px 0 0;border-color:#ddd" (click)="newMessage()">New message</div>
-        <img class='editButton' style="float:right;width:20px;opacity:.6" (click)="router.navigate(['settings'])" src="./../assets/App icons/settings-24px.svg">
+        <img style="float:right;width:20px;margin:5px 8px 5px 8px;cursor:pointer;opacity:.6" (click)="router.navigate(['settings'])" src="./../assets/App icons/settings-24px.svg">
         <div style="float:right;height:33px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd"></div>
-        <img *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance>0" class='editButton' style="float:right;width:20px;filter:grayscale(100%)" src="./../assets/App icons/onshape_new.png" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
-        <img *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance>0" class='editButton' style="float:right;width:18px;margin-top:7px;filter:grayscale(100%)" src="./../assets/App icons/Google_Drive_icon_(2020).svg" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
-        <img *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance>0" class='editButton' style="float:right;width:18px;margin-top:8px;filter:grayscale(100%)" src="./../assets/App icons/google-meet-logo.png" onclick="window.open('https://meet.google.com/rxn-vtfa-shq','_blank')">
+        <img *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="float:right;width:20px;margin:5px 8px 5px 8px;cursor:pointer;filter:grayscale(100%)" src="./../assets/App icons/onshape_new.png" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">
+        <img *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="float:right;width:18px;margin:5px 8px 5px 8px;cursor:pointer;margin-top:7px;filter:grayscale(100%)" src="./../assets/App icons/Google_Drive_icon_(2020).svg" onclick="window.open('https://drive.google.com/drive/u/1/folders/1qvipN1gs1QS4sCh1tY8rSSFXV5S0-uR3','_blank')">
+        <img *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="float:right;width:18px;margin:5px 8px 5px 8px;cursor:pointer;margin-top:8px;filter:grayscale(100%)" src="./../assets/App icons/google-meet-logo.png" onclick="window.open('https://meet.google.com/rxn-vtfa-shq','_blank')">
+        <div style="float:right;height:33px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd"></div>
+        <img style="float:right;width:20px;margin:5px 8px 5px 8px;cursor:pointer;opacity:.6" (click)="newMessage()" src="./../assets/App icons/create-24px.svg">
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
