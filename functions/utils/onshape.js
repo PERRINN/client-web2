@@ -42,7 +42,7 @@ module.exports = {
       json: true,
       body: body
     }).catch(error=>{
-      console.log('email '+email+' error '+error)
+      console.log('Onshape POST email '+email+' error '+error)
       return
     })
   },
@@ -79,7 +79,7 @@ module.exports = {
       },
       json: true
     }).catch(error=>{
-      console.log('uid '+uid+' error '+error)
+      console.log('Onshape DELETE uid '+uid+' error '+error)
       return
     })
   },
@@ -115,7 +115,7 @@ module.exports = {
       },
       json: true
     }).catch(error=>{
-      console.log('Onshape get error '+error)
+      console.log('Onshape GET error '+error)
       return
     })
   },

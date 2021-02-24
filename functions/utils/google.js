@@ -29,7 +29,7 @@ module.exports = {
         }
       })
     }).catch(error=>{
-      console.log('email '+email+' error '+error)
+      console.log('Google INSERT email '+email+' error '+error)
       return
     })
   },
@@ -56,7 +56,7 @@ module.exports = {
         memberKey:email
       })
     }).catch(error=>{
-      console.log('email '+email+' error '+error)
+      console.log('Google DELETE email '+email+' error '+error)
       return
     })
   },
@@ -81,7 +81,7 @@ module.exports = {
         groupKey:"perrinn-google-group@perrinn.com"
       })
     }).catch(error=>{
-      console.log('get Google error '+error)
+      console.log('Google GET error '+error)
       return
     })
   }
