@@ -12,7 +12,7 @@ import * as firebase from 'firebase/app'
   template: `
 
   <div class="sheet">
-    <div class="fixed" style="background:#f2f2f2;color:#444;font-size:12px;cursor:pointer" (click)="showChatDetails=!showChatDetails">
+    <div class="fixed" style="background:whitesmoke;color:#444;font-size:12px;cursor:pointer" (click)="showChatDetails=!showChatDetails">
       <div *ngIf="!showChatDetails" style="float:left;margin:0 5px 0 10px;min-height:40px">
         <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
         <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
@@ -25,7 +25,7 @@ import * as firebase from 'firebase/app'
           <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:red;color:white;padding:0 5px 0 5px">Now</div>
         </div>
       </div>
-      <div *ngIf="showChatDetails" style="background:#f2f2f2">
+      <div *ngIf="showChatDetails" style="background:whitesmoke">
         <div style="float:left;font-size:12px;line-height:20px;margin:10px;color:midnightblue;cursor:pointer">< messages</div>
       </div>
       <div class="seperator" style="width:100%;margin:0px"></div>

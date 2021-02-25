@@ -15,10 +15,10 @@ import * as firebase from 'firebase/app'
       <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 5px 0 5px;padding:0 3px 0 3px;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/membership','_blank')">More info about the membership</div>
       <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 5px 0 5px;padding:0 3px 0 3px;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['profile','QYm5NATKa6MGD87UpNZCTl6IolX2'])">Chat with Nicolas</div>
     </div>
-    <div *ngIf="id=='all'" style="clear:both;background:#f2f2f2;font-size:14px;padding:5px 15px 5px 15px">PERRINN messages</div>
+    <div *ngIf="id=='all'" style="clear:both;background:whitesmoke;font-size:14px;padding:5px 15px 5px 15px">PERRINN messages</div>
     <div *ngIf="id=='all'" class="seperator" style="width:100%;margin:0px"></div>
     <div *ngIf="id!='all'">
-      <div style="clear:both;background-color:#f4f7fc"
+      <div style="clear:both;background:whitesmoke"
       [ngClass]="UI.isContentAccessible(focusUserLastMessageObj?.user)?'clear':'encrypted'">
         <div style="float:left">
           <img [src]="focusUserLastMessageObj?.imageUrlThumbUser" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px;border-radius:50%">
@@ -28,8 +28,8 @@ import * as firebase from 'firebase/app'
             <div style="float:left">
               <span >{{focusUserLastMessageObj?.name}}</span>
               <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
-              <span *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">Member</span>
-              <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:white;background-color:midnightblue;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px">{{focusUserLastMessageObj?.contract?.position}}</span>
+              <span *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="color:green;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:5px">Member</span>
+              <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:midnightblue;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px">{{focusUserLastMessageObj?.contract?.position}}</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.signed&&(focusUserLastMessageObj?.contract?.level*focusUserLastMessageObj?.contract?.frequency)>0" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">{{focusUserLastMessageObj?.contract?.level*focusUserLastMessageObj?.contract?.frequency}} C/d</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed&&UI.currentUser=='QYm5NATKa6MGD87UpNZCTl6IolX2'" style="margin:15px;font-size:10px;color:midnightblue;cursor:pointer" (click)=signContract()>Sign contract</span>
@@ -85,17 +85,17 @@ import * as firebase from 'firebase/app'
         </div>
         <div *ngIf="id!='all'&&(mode=='30days'||mode=='24months'||mode=='chain')">
           <div *ngIf="first">
-            <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0">Date</div>
-            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Days</div>
-            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Messages</div>
-            <div style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0">Balance</div>
-            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Change</div>
-            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Purchase</div>
-            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Transaction</div>
-            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Write</div>
-            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Interest</div>
-            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Membership</div>
-            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:#ccded0;font-size:10px">Contract</div>
+            <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray">Date</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray;font-size:10px">Days</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray;font-size:10px">Messages</div>
+            <div style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray">Balance</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray;font-size:10px">Change</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray;font-size:10px">Purchase</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray;font-size:10px">Transaction</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray;font-size:10px">Write</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray;font-size:10px">Interest</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray;font-size:10px">Membership</div>
+            <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;background-color:lightgray;font-size:10px">Contract</div>
           </div>
           <div class="tableRow">
             <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd">{{(message.payload.doc.data()?.verifiedTimestamp?.seconds*1000)|date:'d MMM'}}</div>

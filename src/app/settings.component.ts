@@ -11,36 +11,37 @@ import * as firebase from 'firebase/app';
 @Component({
   selector: 'settings',
   template: `
-  <div class="sheet" style="background-color:#f5f5f5">
+  <div class="sheet" style="background-color:whitesmoke">
   <img class="imageWithZoom" [src]="UI.currentUserLastMessageObj?.imageUrlMedium||UI.currentUserLastMessageObj?.imageUrlThumbUser" style="object-fit:cover;margin:10px;border-radius:3px;max-height:150px;width:50%" (click)="showFullScreenImage(UI.currentUserLastMessageObj?.imageUrlOriginal)"
   onerror="this.onerror=null;this.src='https://storage.googleapis.com/perrinn-d5fc1.appspot.com/images%2F1585144867972Screen%20Shot%202018-03-16%20at%2015.05.10_180x180.png?GoogleAccessId=firebase-adminsdk-rh8x2%40perrinn-d5fc1.iam.gserviceaccount.com&Expires=16756761600&Signature=I3Kem9n6zYjSNijnKOx%2FAOUAg65GN3xf8OD1qD4uo%2BayOFblFIgfn81uPWRTzhGg14lJdyhz3Yx%2BiCXuYCIdYnduqMZcIjtHE6WR%2BPo74ckemuxIKx3N24tlBJ6DgkfgqwmIkw%2F%2FKotm8Cz%2Fq%2FbIZm%2FvAOi2dpBHqrHiIFXYb8AVYnhP1osUhVvyzapgYJEBZJcHur7v6uqrSKwQ4DfeHHinbJpvkX3wjM6Nxabi3kVABdGcGqMoAPGCTZJMzNj8xddAXuECbptQprd9LlnQOuL4tuDfLMAOUXTHmJVhJEBrquxQi8iPRjnLOvnqF8s2We0SOxprqEuwbZyxSgH05Q%3D%3D'">
   <br/>
   <span style="font-size:18px;line-height:30px;margin:15px;font-family:sans-serif;">{{UI.currentUserLastMessageObj?.name}} {{UI.currentUserLastMessageObj?.familyName}}</span>
-  <span *ngIf='UI.currentUserIsMember' style="color:white;background-color:green;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:10px">Member</span>
-  <span *ngIf="UI.currentUserLastMessageObj?.contract?.signed" style="color:white;background-color:midnightblue;padding:2px 4px 2px 4px;border-radius:3px;font-size:10px;margin:5px">{{UI.currentUserLastMessageObj?.contract?.position}} {{(UI.currentUserLastMessageObj?.contract?.level||0)*(UI.currentUserLastMessageObj?.contract?.frequency||0)}} COINS/day</span>
+  <span *ngIf='UI.currentUserIsMember' style="color:green;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:10px">Member</span>
+  <span *ngIf="UI.currentUserLastMessageObj?.contract?.signed" style="color:midnightblue;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:5px">{{UI.currentUserLastMessageObj?.contract?.position}} {{(UI.currentUserLastMessageObj?.contract?.level||0)*(UI.currentUserLastMessageObj?.contract?.frequency||0)}} COINS/day</span>
   <span *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&!UI.currentUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
   <br/>
   <span style="font-size:16px;line-height:30px;margin:15px;font-family:sans-serif">Balance: {{(UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</span>
-  <span style="font-size:10px;color:green;padding:2px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['buyCoins'])">Buy new COINS</span>
+  <div style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:white;background-color:green;border-radius:3px;cursor:pointer" (click)="router.navigate(['buyCoins'])">Buy new COINS</div>
   <br/>
   <div class="seperator" style="width:100%;margin:0px"></div>
   </div>
   <div class='sheet'>
-    <div style="color:midnightblue;cursor:pointer;margin:20px">
+    <div>
       <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
       <label class="buttonUploadImage" for="chatImage" id="buttonFile">
-      <div>Upload new profile picture</div>
+      <div style="font-size:12px;text-align:center;line-height:20px;width:250px;padding:2px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer">Upload new profile picture</div>
       </label>
     </div>
+    <div class="seperator" style="width:100%;margin:0px"></div>
       <input [(ngModel)]="name" placeholder="First name">
       <input [(ngModel)]="familyName" placeholder="Family name">
-      <div (click)="updateName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update name</div>
+      <div (click)="updateName()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer">Update name</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
       <img style="float:left;margin:15px;width:30px;opacity:.6" src="./../assets/App icons/email-24px.svg">
       <div style="font-size:14px;margin:20px;color:#444">Your PERRINN email</div>
       <div style="font-size:10px;margin:20px;color:#777">Use this email to receive notifications, connect to other PERRINN apps like Onshape, Google Drive and Google Meet (calendar events and meetings). This email can be the one you use to log into PERRINN.com or any other email. This email is visible by other PERRINN members.</div>
       <input [(ngModel)]="currentEmail" placeholder="Enter your PERRINN email">
-      <div (click)="updateEmail()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update email</div>
+      <div (click)="updateEmail()" style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer">Update email</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
       <img style="float:left;margin:15px;width:30px;opacity:.6" src="./../assets/App icons/admin_panel_settings-24px.svg">
       <div style="font-size:14px;margin:20px;color:#444">Your PERRINN contract</div>
@@ -56,9 +57,9 @@ import * as firebase from 'firebase/app';
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">Contract number: {{UI.currentUserLastMessageObj?.contract?.createdTimestamp}}</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&UI.currentUserLastMessageObj?.contract?.signed" style="float:left;margin:15px;font-size:10px;color:midnightblue">Signature valid for level {{UI.currentUserLastMessageObj?.contract?.signedLevel}} maximum and frequency {{UI.currentUserLastMessageObj?.contract?.signedFrequency}} maximum</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&!UI.currentUserLastMessageObj?.contract?.signed" style="float:left;margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</div>
-      <div (click)="updateContract()" style="clear:both;font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">Update contract</div>
+      <div (click)="updateContract()" style="clear:both;font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer">Update contract</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
-  <div class="buttonDiv" style="color:red;margin-top:25px;margin-bottom:25px" (click)="this.logout();router.navigate(['login']);">logout</div>
+  <div class="buttonDiv" style="color:white;background-color:red;margin-top:25px;margin-bottom:25px" (click)="this.logout();router.navigate(['login']);">logout</div>
   <div class="seperator" style="width:100%;margin-bottom:250px"></div>
   `,
 })
