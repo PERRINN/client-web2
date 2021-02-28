@@ -163,9 +163,10 @@ import * as firebase from 'firebase/app'
 
   <div class="sheet">
     <div class="fixed" style="bottom:0">
+      <span *ngFor="let recipient of draftRecipientNamesList" style="margin:5px;font-size:10px">+{{recipient}} </span>
       <div class="seperator" style="width:100%"></div>
       <div style="clear:both;float:left;width:90%">
-        <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;padding:9px;resize:none;overflow-y:scroll" maxlength="500" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
+        <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;padding:9px;resize:none;overflow-y:scroll" maxlength="500" (keyup)="messageInputKeyUp()" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
       </div>
       <div *ngIf="draftMessage" style="float:right;width:10%;cursor:pointer">
         <img src="./../assets/App icons/send.png" style="width:25px;margin:20px 5px 5px 5px" (click)="addMessage()">
@@ -182,6 +183,8 @@ import * as firebase from 'firebase/app'
 })
 export class ChatComponent {
   draftMessage:string
+  draftRecipientList:any
+  draftRecipientNamesList:any
   imageTimestamp:string
   imageDownloadUrl:string
   messageNumberDisplay:number
@@ -247,6 +250,22 @@ export class ChatComponent {
     this.eventDates=[]
     for(i=0;i<500;i++){
       this.eventDates[i]=(Math.ceil(this.UI.nowSeconds/3600)+i)*3600000
+    }
+  }
+
+  messageInputKeyUp(){
+    let words=this.draftMessage.split(" ")
+    let indexFound=[]
+    let searchNameDraft1=words[words.length-2]
+    let searchNameDraft2=words[words.length-1]
+    if(searchNameDraft1.length<3||!searchNameDraft2)return
+    this.UI.searchNameIndex.forEach((value,index)=>{
+      if(value.search(new RegExp(searchNameDraft1,"i"))==0&&(value.split(' ').slice(1).join(' ')).search(new RegExp(searchNameDraft2,"i"))==0)indexFound.push(index)
+    })
+    if(indexFound.length!=1)return
+    if(!this.draftRecipientList.includes(this.UI.userObjectIndex[indexFound[0]].user)&&!((this.chatLastMessageObj||{}).recipientList||[]).includes(this.UI.userObjectIndex[indexFound[0]].user)){
+      this.draftRecipientList.push(this.UI.userObjectIndex[indexFound[0]].user)
+      this.draftRecipientNamesList.push(this.UI.userObjectIndex[indexFound[0]].name+' '+this.UI.userObjectIndex[indexFound[0]].familyName)
     }
   }
 
@@ -349,6 +368,7 @@ export class ChatComponent {
     this.UI.createMessage({
       text:this.draftMessage,
       chain:this.chatLastMessageObj.chain||this.chatChain,
+      recipientList:this.draftRecipientList,
       chatImageTimestamp:this.imageTimestamp,
       chatImageUrlThumb:this.imageDownloadUrl,
       chatImageUrlMedium:this.imageDownloadUrl,
@@ -445,6 +465,8 @@ export class ChatComponent {
     this.searchFilter=''
     this.teams=null
     this.draftMessage=''
+    this.draftRecipientList=[]
+    this.draftRecipientNamesList=[]
     this.imageTimestamp=''
     this.imageDownloadUrl=''
     this.showChatDetails=false
