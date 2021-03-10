@@ -50,11 +50,6 @@ import * as firebase from 'firebase/app'
         <div class="seperator" style="width:100%;margin:0px"></div>
       </div>
     </div>
-    <div class="spinner" *ngIf="UI.loading">
-      <div class="bounce1"></div>
-      <div class="bounce2"></div>
-      <div class="bounce3"></div>
-    </div>
     <ul class="listLight">
       <li *ngFor="let message of messages|async;let first=first;let last=last"
         (click)="router.navigate(['chat',message.payload.doc.data()?.chain])"
@@ -114,6 +109,7 @@ import * as firebase from 'firebase/app'
         {{storeMessageValues(message.payload.doc.data())}}
       </li>
     </ul>
+    <div style="color:midnightblue;width:200px;padding:15px;margin:0 auto;text-align:center;cursor:pointer" (click)="loadMore()">Load more</div>
   </div>
   `,
 })
@@ -133,6 +129,7 @@ export class ProfileComponent {
   previousAmountInterestCummulate:number
   previousAmountTransactionCummulate:number
   math:any
+  messageNumberDisplay:number
 
   constructor(
     public afs: AngularFirestore,
@@ -141,9 +138,9 @@ export class ProfileComponent {
     private route: ActivatedRoute
   ) {
     this.math=Math
+    this.messageNumberDisplay=30
     this.id=''
     this.mode='inbox'
-    this.UI.loading=false
     this.scrollTeam=''
     this.route.params.subscribe(params => {
       this.id=params.id
@@ -160,7 +157,7 @@ export class ProfileComponent {
         .where('lastMessage','==',true)
         .where('verified','==',true)
         .orderBy('serverTimestamp','desc')
-        .limit(30)
+        .limit(this.messageNumberDisplay)
       ).snapshotChanges().pipe(map(changes=>{
         changes.forEach(c=>{
           this.UI.userObjectIndexPopulate(c.payload.doc.data())
@@ -174,7 +171,7 @@ export class ProfileComponent {
         .where('verified','==',true)
         .where('userChain.newDay','==',true)
         .orderBy('serverTimestamp','desc')
-        .limit(30)
+        .limit(this.messageNumberDisplay)
       ).snapshotChanges().pipe(map(changes=>{
         changes.forEach(c=>{
           this.UI.userObjectIndexPopulate(c.payload.doc.data())
@@ -201,7 +198,7 @@ export class ProfileComponent {
         .where('user','==',this.id)
         .where('verified','==',true)
         .orderBy('serverTimestamp','desc')
-        .limit(30)
+        .limit(this.messageNumberDisplay)
       ).snapshotChanges().pipe(map(changes=>{
         changes.forEach(c=>{
           this.UI.userObjectIndexPopulate(c.payload.doc.data())
@@ -215,7 +212,7 @@ export class ProfileComponent {
         .where('verified','==',true)
         .where('lastMessage','==',true)
         .orderBy('serverTimestamp','desc')
-        .limit(30)
+        .limit(this.messageNumberDisplay)
       ).snapshotChanges().pipe(map(changes=>{
         changes.forEach(c=>{
           this.UI.userObjectIndexPopulate(c.payload.doc.data())
@@ -294,6 +291,11 @@ export class ProfileComponent {
     var hDisplay=(h>0&&d==0)?h+'h ':''
     var mDisplay=(m>=0&&d==0&&h==0)?m+'m ':''
     return dDisplay+hDisplay+mDisplay
+  }
+
+  loadMore() {
+    this.messageNumberDisplay+=15
+    this.refreshMessages()
   }
 
 }
