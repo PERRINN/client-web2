@@ -18,11 +18,10 @@ import * as firebase from 'firebase/app'
         <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
         [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{last?"":", "}}</span>
         <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="clear:both">
-          <img style="float:left;width:17px;opacity:.6;;margin:0 5px 0 0" src="./../assets/App icons/event-24px.svg">
-          <div style="float:left;margin:0 5px 0 0">{{eventDescription}} /</div>
-          <div style="float:left;margin:0 10px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
           <div [style.background-color]="(math.floor((eventDate/1000-UI.nowSeconds)/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(eventDate/1000-UI.nowSeconds)}}</div>
           <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:red;color:white;padding:0 5px 0 5px">Now</div>
+          <div style="float:left;margin:0 5px 0 5px">{{eventDescription}} /</div>
+          <div style="float:left;margin:0 5px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
         </div>
       </div>
       <div *ngIf="showChatDetails" style="background:whitesmoke">
