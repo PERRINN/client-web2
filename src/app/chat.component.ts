@@ -33,13 +33,10 @@ import * as firebase from 'firebase/app'
   </div>
 
 
-  <div class="sheet" *ngIf="showChatDetails||chatLastMessageObj?.chatSubject==null" style="padding-top:40px">
+  <div class="sheet" *ngIf="showChatDetails" style="padding-top:40px">
     <input [(ngModel)]="chatSubject" style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" placeholder="What is the subject of this chat?">
     <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubject&&chatSubject" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
-  </div>
-
-  <div class="sheet" *ngIf="showChatDetails">
     <ul style="color:#333;margin:10px">
       <li *ngFor="let recipient of chatLastMessageObj?.recipientList" (click)="router.navigate(['profile',recipient])" style="cursor:pointer;float:left"
       [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">
@@ -163,6 +160,7 @@ import * as firebase from 'firebase/app'
 
   <div class="sheet">
     <div class="fixed" style="bottom:0">
+      <div *ngIf="chatLastMessageObj?.chatSubject==null" style="margin:5px;font-size:10px">This message will be the subject of this chat.</div>
       <span *ngFor="let recipient of draftRecipientNamesList" style="margin:5px;font-size:10px">+{{recipient}} </span>
       <div class="seperator" style="width:100%"></div>
       <div style="clear:both;float:left;width:90%">
