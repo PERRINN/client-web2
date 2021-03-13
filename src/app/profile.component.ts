@@ -124,6 +124,7 @@ import * as firebase from 'firebase/app'
       </li>
     </ul>
     <div style="color:midnightblue;width:200px;padding:15px;margin:0 auto;text-align:center;cursor:pointer" (click)="loadMore()">Load more</div>
+    <div class="seperator"></div>
   </div>
   `,
 })
