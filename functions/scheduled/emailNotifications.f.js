@@ -6,7 +6,6 @@ const emailUtils = require('../utils/email')
 exports=module.exports=functions.pubsub.schedule('every 10 minutes').onRun(async(context) => {
   try{
     const timestampGate=new Date(Date.now()-3600000*6) //6 hours delay
-    console.log('timestampGate: '+timestampGate)
     const lastMessages=await admin.firestore().collection('PERRINNMessages').orderBy('verifiedTimestamp').where('verifiedTimestamp','<',timestampGate).where('lastMessage','==',true).where('emailNotificationsStatus','==','pending').where('verified','==',true).get()
     if(lastMessages==undefined)return null;
     var batch=admin.firestore().batch();

@@ -51,7 +51,7 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       statistics.purchaseCOIN.amount=((statistics.purchaseCOIN||{}).amount||0)+result.purchaseCOIN.amount
       statistics.purchaseCOIN.amountCummulate=((statistics.purchaseCOIN||{}).amountCummulate||0)+result.purchaseCOIN.amountCummulate
       statistics.membership.amount=((statistics.membership||{}).amount||0)+result.membership.amount
-      if(result.wallet.balance>0)statistics.membership.rateDay=((statistics.membership.rateDay||{})||0)+result.membership.dailyCost
+      if(result.wallet.balance>0)statistics.membership.rateDay=((statistics.membership||{}).rateDay||0)+result.membership.dailyCost
       statistics.membership.amountCummulate=((statistics.membership||{}).amountCummulate||0)+result.membership.amountCummulate
       statistics.userCount=(statistics.userCount||0)+1
     }
@@ -105,6 +105,9 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     console.log(statistics.membersEmails.length+' PERRINN members.')
     console.log(statistics.googleEmails.length+' Google users.')
     console.log(statistics.onshapeEmails.length+' Onshape users.')
+    console.log('Members Emails: '+JSON.stringify(statistics.membersEmails))
+    console.log('Google Emails: '+JSON.stringify(statistics.googleEmails))
+    console.log('Onshape Emails: '+JSON.stringify(statistics.onshapeEmails))
     console.log('invalid Google Emails: '+JSON.stringify(statistics.googleEmailsInvalid))
     console.log('invalid Onshape Uids: '+JSON.stringify(statistics.onshapeUidsInvalid))
     console.log('missing Google Emails: '+JSON.stringify(statistics.googleEmailsMissing))
