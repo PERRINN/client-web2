@@ -163,7 +163,7 @@ import * as firebase from 'firebase/app'
       <span *ngFor="let recipient of draftRecipientNamesList" style="margin:5px;font-size:10px">+{{recipient}} </span>
       <div class="seperator" style="width:100%"></div>
       <div style="clear:both;float:left;width:90%">
-        <textarea id="inputMessage" autofocus autocapitalize="none" style="float:left;width:95%;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;padding:9px;resize:none;overflow-y:scroll" maxlength="500" (keyup)="messageInputKeyUp()" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
+        <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;padding:9px;resize:none;overflow-y:scroll" maxlength="500" (keyup)="messageInputKeyUp()" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
       </div>
       <div *ngIf="draftMessage" style="float:right;width:10%;cursor:pointer">
         <img src="./../assets/App icons/send.png" style="width:25px;margin:20px 5px 5px 5px" (click)="addMessage()">
@@ -234,7 +234,6 @@ export class ChatComponent {
 
   ngOnInit() {
     this.refreshSearchLists()
-    document.getElementById("inputMessage").focus()
   }
 
   loadMore() {
