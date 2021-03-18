@@ -37,10 +37,13 @@ import * as firebase from 'firebase/app'
     <div *ngIf="chatLastMessageObj?.chatSubject!=chatSubject&&chatSubject" style="float:right;width:75px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" (click)="saveNewSubject()">Save</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
-      <li *ngFor="let recipient of chatLastMessageObj?.recipientList" (click)="router.navigate(['profile',recipient])" style="cursor:pointer;float:left"
+      <li *ngFor="let recipient of chatLastMessageObj?.recipientList" style="float:left"
       [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">
-        <img [src]="chatLastMessageObj?.recipients[recipient]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:50%;margin:3px 3px 3px 10px">
-        <div style="float:left;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{chatLastMessageObj?.recipients[recipient]?.name}}</div>
+        <div style="float:left;cursor:pointer" (click)="router.navigate(['profile',recipient])">
+          <img [src]="chatLastMessageObj?.recipients[recipient]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:50%;margin:3px 3px 3px 10px">
+          <div style="float:left;margin:10px 5px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{chatLastMessageObj?.recipients[recipient]?.name}}</div>
+        </div>
+        <div style="float:left;cursor:pointer;font-weight:bold;margin:10px 15px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif;color:red" (click)="removeRecipient(recipient,chatLastMessageObj?.recipients[recipient]?.name,chatLastMessageObj?.recipients[recipient]?.familyName)">X</div>
       </li>
     </ul>
     <input style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Add people">
@@ -379,6 +382,15 @@ export class ChatComponent {
       text:'adding '+name+' '+(familyName||'')+' to this chat.',
       chain:this.chatLastMessageObj.chain||this.chatChain,
       recipientList:[user]
+    })
+    this.resetChat()
+  }
+
+  removeRecipient(user,name,familyName){
+    this.UI.createMessage({
+      text:'removing '+name+' '+(familyName||'')+' from this chat.',
+      chain:this.chatLastMessageObj.chain||this.chatChain,
+      recipientListToBeRemoved:[user]
     })
     this.resetChat()
   }
