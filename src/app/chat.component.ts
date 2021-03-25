@@ -255,6 +255,7 @@ export class ChatComponent {
 
   messageInputKeyUp(){
     let words=this.draftMessage.split(" ")
+    if(words.length<2)return
     let indexFound=[]
     let searchNameDraft1=words[words.length-2]
     let searchNameDraft2=words[words.length-1]
