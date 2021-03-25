@@ -60,7 +60,6 @@ export class UserInterfaceService {
   }
 
   createMessage(messageObj){
-    messageObj.text=messageObj.text.replace(/(\r\n|\n|\r)/gm, '')
     if (!messageObj.text&&!messageObj.chatImageTimestamp) return null
     messageObj.serverTimestamp=firebase.firestore.FieldValue.serverTimestamp()
     messageObj.user=this.currentUser
