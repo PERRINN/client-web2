@@ -84,9 +84,9 @@ import * as firebase from 'firebase/app'
             <div style="clear:both;float:left;margin-top:5px;color:#111;font-size:14px">{{message.payload.doc.data()?.name}}</div>
             <div style="float:left;margin-top:5px;margin-left:5px;color:#111;font-size:11px">{{message.payload.doc.data()?.recipientList.length>1?'+'+(message.payload.doc.data()?.recipientList.length-1):''}}</div>
             <div style="float:right;margin:5px 0 0 0;width:35px;height:20px;line-height:20px;font-size:10px;text-align:center;border-radius:3px 0 0 3px"
-            (click)="readFlagClick(message.payload.doc.id,message.payload.doc.data()?.reads[UI.currentUser])"
-            [style.background-color]="message.payload.doc.data()?.reads[UI.currentUser]?'whitesmoke':message.payload.doc.data()?.recipients[UI.currentUser]?'red':'midnightblue'"
-            [style.color]="message.payload.doc.data()?.reads[UI.currentUser]?'whitesmoke':'white'">
+            (click)="readFlagClick(message.payload.doc.id,(message.payload.doc.data()?.reads||{})[UI.currentUser])"
+            [style.background-color]="(message.payload.doc.data()?.reads||{})[UI.currentUser]?'whitesmoke':message.payload.doc.data()?.recipients[UI.currentUser]?'red':'midnightblue'"
+            [style.color]="(message.payload.doc.data()?.reads||{})[UI.currentUser]?'whitesmoke':'white'">
               {{message.payload.doc.data()?.recipients[UI.currentUser]?.unreadMessages}}
             </div>
             <div style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:40px">{{secondsToDhmDetail1(math.max(0,(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)))}}</div>
