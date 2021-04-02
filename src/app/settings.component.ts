@@ -17,7 +17,8 @@ import * as firebase from 'firebase/app';
   <br/>
   <span style="font-size:18px;line-height:30px;margin:15px;font-family:sans-serif;">{{UI.currentUserLastMessageObj?.name}} {{UI.currentUserLastMessageObj?.familyName}}</span>
   <span *ngIf='UI.currentUserIsMember' style="color:green;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:10px">Member</span>
-  <span *ngIf="UI.currentUserLastMessageObj?.contract?.signed" style="color:midnightblue;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:5px">{{UI.currentUserLastMessageObj?.contract?.position}} {{(UI.currentUserLastMessageObj?.contract?.level||0)*(UI.currentUserLastMessageObj?.contract?.frequency||0)}} COINS/day</span>
+  <span *ngIf="UI.currentUserLastMessageObj?.contract?.signed" style="color:midnightblue;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px">{{UI.currentUserLastMessageObj?.contract?.position}}</span>
+  <span *ngIf="UI.currentUserLastMessageObj?.contract?.signed&&(UI.currentUserLastMessageObj?.contract?.level>0)" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">Level {{UI.currentUserLastMessageObj?.contract?.level}}</span>
   <span *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&!UI.currentUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
   <br/>
   <span style="font-size:16px;line-height:30px;margin:15px;font-family:sans-serif">Balance: {{(UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</span>
@@ -51,11 +52,9 @@ import * as firebase from 'firebase/app';
       <input [(ngModel)]="contract.position" placeholder="Contract position">
       <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Level</div>
       <input [(ngModel)]="contract.level" placeholder="Contract level">
-      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Frequency</div>
-      <input [(ngModel)]="contract.frequency" placeholder="Contract frequency">
       <div *ngIf="!UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">No contract registered.</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">Contract number: {{UI.currentUserLastMessageObj?.contract?.createdTimestamp}}</div>
-      <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&UI.currentUserLastMessageObj?.contract?.signed" style="float:left;margin:15px;font-size:10px;color:midnightblue">Signature valid for level {{UI.currentUserLastMessageObj?.contract?.signedLevel}} maximum and frequency {{UI.currentUserLastMessageObj?.contract?.signedFrequency}} maximum</div>
+      <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&UI.currentUserLastMessageObj?.contract?.signed" style="float:left;margin:15px;font-size:10px;color:midnightblue">Signature valid for level {{UI.currentUserLastMessageObj?.contract?.signedLevel}}, you will receive {{UI.currentUserLastMessageObj?.contract?.rateDay}} COINS per day when you are active on PERRINN posting messages.</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&!UI.currentUserLastMessageObj?.contract?.signed" style="float:left;margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</div>
       <div (click)="updateContract()" style="clear:both;font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer">Update contract</div>
     <div class="seperator" style="width:100%;margin:0px"></div>
@@ -86,7 +85,6 @@ export class SettingsComponent {
     this.currentEmail=this.UI.currentUserLastMessageObj.userEmail||null
     this.contract.position=(this.UI.currentUserLastMessageObj.contract||{}).position||null
     this.contract.level=(this.UI.currentUserLastMessageObj.contract||{}).level||null
-    this.contract.frequency=(this.UI.currentUserLastMessageObj.contract||{}).frequency||null
   }
 
   logout() {
@@ -116,14 +114,13 @@ export class SettingsComponent {
   }
 
   updateContract(){
-    if(!this.contract.position||!this.contract.level||!this.contract.frequency)return
+    if(!this.contract.position||!this.contract.level)return
     this.UI.createMessage({
       chain:this.UI.currentUser,
-      text:'Updating my contract details to position: '+this.contract.position+', level: '+this.contract.level+', frequency: '+this.contract.frequency,
+      text:'Updating my contract details to position: '+this.contract.position+', level: '+this.contract.level,
       contract:{
         position:this.contract.position,
-        level:this.contract.level,
-        frequency:this.contract.frequency
+        level:this.contract.level
       }
     })
     this.router.navigate(['chat',this.UI.currentUser])

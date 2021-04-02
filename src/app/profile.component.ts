@@ -30,7 +30,7 @@ import * as firebase from 'firebase/app'
               <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
               <span *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="color:green;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:5px">Member</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:midnightblue;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px">{{focusUserLastMessageObj?.contract?.position}}</span>
-              <span *ngIf="focusUserLastMessageObj?.contract?.signed&&(focusUserLastMessageObj?.contract?.level*focusUserLastMessageObj?.contract?.frequency)>0" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">{{focusUserLastMessageObj?.contract?.level*focusUserLastMessageObj?.contract?.frequency}} C/d</span>
+              <span *ngIf="focusUserLastMessageObj?.contract?.signed&&(focusUserLastMessageObj?.contract?.level>0)" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">Level {{focusUserLastMessageObj?.contract?.level}}</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed&&UI.currentUser=='QYm5NATKa6MGD87UpNZCTl6IolX2'" style="margin:15px;font-size:10px;color:midnightblue;cursor:pointer" (click)=signContract()>Sign contract</span>
             </div>
@@ -300,7 +300,7 @@ export class ProfileComponent {
   signContract(){
     this.UI.createMessage({
       chain:this.focusUserLastMessageObj.user,
-      text:'Contract signature for position: '+((this.focusUserLastMessageObj.contract||{}).position||null)+', level: '+((this.focusUserLastMessageObj.contract||{}).level||0)+', frequency: '+((this.focusUserLastMessageObj.contract||{}).frequency||0),
+      text:'Contract signature for position: '+((this.focusUserLastMessageObj.contract||{}).position||null)+', level: '+((this.focusUserLastMessageObj.contract||{}).level||0),
       contractSignature:{
         user:this.focusUserLastMessageObj.user,
         contract:this.focusUserLastMessageObj.contract||{}

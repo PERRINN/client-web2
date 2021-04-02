@@ -28,7 +28,7 @@ import * as firebase from 'firebase/app';
           <span style="float:left;font-size:8px;color:green;line-height:22px">COINS</span>
         </div>
         <span *ngIf="message?.values?.contract?.signed" style="color:midnightblue;margin:10px 0 0 10px;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px">{{message?.values?.contract?.position}}</span>
-        <div *ngIf="message?.values?.contract?.signed&&(message?.values?.contract?.level*message?.values?.contract?.frequency)>0" style="color:midnightblue;margin:0 0 0 10px;padding:2px 4px 2px 4px;font-size:10px;line-height:10px">{{message?.values?.contract?.level*message?.values?.contract?.frequency}} C/d</div>
+        <div *ngIf="message?.values?.contract?.signed&&(message?.values?.contract?.level>0)" style="color:midnightblue;margin:0 0 0 10px;padding:2px 4px 2px 4px;font-size:10px;line-height:10px">Level {{message?.values?.contract?.level}}</div>
       </div>
     </li>
   </ul>
