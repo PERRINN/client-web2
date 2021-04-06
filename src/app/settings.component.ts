@@ -47,10 +47,9 @@ import * as firebase from 'firebase/app';
       <img style="float:left;margin:15px;width:30px;opacity:.6" src="./../assets/App icons/admin_panel_settings-24px.svg">
       <div style="font-size:14px;margin:20px;color:#444">Your PERRINN contract</div>
       <div style="font-size:10px;margin:20px;color:#777">This contract is between you and PERRINN team. New COINS are credited to you based on the settings below. When these settings are updated, they will need to be approved before taking effect. You or PERRINN can cancel this contract at any time.</div>
-      <div style="font-size:10px;margin:20px;color:midnightblue;cursor:pointer" (click)="router.navigate(['chat','ACuUWECdynuUUncuAZ4z'])">More info to help you setup your contract here</div>
-      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Position</div>
+      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Position: as specific as possible so other members understand your role in the team.</div>
       <input [(ngModel)]="contract.position" placeholder="Contract position">
-      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Level</div>
+      <div style="color:midnightblue;font-size:10px;margin:15px 0 0 15px">Level: [1-10] defines the level of experience / capacity to resolve problems independently. Level 1 is university student with no experience, 10 is expert (10+ years experience in the field).</div>
       <input [(ngModel)]="contract.level" placeholder="Contract level">
       <div *ngIf="!UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">No contract registered.</div>
       <div *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp" style="float:left;margin:15px;font-size:10px;color:midnightblue">Contract number: {{UI.currentUserLastMessageObj?.contract?.createdTimestamp}}</div>
