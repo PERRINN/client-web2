@@ -26,8 +26,8 @@ module.exports = {
       userChain.index=1
       userChain.newDay=true
       userChain.newMonth=true
-      const lastUserMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',user).where('verified','==',true).orderBy('serverTimestamp','desc').limit(2).get()
-      lastUserMessages.forEach(message=>{
+      const userLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',user).where('verified','==',true).orderBy('serverTimestamp','desc').limit(2).get()
+      userLastMessages.forEach(message=>{
         if(message.id!=messageId&&userChain.previousMessage=='none'){
           userChain.previousMessage=message.id
           userPreviousMessageData=message.data()
@@ -36,6 +36,14 @@ module.exports = {
           userChain.newMonth=Math.floor(now/86400000/30)!=Math.floor(((userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24/30)||0)
           batch.update(admin.firestore().doc('PERRINNMessages/'+userChain.previousMessage),{"userChain.nextMessage":admin.firestore.FieldValue.arrayUnion(messageId)},{create:true})
         }
+      })
+
+      //user chain correcting if number of messages with nextMessage='none' is more than 1
+      let userNextMessageNoneMessagesCount=0
+      const userNextMessageNoneMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',user).where('verified','==',true).where('userChain.nextMessage','==','none').orderBy('serverTimestamp','desc').get()
+      userNextMessageNoneMessages.forEach(message=>{
+        userNextMessageNoneMessagesCount+=1
+        if(userNextMessageNoneMessagesCount>1)batch.update(admin.firestore().doc('PERRINNMessages/'+message.id),{"userChain.nextMessage":'invalid'},{create:true})
       })
 
       //user data
@@ -74,6 +82,9 @@ module.exports = {
       })
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{lastMessage:chatLastMessage})
 
+      //log
+      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{isLog:messageData.chain.endsWith('Log')})
+
       //message recipientList (merge with user, transactionOut user, previous chat list and remove duplicates and remove undefined and null and remove from the ToBeRemoved list)
       messageData.recipientList=[user].concat([(messageData.transactionOut||{}).user]||[]).concat(messageData.recipientList||[]).concat(chatPreviousMessageData.recipientList||[])
       messageData.recipientList=messageData.recipientList.filter((item,pos)=>messageData.recipientList.indexOf(item)===pos)
@@ -84,6 +95,7 @@ module.exports = {
         if(index>-1)messageData.recipientList.splice(index,1)
       })
       if(messageData.chain==user)messageData.recipientList=[user]
+      if(messageData.chain==(user+'Log'))messageData.recipientList=[user]
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{recipientList:messageData.recipientList||[]},{create:true})
 
       //message recipients data
@@ -160,7 +172,7 @@ module.exports = {
         contract.amount=0
         contract.rateDay=0
         contract.signed=false
-        if(contract.level&&contract.position&&contract.message&&contract.createdTimestamp){
+        if(contract.level&&contract.position&&contract.message&&contract.createdTimestamp&&messageData.chain==(user+'Log')){
           const contractSignatureMessage=await admin.firestore().doc('PERRINNMessages/'+contract.message).get()
           let contractSignatureMessageData=(contractSignatureMessage!=undefined)?(contractSignatureMessage||{}).data():{}
           if((contractSignatureMessageData.user=='QYm5NATKa6MGD87UpNZCTl6IolX2')
@@ -170,9 +182,10 @@ module.exports = {
           ){
             contract.signed=true
             contract.signedLevel=((contractSignatureMessageData.contractSignature||{}).contract||{}).level||null
-            contract.days=appSettingsContract.data().messageCoverDays-Math.max(0,appSettingsContract.data().messageCoverDays-((messageData.serverTimestamp||{}).seconds-(userPreviousMessageData.serverTimestamp||{}).seconds)/3600/24)
+            contract.days=appSettingsContract.data().messageCoverDays-Math.max(0,appSettingsContract.data().messageCoverDays-((messageData.serverTimestamp||{}).seconds-(userPreviousMessageData.contract.previousContractMessageServerTimestamp||userPreviousMessageData.serverTimestamp||{}).seconds)/3600/24)
             contract.rateDay=appSettingsContract.data().rateDayLevel1*contract.level
             contract.amount=contract.days*contract.rateDay
+            contract.previousContractMessageServerTimestamp=messageData.serverTimestamp
           }
         }
         contract.daysTotal=((userPreviousMessageData.contract||{}).daysTotal||0)+contract.days

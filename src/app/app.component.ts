@@ -21,6 +21,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
           <img *ngIf="UI.currentUserLastMessageObj?.imageUrlThumbUser" [src]="UI.currentUserLastMessageObj.imageUrlThumbUser" style="display:inline;float:left;margin:4px;border-radius:50%;object-fit:cover;width:25px;height:25px">
           <div *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance" style="float:left;margin:8px;font-size:12px">{{UI.currentUserLastMessageObj.PERRINN.wallet.balance|number:'1.2-2'}}</div>
         </div>
+        <img style="float:left;width:22px;margin:5px 8px 5px 8px;cursor:pointer;opacity:.6" (click)="router.navigate(['chat',this.UI.currentUser+'Log'])" src="./../assets/App icons/fact_check_black_24dp.svg">
         <img style="float:right;width:20px;margin:5px 8px 5px 8px;cursor:pointer;opacity:.6" (click)="router.navigate(['settings'])" src="./../assets/App icons/settings-24px.svg">
         <div style="float:right;height:33px;border-style:solid;border-width:0 1px 0 0;border-color:#ddd"></div>
         <img *ngIf="UI.currentUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="float:right;width:20px;margin:5px 8px 5px 8px;cursor:pointer;filter:grayscale(100%)" src="./../assets/App icons/onshape_new.png" onclick="window.open('https://cad.onshape.com/documents?nodeId=31475a51a48fbcc9cfc7e244&resourceType=folder','_blank')">

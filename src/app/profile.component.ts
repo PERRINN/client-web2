@@ -59,7 +59,10 @@ import * as firebase from 'firebase/app'
           <img src="./../assets/App icons/event-24px.svg" style="float:left;opacity:.6;margin:7px 4px 7px 4px;object-fit:cover;height:40px;width:40px;border-radius:50%">
         </div>
         <div>
-          <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
+          <div style="clear:right;margin-top:5px;width:60%">
+            <img *ngIf="message.payload.doc.data()?.isLog" style="float:left;width:15px;margin:2px 5px 0 0;opacity:.6" src="./../assets/App icons/fact_check_black_24dp.svg">
+            <div style="float:left;font-size:14px;font-weight:bold;white-space:nowrap;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
+          </div>
           <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="width:80%">
             <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>0" [style.background-color]="(math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(message.payload.doc.data()?.eventDate/1000-UI.nowSeconds)}}</div>
             <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:red;color:white;padding:0 5px 0 5px">Now</div>
@@ -90,7 +93,10 @@ import * as firebase from 'firebase/app'
               {{message.payload.doc.data()?.recipients[UI.currentUser]?.unreadMessages}}
             </div>
             <div style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:40px">{{secondsToDhmDetail1(math.max(0,(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)))}}</div>
-            <div style="clear:right;margin-top:5px;font-size:14px;font-weight:bold;white-space:nowrap;width:60%;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
+            <div style="clear:right;margin-top:5px;width:60%">
+              <img *ngIf="message.payload.doc.data()?.isLog" style="float:left;width:15px;margin:2px 5px 0 0;opacity:.6" src="./../assets/App icons/fact_check_black_24dp.svg">
+              <div style="float:left;font-size:14px;font-weight:bold;white-space:nowrap;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
+            </div>
             <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}{{(message.payload.doc.data()?.chatImageTimestamp!=''&&message.payload.doc.data()?.chatImageTimestamp!=undefined)?' (image)':''}}</div>
           </div>
           <div class="seperator"></div>

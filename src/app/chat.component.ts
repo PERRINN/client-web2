@@ -14,7 +14,10 @@ import * as firebase from 'firebase/app'
   <div class="sheet">
     <div class="fixed" style="background:whitesmoke;color:#444;font-size:12px;cursor:pointer" (click)="showChatDetails=!showChatDetails">
       <div *ngIf="!showChatDetails" style="float:left;margin:0 5px 0 10px;min-height:40px">
-        <div style="font-weight:bold">{{chatLastMessageObj?.chatSubject}}</div>
+        <div>
+          <img *ngIf="chatLastMessageObj?.isLog" style="float:left;width:15px;margin:2px 5px 0 0;opacity:.6" src="./../assets/App icons/fact_check_black_24dp.svg">
+          <div style="float:left;font-weight:bold">{{chatLastMessageObj?.chatSubject}} </div>
+        </div>
         <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
         [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{last?"":", "}}</span>
         <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="clear:both">
