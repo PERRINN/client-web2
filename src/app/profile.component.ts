@@ -61,6 +61,7 @@ import * as firebase from 'firebase/app'
         <div>
           <div style="clear:right;margin-top:5px;width:60%">
             <img *ngIf="message.payload.doc.data()?.isLog" style="float:left;width:15px;margin:2px 5px 0 0;opacity:.6" src="./../assets/App icons/fact_check_black_24dp.svg">
+            <div *ngIf="message.payload.doc.data()?.isLog" style="float:left;font-size:14px;font-weight:bold;margin-right:5px">(Log)</div>
             <div style="float:left;font-size:14px;font-weight:bold;white-space:nowrap;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
           </div>
           <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="width:80%">
@@ -95,6 +96,7 @@ import * as firebase from 'firebase/app'
             <div style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:40px">{{secondsToDhmDetail1(math.max(0,(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)))}}</div>
             <div style="clear:right;margin-top:5px;width:60%">
               <img *ngIf="message.payload.doc.data()?.isLog" style="float:left;width:15px;margin:2px 5px 0 0;opacity:.6" src="./../assets/App icons/fact_check_black_24dp.svg">
+              <div *ngIf="message.payload.doc.data()?.isLog" style="float:left;font-size:14px;font-weight:bold;margin-right:5px">(Log)</div>
               <div style="float:left;font-size:14px;font-weight:bold;white-space:nowrap;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
             </div>
             <div style="clear:both;white-space:nowrap;width:80%;text-overflow:ellipsis;color:#888">{{message.payload.doc.data()?.text}}{{(message.payload.doc.data()?.chatImageTimestamp!=''&&message.payload.doc.data()?.chatImageTimestamp!=undefined)?' (image)':''}}</div>

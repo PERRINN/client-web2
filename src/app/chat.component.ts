@@ -16,6 +16,7 @@ import * as firebase from 'firebase/app'
       <div *ngIf="!showChatDetails" style="float:left;margin:0 5px 0 10px;min-height:40px">
         <div>
           <img *ngIf="chatLastMessageObj?.isLog" style="float:left;width:15px;margin:2px 5px 0 0;opacity:.6" src="./../assets/App icons/fact_check_black_24dp.svg">
+          <div *ngIf="chatLastMessageObj?.isLog" style="float:left;font-weight:bold;margin-right:5px">(Log)</div>
           <div style="float:left;font-weight:bold">{{chatLastMessageObj?.chatSubject}} </div>
         </div>
         <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
