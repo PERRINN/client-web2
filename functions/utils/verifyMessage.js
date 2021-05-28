@@ -96,6 +96,7 @@ module.exports = {
       })
       if(messageData.chain==user)messageData.recipientList=[user]
       if(messageData.chain==(user+'Log'))messageData.recipientList=[user]
+      if(messageData.chain=='PERRINNUsersStateSnapshot')messageData.recipientList=[]
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{recipientList:messageData.recipientList||[]},{create:true})
 
       //message recipients data
@@ -203,7 +204,7 @@ module.exports = {
 
       //*******TIME BASED INTEREST*************************
         let membership={}
-        membership.dailyCost=appSettingsCosts.data().membershipDay
+        membership.dailyCost=((messageData.membership||{}).dailyCost)||appSettingsCosts.data().membershipDay
         //interest
         let interest={}
         interest.rateYear=appSettingsCosts.data().interestRateYear
@@ -229,6 +230,7 @@ module.exports = {
       //*******MESSAGE WRITES**********************
         //message chat Subject
         if(messageData.chain==user)messageData.chatSubject='User records'
+        if(messageData.chain=='PERRINNUsersStateSnapshot')messageData.chatSubject='PERRINN Users State Snapshot'
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{chatSubject:messageData.chatSubject||chatPreviousMessageData.chatSubject||messageData.text||null},{create:true})
         //message event
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{eventDate:messageData.eventDate||chatPreviousMessageData.eventDate||null},{create:true})
@@ -275,6 +277,15 @@ module.exports = {
             contract:{
               message:messageId
             }
+          })
+        }
+
+        //user state snapshot
+        if(membership.dailyCost!=appSettingsCosts.data().membershipDay){
+          createMessageUtils.createMessageAFS({
+            user:user,
+            text:'Taking a snapshot of user state',
+            chain:'PERRINNUsersStateSnapshot',
           })
         }
 
