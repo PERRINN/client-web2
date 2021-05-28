@@ -12,8 +12,8 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
     <div class="module form-module">
       <div class="form">
         <form>
-          <img src="./../assets/App icons/teamExperience.jpg" style="width:95%;margin:10px 0 10px 0">
-          <img src="./../assets/App icons/PERRINN logo.png" style="width:95%;margin:10px 0 10px 0">
+          <img src="./../assets/App icons/PERRINN logo.png" style="width:95%;margin:10px 0 15px 0">
+          <div style="font-size:10px;text-align:center;line-height:15px;width:125px;padding:2px;margin:0 auto;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" onclick="window.open('https://discover.perrinn.com','_blank')">Discover PERRINN</div>
           <div [hidden]="UI.currentUser!=null">
           <div style="text-align:right; font-size:10px; cursor:pointer; color:midnightblue; padding:10px;" (click)="newUser=!newUser;messageUser=''">{{newUser?"Already have an account?":"Need a new account?"}}</div>
           <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *" (keyup)="messageUser=''" autofocus required/>
