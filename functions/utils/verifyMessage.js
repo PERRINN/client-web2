@@ -173,7 +173,7 @@ module.exports = {
         contract.amount=0
         contract.rateDay=0
         contract.signed=false
-        if(contract.level&&contract.position&&contract.message&&contract.createdTimestamp&&messageData.chain==(user+'Log')){
+        if(contract.level&&contract.position&&contract.message&&contract.createdTimestamp){
           const contractSignatureMessage=await admin.firestore().doc('PERRINNMessages/'+contract.message).get()
           let contractSignatureMessageData=(contractSignatureMessage!=undefined)?(contractSignatureMessage||{}).data():{}
           if((contractSignatureMessageData.user=='QYm5NATKa6MGD87UpNZCTl6IolX2')
@@ -183,10 +183,12 @@ module.exports = {
           ){
             contract.signed=true
             contract.signedLevel=((contractSignatureMessageData.contractSignature||{}).contract||{}).level||null
-            contract.days=appSettingsContract.data().messageCoverDays-Math.max(0,appSettingsContract.data().messageCoverDays-((messageData.serverTimestamp||{}).seconds-(userPreviousMessageData.contract.previousContractMessageServerTimestamp||userPreviousMessageData.serverTimestamp||{}).seconds)/3600/24)
             contract.rateDay=appSettingsContract.data().rateDayLevel1*contract.level
-            contract.amount=contract.days*contract.rateDay
-            contract.previousContractMessageServerTimestamp=messageData.serverTimestamp
+            if(messageData.chain==(user+'Log')){
+              contract.days=appSettingsContract.data().messageCoverDays-Math.max(0,appSettingsContract.data().messageCoverDays-((messageData.serverTimestamp||{}).seconds-(userPreviousMessageData.contract.previousContractMessageServerTimestamp||userPreviousMessageData.serverTimestamp||{}).seconds)/3600/24)
+              contract.amount=contract.days*contract.rateDay
+              contract.previousContractMessageServerTimestamp=messageData.serverTimestamp
+            }
           }
         }
         contract.daysTotal=((userPreviousMessageData.contract||{}).daysTotal||0)+contract.days
