@@ -28,7 +28,7 @@ import * as firebase from 'firebase/app'
             <div style="float:left">
               <span >{{focusUserLastMessageObj?.name}}</span>
               <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
-              <span *ngIf="focusUserLastMessageObj?.PERRINN?.wallet?.balance>0" style="color:green;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:5px">Member</span>
+              <span *ngIf="focusUserLastMessageObj?.wallet?.balance>0" style="color:green;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:5px">Member</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:midnightblue;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px">{{focusUserLastMessageObj?.contract?.position}}</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.signed&&(focusUserLastMessageObj?.contract?.level>0)" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">Level {{focusUserLastMessageObj?.contract?.level}}</span>
               <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
@@ -38,7 +38,7 @@ import * as firebase from 'firebase/app'
           </div>
           <div style="clear:both">
             <div style="float:left;font-size:10px;color:#666">{{focusUserLastMessageObj?.userEmail}}</div>
-            <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(focusUserLastMessageObj?.PERRINN?.wallet?.balance||0)|number:'1.2-2'}}</div>
+            <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(focusUserLastMessageObj?.wallet?.balance||0)|number:'1.2-2'}}</div>
             <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
             <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='inbox'?'underline':'none'" (click)="mode='inbox';refreshMessages()">inbox</div>
             <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='30days'?'underline':'none'" (click)="mode='30days';refreshMessages()">30 days</div>
@@ -121,8 +121,8 @@ import * as firebase from 'firebase/app'
             <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd">{{(message.payload.doc.data()?.verifiedTimestamp?.seconds*1000)|date:'d MMM'}}</div>
             <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.verifiedTimestamp?.seconds-previousTimestamp.seconds)/3600/24|number:'1.2-2'}}</div>
             <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.userChain?.index-previousIndex)}}</div>
-            <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd">{{message.payload.doc.data()?.PERRINN?.wallet?.balance|number:'1.2-2'}}</div>
-            <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.PERRINN?.wallet?.balance-previousBalance)|number:'1.2-2'}}</div>
+            <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:100px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd">{{message.payload.doc.data()?.wallet?.balance|number:'1.2-2'}}</div>
+            <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd;font-size:10px">{{first?'':(message.payload.doc.data()?.wallet?.balance-previousBalance)|number:'1.2-2'}}</div>
             <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.purchaseCOIN?.amountCummulate||0)-previousPurchaseCOINAmountCummulate)|blankIfZero|number:'1.2-2'}}</div>
             <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd;font-size:10px">{{first?'':((message.payload.doc.data()?.transactionIn?.amountCummulate||0)-(message.payload.doc.data()?.transactionOut?.amountCummulate||0)-previousAmountTransactionCummulate)|blankIfZero|number:'1.2-2'}}</div>
             <div [style.color]="message.payload.doc.data()?.userChain?.nextMessage=='none'?'black':'grey'" style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd;font-size:10px">{{first?'':(previousAmountWriteCummulate-message.payload.doc.data()?.messagingCost?.amountWriteCummulate||0)|blankIfZero|number:'1.2-2'}}</div>
@@ -294,7 +294,7 @@ export class ProfileComponent {
   }
 
   storeMessageValues(message) {
-    this.previousBalance=message.PERRINN.wallet.balance
+    this.previousBalance=message.wallet.balance
     this.previousTimestamp=message.verifiedTimestamp
     this.previousIndex=message.userChain.index
     this.previousPurchaseCOINAmountCummulate=(message.purchaseCOIN||{}).amountCummulate||0

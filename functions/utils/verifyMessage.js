@@ -230,6 +230,15 @@ module.exports = {
         membership.amountCummulate=((userPreviousMessageData.membership||{}).amountCummulate||0)+membership.amount
         wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount||0))*100000)/100000
 
+      //user status
+        let userStatus={}
+        userStatus.isMember=false
+        userStatus.isDeveloper=false
+        userStatus.isInvestor=false
+        if(wallet.balance>0)userStatus.isMember=true
+        if(contract.signed)userStatus.isDeveloper=true
+        if((wallet.balance*interest.rateYear)>(365*membership.dailyCost))userStatus.isInvestor=true
+
       //*******MESSAGE WRITES**********************
         //message chat Subject
         if(messageData.chain==user)messageData.chatSubject='User records'
@@ -248,7 +257,7 @@ module.exports = {
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{contract:contract},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{interest:interest},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{wallet:wallet},{create:true})
-        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{"PERRINN.wallet":wallet},{create:true})
+        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userStatus:userStatus},{create:true})
         //message verified
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{verified:true},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{verifiedTimestamp:admin.firestore.FieldValue.serverTimestamp()},{create:true})
@@ -302,7 +311,8 @@ module.exports = {
         membership:membership,
         contract:contract,
         messagingCost:messagingCost,
-        interest:interest
+        interest:interest,
+        userStatus:userStatus
       }
 
     }
