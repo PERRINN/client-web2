@@ -125,6 +125,8 @@ import * as firebase from 'firebase/app'
               </div>
               <div *ngIf="messageShowDetails.includes(message.key)" style="margin:5px">
                 <div class="seperator" style="width:100%"></div>
+                <div style="color:#666;font-size:10px">userStatus: {{message.payload?.userStatus|json}}</div>
+                <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">userChain: {{message.payload?.userChain|json}}</div>
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">transactionOut: {{message.payload?.transactionOut|json}}</div>
