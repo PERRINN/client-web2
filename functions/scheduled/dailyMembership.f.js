@@ -21,6 +21,8 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     statistics.purchaseCOIN={}
     statistics.membership={}
     statistics.membersEmails=[]
+    statistics.usersWithConstractSigned=[]
+    statistics.usersWithHighBalance=[]
     statistics.googleEmails=[]
     statistics.googleEmailsInvalid=[]
     statistics.googleEmailsMissing=[]
@@ -35,6 +37,8 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
       let lastUserMessage=await admin.firestore().collection('PERRINNMessages').where('user','==',userRecord.uid).orderBy('serverTimestamp','desc').limit(1).get()
       let result=await verifyMessageUtils.verifyMessage(lastUserMessage.docs[0].id,lastUserMessage.docs[0].data())
       if (result.wallet.balance>0)statistics.membersEmails.push(result.userEmail)
+      if (result.contract.signed)statistics.usersWithConstractSigned.push(result.user)
+      if ((result.wallet.balance*result.interest.rateYear)>(365*result.membership.dailyCost))statistics.usersWithHighBalance.push(result.user)
       statistics.wallet.balance=((statistics.wallet||{}).balance||0)+result.wallet.balance
       statistics.interest.amount=((statistics.interest||{}).amount||0)+result.interest.amount
       statistics.interest.rateDay=statistics.wallet.balance*(Math.exp(result.interest.rateYear/365)-1)
@@ -85,12 +89,13 @@ exports=module.exports=functions.runWith(runtimeOpts).pubsub.schedule('every 24 
     await admin.firestore().collection('statistics').add(statistics);
 
     let messageText=
-      statistics.userCount+' users registered. '+
+      statistics.userCount+' visitors. '+
       statistics.membersEmails.length+' members. '+
+      statistics.usersWithConstractSigned.length+' developers. '+
+      statistics.usersWithHighBalance.length+' investors. '+
       Math.round(statistics.wallet.balance)+' COINS in circulation. '+
       Math.round(statistics.interest.rateDay)+' COINS/day created from interest. '+
-      Math.round(statistics.membership.rateDay)+' COINS/day burned from membership. '+
-      Math.round(statistics.messagingCost.amountWriteCummulate)+' COINS burned by messaging in total. '
+      Math.round(statistics.membership.rateDay)+' COINS/day burned from membership. '
 
     createMessageUtils.createMessageAFS({
       user:'-L7jqFf8OuGlZrfEK6dT',
