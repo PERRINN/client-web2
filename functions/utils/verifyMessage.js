@@ -196,7 +196,7 @@ module.exports = {
         contract.amountCummulate=((userPreviousMessageData.contract||{}).amountCummulate||0)+contract.amount
         //message wallet
         let wallet={}
-        wallet.previousBalance=((userPreviousMessageData.PERRINN||{}).wallet||{}).balance||0
+        wallet.previousBalance=(userPreviousMessageData.wallet||{}).balance||0
         wallet.balance=wallet.previousBalance
         wallet.balance=Math.round((Number(wallet.balance)-Number(messagingCost.amount))*100000)/100000
         wallet.balance=Math.round((Number(wallet.balance)-Number(transactionOut.amount))*100000)/100000
