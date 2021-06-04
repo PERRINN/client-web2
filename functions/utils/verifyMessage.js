@@ -120,9 +120,9 @@ module.exports = {
       //*******INSTANT CREDIT/DEBIT*********************
         //messaging cost
         let messagingCost={}
-        messagingCost.amountWrite=appSettingsCosts.data().messageWrite||0
+        messagingCost.amountWrite=(appSettingsCosts.data().messageWrite)||0
         messagingCost.amount=Math.round(Number(messagingCost.amountWrite)*100000)/100000
-        messagingCost.amountWriteCummulate=((userPreviousMessageData.messagingCost||{}).amountWriteCummulate||0)+(messagingCost.amountWrite||0)
+        messagingCost.amountWriteCummulate=(((userPreviousMessageData.messagingCost||{}).amountWriteCummulate)||0)+((messagingCost.amountWrite)||0)
         //message transaction out
         let transactionOut={}
         const transactionOutUserLastMessages=await admin.firestore().collection('PERRINNMessages').where('user','==',(messageData.transactionOut||{}).user||null).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1).get()
@@ -132,9 +132,9 @@ module.exports = {
         transactionOut.name=transactionOutUserLastMessageData.name||null
         transactionOut.familyName=transactionOutUserLastMessageData.familyName||null
         transactionOut.imageUrlThumb=transactionOutUserLastMessageData.imageUrlThumbUser||null
-        transactionOut.amount=Number((messageData.transactionOut||{}).amount||0)
+        transactionOut.amount=Number(((messageData.transactionOut||{}).amount)||0)
         transactionOut.code=(messageData.transactionOut||{}).code||null
-        transactionOut.amountCummulate=Number((userPreviousMessageData.transactionOut||{}).amountCummulate||0)+transactionOut.amount
+        transactionOut.amountCummulate=Number(((userPreviousMessageData.transactionOut||{}).amountCummulate)||0)+transactionOut.amount
         if(transactionOut.code=='PERRINNselfTRANSACTION'&&user=='QYm5NATKa6MGD87UpNZCTl6IolX2'){
           transactionOut.user='QYm5NATKa6MGD87UpNZCTl6IolX2'
           transactionOut.name=messageData.name||userPreviousMessageData.name||null
@@ -150,24 +150,24 @@ module.exports = {
         transactionIn.name=transactionInUserLastMessageData.name||null
         transactionIn.familyName=transactionInUserLastMessageData.familyName||null
         transactionIn.imageUrlThumb=transactionInUserLastMessageData.imageUrlThumbUser||null
-        transactionIn.amount=Number((messageData.transactionIn||{}).amount||0)
+        transactionIn.amount=Number(((messageData.transactionIn||{}).amount)||0)
         if(transactionOut.code=='PERRINN'&&user=='QYm5NATKa6MGD87UpNZCTl6IolX2')transactionIn.amount=transactionOut.amount
         if(transactionOut.code=='PERRINNselfTRANSACTION'&&user=='QYm5NATKa6MGD87UpNZCTl6IolX2'){
           transactionIn.amount=transactionOut.amount
         }
-        transactionIn.amountCummulate=Number((userPreviousMessageData.transactionIn||{}).amountCummulate||0)+transactionIn.amount
+        transactionIn.amountCummulate=Number(((userPreviousMessageData.transactionIn||{}).amountCummulate)||0)+transactionIn.amount
         if(transactionIn.message&&transactionIn.amount>0&&transactionIn.user)batch.update(admin.firestore().doc('PERRINNMessages/'+transactionIn.message),{"transactionOut.message":messageId},{create:true})
         //COIN Purchase
         let purchaseCOIN={}
         purchaseCOIN.chargeID=(messageData.purchaseCOIN||{}).chargeID||null
-        purchaseCOIN.amount=(messageData.purchaseCOIN||{}).amount||0
-        purchaseCOIN.amountCummulate=((userPreviousMessageData.purchaseCOIN||{}).amountCummulate||0)+purchaseCOIN.amount
+        purchaseCOIN.amount=((messageData.purchaseCOIN||{}).amount)||0
+        purchaseCOIN.amountCummulate=(((userPreviousMessageData.purchaseCOIN||{}).amountCummulate)||0)+purchaseCOIN.amount
         //contract
         let contract={}
         contract.position=(messageData.contract||{}).position||(userPreviousMessageData.contract||{}).position||null
-        contract.level=(messageData.contract||{}).level||(userPreviousMessageData.contract||{}).level||0
+        contract.level=((messageData.contract||{}).level)||((userPreviousMessageData.contract||{}).level)||0
         contract.message=(messageData.contract||{}).message||(userPreviousMessageData.contract||{}).message||null
-        if(contract.level!=((userPreviousMessageData.contract||{}).level||0)||contract.position!=((userPreviousMessageData.contract||{}).position||null))contract.createdTimestamp=now
+        if(contract.level!=(((userPreviousMessageData.contract||{}).level)||0)||contract.position!=((userPreviousMessageData.contract||{}).position||null))contract.createdTimestamp=now
         else contract.createdTimestamp=(userPreviousMessageData.contract||{}).createdTimestamp||null
         contract.days=0
         contract.amount=0
@@ -192,11 +192,11 @@ module.exports = {
             }
           }
         }
-        contract.daysTotal=((userPreviousMessageData.contract||{}).daysTotal||0)+contract.days
-        contract.amountCummulate=((userPreviousMessageData.contract||{}).amountCummulate||0)+contract.amount
+        contract.daysTotal=(((userPreviousMessageData.contract||{}).daysTotal)||0)+contract.days
+        contract.amountCummulate=(((userPreviousMessageData.contract||{}).amountCummulate)||0)+contract.amount
         //message wallet
         let wallet={}
-        wallet.previousBalance=(userPreviousMessageData.wallet||{}).balance||0
+        wallet.previousBalance=((userPreviousMessageData.wallet||{}).balance)||0
         wallet.balance=wallet.previousBalance
         wallet.balance=Math.round((Number(wallet.balance)-Number(messagingCost.amount))*100000)/100000
         wallet.balance=Math.round((Number(wallet.balance)-Number(transactionOut.amount))*100000)/100000
@@ -214,8 +214,8 @@ module.exports = {
         interest.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
         interest.amountBase=wallet.balance-interest.days*membership.dailyCost/2
         interest.amount=Math.max(0,interest.amountBase*(Math.exp(interest.rateYear/365*interest.days)-1))
-        interest.amountCummulate=((userPreviousMessageData.interest||{}).amountCummulate||0)+interest.amount
-        wallet.balance=Math.round((Number(wallet.balance)+Number(interest.amount||0))*100000)/100000
+        interest.amountCummulate=(((userPreviousMessageData.interest||{}).amountCummulate)||0)+interest.amount
+        wallet.balance=Math.round((Number(wallet.balance)+Number((interest.amount)||0))*100000)/100000
 
       //*******TIME BASED CREDIT/DEBIT**********************
         //PERRINN membership
@@ -225,10 +225,10 @@ module.exports = {
           membership.days=(now/1000/3600/24-(userPreviousMessageData.verifiedTimestamp||{}).seconds/3600/24)||0
           if((membership.days*membership.dailyCost)>wallet.balance)membership.days=wallet.balance/membership.dailyCost
         } else membership.days=0
-        membership.daysTotal=((userPreviousMessageData.membership||{}).daysTotal||0)+membership.days
+        membership.daysTotal=(((userPreviousMessageData.membership||{}).daysTotal)||0)+membership.days
         membership.amount=membership.days*membership.dailyCost
-        membership.amountCummulate=((userPreviousMessageData.membership||{}).amountCummulate||0)+membership.amount
-        wallet.balance=Math.round((Number(wallet.balance)-Number(membership.amount||0))*100000)/100000
+        membership.amountCummulate=(((userPreviousMessageData.membership||{}).amountCummulate)||0)+membership.amount
+        wallet.balance=Math.round((Number(wallet.balance)-Number((membership.amount)||0))*100000)/100000
 
       //user status
         let userStatus={}
