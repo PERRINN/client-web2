@@ -294,7 +294,7 @@ export class ProfileComponent {
   }
 
   storeMessageValues(message) {
-    this.previousBalance=message.wallet.balance
+    this.previousBalance=((message.wallet||{}).balance)||0
     this.previousTimestamp=message.verifiedTimestamp
     this.previousIndex=message.userChain.index
     this.previousPurchaseCOINAmountCummulate=(message.purchaseCOIN||{}).amountCummulate||0
