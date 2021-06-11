@@ -27,6 +27,9 @@ import * as firebase from 'firebase/app'
           <div style="float:left;margin:0 5px 0 5px">{{eventDescription}} /</div>
           <div style="float:left;margin:0 5px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
         </div>
+        <div *ngIf="chatLastMessageObj?.survey?.createdTimestamp" style="clear:both">
+          <div style="float:left">{{survey.question}}</div>
+        </div>
       </div>
       <div *ngIf="showChatDetails" style="background:whitesmoke">
         <div style="float:left;font-size:12px;line-height:20px;margin:10px;color:midnightblue;cursor:pointer">< messages</div>
@@ -85,7 +88,7 @@ import * as firebase from 'firebase/app'
           <div *ngIf="math.round(date/3600000/24)==(date/3600000/24)||first" style="float:left;min-height:10px">{{date|date:'d MMM'}}</div>
         </li>
       </ul>
-      <ul class="listLight" style="clear:none;float:left;width:100px;text-align:center;margin:10px 10px 150px 10px">
+      <ul class="listLight" style="clear:none;float:left;width:100px;text-align:center;margin:10px">
         <li *ngFor="let date of eventDates;let first=first" (click)="eventDate=date" [class.selected]="eventDate==date">
           <div *ngIf="math.floor(date/3600000/24)==math.floor(eventDate/3600000/24)">{{date|date:'HH:mm'}}</div>
         </li>
@@ -94,10 +97,10 @@ import * as firebase from 'firebase/app'
     <div class="seperator" style="width:100%;margin:0px"></div>
     <div>
       <input style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="survey.question">
-      <div *ngIf="survey.question!=chatLastMessageObj?.survey?.question" style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="saveSurvey()">Save survey</div>
+      <div style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="saveSurvey()">Save survey</div>
       <ul class="listLight" style="margin:10px">
-        <li *ngFor="let answer of survey.answers">
-          <input style="width:60%;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="answer">
+        <li *ngFor="let answer of survey.answers;let i=index">
+          <input style="width:60%;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="survey.answers[i].answer">
         </li>
       </ul>
     </div>
@@ -221,6 +224,7 @@ export class ChatComponent {
   eventDates:any
   eventDate:any
   eventDescription:string
+  surveyDefault:any
   survey:any
   messageShowActions:[]
   leftHere:string
@@ -246,14 +250,15 @@ export class ChatComponent {
       this.messageNumberDisplay=15
       this.chatSubject=''
       this.eventDescription=''
-      this.survey={
+      this.surveyDefault={
         question:'Survey question',
         answers:[
-          'Answer A',
-          'Answer B',
-          'Answer C'
+          {answer:'Answer A'},
+          {answer:'Answer B'},
+          {answer:'Answer C'}
         ]
       }
+      this.survey=this.surveyDefault
       this.refreshMessages(params.id)
       this.refreshEventDates()
       this.resetChat()
@@ -393,7 +398,7 @@ export class ChatComponent {
 
   saveSurvey() {
     this.UI.createMessage({
-      text:'new survey',
+      text:'new survey: '+JSON.stringify(this.survey),
       chain:this.chatLastMessageObj.chain||this.chatChain,
       survey:this.survey
     })
