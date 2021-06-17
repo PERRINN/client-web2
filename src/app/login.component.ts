@@ -13,27 +13,26 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
       <div class="form">
         <form>
           <img src="./../assets/App icons/PERRINN logo.png" style="width:95%;margin:10px 0 15px 0">
-          <div style="font-size:10px;text-align:center;line-height:15px;width:125px;padding:2px;margin:0 auto;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" onclick="window.open('https://discover.perrinn.com','_blank')">Discover PERRINN</div>
-          <div [hidden]="UI.currentUser!=null">
-          <div style="text-align:right; font-size:10px; cursor:pointer; color:midnightblue; padding:10px;" (click)="newUser=!newUser;messageUser=''">{{newUser?"Already have an account?":"Need a new account?"}}</div>
-          <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *" (keyup)="messageUser=''" autofocus required/>
-          <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *" (keyup)="messageUser=''" required/>
-          <button *ngIf="!newUser" type="submit" (click)="login(email,password)">Login</button>
-          <div *ngIf="!newUser" style="text-align:center; font-size:10px; cursor:pointer; color:midnightblue; padding:10px;" (click)="resetPassword(email)">Forgot password?</div>
-          <div *ngIf="newUser">
-          <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *" (keyup)="messageUser=''"/>
-          <input maxlength="500" [(ngModel)]="name" name="name" type="text" placeholder="First name *" (keyup)="messageUser=''"/>
-          <input maxlength="500" [(ngModel)]="familyName" name="familyName" type="text" placeholder="Last name *" (keyup)="messageUser=''"/>
-          <button type="button" (click)="register(email,password,passwordConfirm,name,familyName)">Register</button>
+          <div style="font-size:10px;text-align:center;line-height:15px;width:125px;padding:2px;margin:10px auto;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" onclick="window.open('https://discover.perrinn.com','_blank')">Discover PERRINN</div>
+          <div [hidden]="action=='register'" style="font-size:10px;text-align:center;line-height:15px;width:125px;padding:2px;margin:10px auto;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" (click)="action='register';messageUser=''">New user</div>
+          <div [hidden]="action=='login'" style="font-size:10px;text-align:center;line-height:15px;width:125px;padding:2px;margin:10px auto;color:white;background-color:midnightblue;border-radius:3px;cursor:pointer" (click)="action='login';messageUser=''">Existing user</div>
+          <div *ngIf="action=='login'||action=='register'">
+            <input maxlength="500" [(ngModel)]="email" name="email" type="text" placeholder="Email *" (keyup)="messageUser=''" autofocus required/>
+            <input maxlength="500" [(ngModel)]="password" name="password" type="password" placeholder="Password *" (keyup)="messageUser=''" required/>
           </div>
+          <div *ngIf="action=='login'">
+            <button type="submit" (click)="login(email,password)">Login</button>
+            <div style="text-align:center; font-size:10px; cursor:pointer; color:midnightblue; padding:10px;" (click)="resetPassword(email)">Forgot password?</div>
           </div>
-          <div [hidden]="UI.currentUser==null">
-          <button type="button" (click)="logout()">Logout</button>
+          <div *ngIf="action=='register'">
+            <input maxlength="500" [(ngModel)]="passwordConfirm" name="passwordConfirm" type="password" placeholder="Confirm password *" (keyup)="messageUser=''"/>
+            <input maxlength="500" [(ngModel)]="name" name="name" type="text" placeholder="First name *" (keyup)="messageUser=''"/>
+            <input maxlength="500" [(ngModel)]="familyName" name="familyName" type="text" placeholder="Last name *" (keyup)="messageUser=''"/>
+            <button type="button" (click)="register(email,password,passwordConfirm,name,familyName)">Register</button>
           </div>
           <div *ngIf="messageUser" style="text-align:center;padding:10px;color:red">{{messageUser}}</div>
         </form>
       </div>
-      <div class="cta"><a href='mailto:perrinnlimited@gmail.com'>Contact PERRINN</a></div>
     </div>
   </div>
   `,
@@ -41,14 +40,14 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 
 export class LoginComponent  {
 
-  email: string;
-  password: string;
-  passwordConfirm: string;
-  name: string;
-  familyName: string;
-  message: string;
-  messageUser: string;
-  newUser: boolean;
+  email:string
+  password:string
+  passwordConfirm:string
+  name:string
+  familyName:string
+  message:string
+  messageUser:string
+  action:string
 
   constructor(
     public afAuth:AngularFireAuth,
@@ -56,15 +55,15 @@ export class LoginComponent  {
     public router:Router,
     public UI:UserInterfaceService
   ) {
-    this.newUser = false;
+    this.action=''
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
-        this.router.navigate(['profile','all']);
+        this.router.navigate(['profile','all'])
       }
-    });
+    })
   }
 
-  login(email: string, password: string) {
+  login(email:string, password:string) {
     this.afAuth.auth.signInWithEmailAndPassword(email, password).catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -76,7 +75,7 @@ export class LoginComponent  {
     });
   }
 
-  resetPassword(email: string) {
+  resetPassword(email:string) {
     this.afAuth.auth.sendPasswordResetEmail(email)
     .then(_ => this.messageUser = 'An email has been sent to you')
     .catch((error) => {
@@ -92,7 +91,7 @@ export class LoginComponent  {
     .catch(err => this.messageUser = 'You were not logged in');
   }
 
-  register(email:string,password: string,passwordConfirm:string,name:string,familyName:string) {
+  register(email:string,password:string,passwordConfirm:string,name:string,familyName:string) {
     if (email==null||password==null||passwordConfirm==null||name==null||familyName==null){
         this.messageUser = 'You need to fill all the fields';
     } else {
