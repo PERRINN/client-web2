@@ -76,6 +76,29 @@ import * as firebase from 'firebase/app'
       </li>
     </ul>
     <ul class="listLight">
+      <li *ngFor="let message of currentSurveys|async;let first=first;let last=last"
+        (click)="router.navigate(['chat',message.payload.doc.data()?.chain])"
+        [ngClass]="UI.isContentAccessible(message.payload.doc.data().user)?'clear':'encrypted'">
+        <div style="float:left;min-width:90px;min-height:40px">
+          <img src="./../assets/App icons/poll_black_24dp.svg" style="float:left;opacity:.6;margin:7px 4px 7px 4px;object-fit:cover;height:40px">
+        </div>
+        <div>
+          <div style="clear:right;margin-top:5px;width:60%">
+            <img *ngIf="message.payload.doc.data()?.isLog" style="float:left;width:15px;margin:2px 5px 0 0;opacity:.6" src="./../assets/App icons/fact_check_black_24dp.svg">
+            <div *ngIf="message.payload.doc.data()?.isLog" style="float:left;font-size:14px;margin-right:5px">Log</div>
+            <div style="float:left;font-size:14px;font-weight:bold;white-space:nowrap;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
+          </div>
+          <div *ngIf="(math.floor(UI.nowSeconds/3600/24-message.payload.doc.data()?.survey?.createdTimestamp/3600000/24)<7)&&message.payload.doc.data()?.survey?.createdTimestamp" style="clear:both">
+            <div [style.background-color]="(math.floor((UI.nowSeconds-message.payload.doc.data()?.survey.createdTimestamp/1000)/60)<60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(UI.nowSeconds-message.payload.doc.data()?.survey.createdTimestamp/1000+7*24*3600)}} left</div>
+            <div style="float:left;margin:0 5px 0 5px">{{message.payload.doc.data()?.survey.question}}</div>
+            <span *ngFor="let answer of message.payload.doc.data()?.survey.answers;let last=last" [style.font-weight]="answer?.votes.includes(UI.currentUser)?'bold':'normal'" style="float:left;margin:0 5px 0 5px">{{answer.answer}} ({{(answer.votes.length/message.payload.doc.data()?.survey.totalVotes)|percent:'1.0-0'}}),</span>
+            <span style="float:left;margin:0 5px 0 5px">{{message.payload.doc.data()?.survey.totalVotes}} vote{{message.payload.doc.data()?.survey.totalVotes>1?'s':''}}</span>
+          </div>
+        </div>
+        <div class="seperator"></div>
+      </li>
+    </ul>
+    <ul class="listLight">
       <li *ngFor="let message of messages|async;let first=first;let last=last"
         (click)="router.navigate(['chat',message.payload.doc.data()?.chain])"
         [ngClass]="UI.isContentAccessible(message.payload.doc.data().user)?'clear':'encrypted'">
@@ -142,6 +165,7 @@ import * as firebase from 'firebase/app'
 export class ProfileComponent {
   messages:Observable<any[]>
   comingEvents:Observable<any[]>
+  currentSurveys:Observable<any[]>
   scrollTeam:string
   focusUserLastMessageObj:any
   id:string
@@ -184,6 +208,17 @@ export class ProfileComponent {
       .where('verified','==',true)
       .orderBy('eventDate')
       .where('eventDate','>',(this.UI.nowSeconds-3600)*1000)
+    ).snapshotChanges().pipe(map(changes=>{
+      changes.forEach(c=>{
+        this.UI.userObjectIndexPopulate(c.payload.doc.data())
+      })
+      return changes.map(c=>({payload:c.payload}))
+    }))
+    this.currentSurveys=this.afs.collection<any>('PERRINNMessages',ref=>ref
+      .where('lastMessage','==',true)
+      .where('verified','==',true)
+      .orderBy('survey.createdTimestamp')
+      .where('survey.createdTimestamp','>=',(this.UI.nowSeconds-7*24*3600)*1000)
     ).snapshotChanges().pipe(map(changes=>{
       changes.forEach(c=>{
         this.UI.userObjectIndexPopulate(c.payload.doc.data())

@@ -122,7 +122,14 @@ module.exports = {
       survey.question=((messageData.survey||{}).question)||((chatPreviousMessageData.survey||{}).question)||null
       survey.answers=((messageData.survey||{}).answers)||((chatPreviousMessageData.survey||{}).answers)||null
       survey.createdTimestamp=((messageData.survey||{}).createdTimestamp)||((chatPreviousMessageData.survey||{}).createdTimestamp)||null
-      if (!survey.createdTimestamp&&survey.question)survey.createdTimestamp=admin.firestore.FieldValue.serverTimestamp()
+      survey.voteIndexPlusOne=((messageData.survey||{}).voteIndexPlusOne)||null
+      if (!survey.createdTimestamp&&survey.question)survey.createdTimestamp=now
+      (survey.answers||[]).forEach((answer,i)=>{
+        if(!survey.answers[i].votes)survey.answers[i].votes=[]
+        if(survey.voteIndexPlusOne==(i+1)&&!survey.answers[i].votes.includes(user))survey.answers[i].votes.push(user)
+        if(survey.voteIndexPlusOne&&survey.voteIndexPlusOne!=(i+1)&&survey.answers[i].votes.includes(user))survey.answers[i].votes.splice(survey.answers[i].votes.indexOf(user),1)
+        survey.totalVotes=(survey.totalVotes||0)+survey.answers[i].votes.length
+      })
 
       //*******INSTANT CREDIT/DEBIT*********************
         //messaging cost

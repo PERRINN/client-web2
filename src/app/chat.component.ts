@@ -28,11 +28,12 @@ import * as firebase from 'firebase/app'
           <div style="float:left;margin:0 5px 0 5px">{{eventDescription}}</div>
           <div style="float:left;margin:0 5px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
         </div>
-        <div *ngIf="(math.floor(UI.nowSeconds/3600/24-survey?.createdTimestamp?.seconds/3600/24)<7)&&survey?.createdTimestamp" style="clear:both">
+        <div *ngIf="(math.floor(UI.nowSeconds/3600/24-survey?.createdTimestamp/3600000/24)<7)&&survey?.createdTimestamp" style="clear:both">
           <img src="./../assets/App icons/poll_black_24dp.svg" style="float:left;opacity:.6;margin-right:5px;object-fit:cover;height:20px">
-          <div [style.background-color]="(math.floor((UI.nowSeconds-survey.createdTimestamp.seconds)/60)<60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(UI.nowSeconds-survey.createdTimestamp.seconds+7*24*3600)}} left</div>
+          <div [style.background-color]="(math.floor((UI.nowSeconds-survey.createdTimestamp/1000)/60)<60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(UI.nowSeconds-survey.createdTimestamp/1000+7*24*3600)}} left</div>
           <div style="float:left;margin:0 5px 0 5px">{{survey.question}}</div>
-          <span *ngFor="let answer of survey.answers;let last=last" style="float:left;margin:0 5px 0 5px">{{answer.answer}}{{last?"":", "}}</span>
+          <span *ngFor="let answer of survey.answers;let last=last" [style.font-weight]="answer?.votes.includes(UI.currentUser)?'bold':'normal'" style="float:left;margin:0 5px 0 5px">{{answer.answer}} ({{(answer.votes.length/survey.totalVotes)|percent:'1.0-0'}}),</span>
+          <span style="float:left;margin:0 5px 0 5px">{{survey.totalVotes}} vote{{survey.totalVotes>1?'s':''}}</span>
         </div>
       </div>
       <div *ngIf="showChatDetails" style="background:whitesmoke">
@@ -104,7 +105,8 @@ import * as firebase from 'firebase/app'
       <div style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="saveSurvey()">Save survey</div>
       <ul class="listLight" style="margin:10px">
         <li *ngFor="let answer of survey.answers;let i=index">
-          <input style="width:60%;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="survey.answers[i].answer">
+          <div style="float:left;width:50px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:15px 5px 5px 0px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="voteSurvey(i)">Vote</div>
+          <input style="float:left;width:60%;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="survey.answers[i].answer">
         </li>
       </ul>
     </div>
@@ -161,6 +163,8 @@ import * as firebase from 'firebase/app'
                 <div style="color:#666;font-size:10px">contract: {{message.payload?.contract|json}}</div>
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">wallet: {{message.payload?.wallet|json}}</div>
+                <div class="seperator" style="width:100%"></div>
+                <div style="color:#666;font-size:10px">survey: {{message.payload?.survey|json}}</div>
                 <div class="seperator" style="width:100%"></div>
                 <div style="color:#666;font-size:10px">{{message.payload|json}}</div>
               </div>
@@ -402,9 +406,18 @@ export class ChatComponent {
 
   saveSurvey() {
     this.UI.createMessage({
-      text:'survey: '+JSON.stringify(this.survey),
+      text:'Survey saved',
       chain:this.chatLastMessageObj.chain||this.chatChain,
       survey:this.survey
+    })
+    this.resetChat()
+  }
+
+  voteSurvey(i) {
+    this.UI.createMessage({
+      text:'Survey vote: '+this.survey.answers[i].answer,
+      chain:this.chatLastMessageObj.chain||this.chatChain,
+      survey:{voteIndexPlusOne:i+1}
     })
     this.resetChat()
   }
