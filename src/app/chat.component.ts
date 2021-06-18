@@ -22,13 +22,17 @@ import * as firebase from 'firebase/app'
         <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
         [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{last?"":", "}}</span>
         <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="clear:both">
+          <img src="./../assets/App icons/event-24px.svg" style="float:left;opacity:.6;margin-right:5px;object-fit:cover;height:20px">
           <div [style.background-color]="(math.floor((eventDate/1000-UI.nowSeconds)/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(eventDate/1000-UI.nowSeconds)}}</div>
           <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:red;color:white;padding:0 5px 0 5px">Now</div>
-          <div style="float:left;margin:0 5px 0 5px">{{eventDescription}} /</div>
+          <div style="float:left;margin:0 5px 0 5px">{{eventDescription}}</div>
           <div style="float:left;margin:0 5px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
         </div>
-        <div *ngIf="chatLastMessageObj?.survey?.createdTimestamp" style="clear:both">
-          <div style="float:left">{{survey.question}}</div>
+        <div *ngIf="(math.floor(UI.nowSeconds/3600/24-survey?.createdTimestamp?.seconds/3600/24)<7)&&survey?.createdTimestamp" style="clear:both">
+          <img src="./../assets/App icons/poll_black_24dp.svg" style="float:left;opacity:.6;margin-right:5px;object-fit:cover;height:20px">
+          <div [style.background-color]="(math.floor((UI.nowSeconds-survey.createdTimestamp.seconds)/60)<60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(UI.nowSeconds-survey.createdTimestamp.seconds+7*24*3600)}} left</div>
+          <div style="float:left;margin:0 5px 0 5px">{{survey.question}}</div>
+          <span *ngFor="let answer of survey.answers;let last=last" style="float:left;margin:0 5px 0 5px">{{answer.answer}}{{last?"":", "}}</span>
         </div>
       </div>
       <div *ngIf="showChatDetails" style="background:whitesmoke">
@@ -398,7 +402,7 @@ export class ChatComponent {
 
   saveSurvey() {
     this.UI.createMessage({
-      text:'new survey: '+JSON.stringify(this.survey),
+      text:'survey: '+JSON.stringify(this.survey),
       chain:this.chatLastMessageObj.chain||this.chatChain,
       survey:this.survey
     })

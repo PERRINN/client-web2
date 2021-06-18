@@ -56,7 +56,7 @@ import * as firebase from 'firebase/app'
         [ngClass]="UI.isContentAccessible(message.payload.doc.data().user)?'clear':'encrypted'">
         <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60">
         <div style="float:left;min-width:90px;min-height:40px">
-          <img src="./../assets/App icons/event-24px.svg" style="float:left;opacity:.6;margin:7px 4px 7px 4px;object-fit:cover;height:40px;width:40px;border-radius:50%">
+          <img src="./../assets/App icons/event-24px.svg" style="float:left;opacity:.6;margin:7px 4px 7px 4px;object-fit:cover;height:40px">
         </div>
         <div>
           <div style="clear:right;margin-top:5px;width:60%">
@@ -67,7 +67,7 @@ import * as firebase from 'firebase/app'
           <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="width:80%">
             <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>0" [style.background-color]="(math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(message.payload.doc.data()?.eventDate/1000-UI.nowSeconds)}}</div>
             <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:red;color:white;padding:0 5px 0 5px">Now</div>
-            <div style="float:left;margin:0 5px 0 5px">{{message.payload.doc.data()?.eventDescription}} /</div>
+            <div style="float:left;margin:0 5px 0 5px">{{message.payload.doc.data()?.eventDescription}}</div>
             <div style="float:left;margin:0 5px 0 0">{{message.payload.doc.data()?.eventDate|date:'EEEE d MMM HH:mm'}}</div>
           </div>
         </div>

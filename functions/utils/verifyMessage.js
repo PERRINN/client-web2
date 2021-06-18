@@ -117,6 +117,13 @@ module.exports = {
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{emailNotificationsList:messageData.recipientList},{create:true})
       batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{emailNotificationsStatus:messageData.emailNotificationsStatus||'pending'},{create:true})
 
+      //*******SURVEY**********
+      let survey={}
+      survey.question=((messageData.survey||{}).question)||((chatPreviousMessageData.survey||{}).question)||null
+      survey.answers=((messageData.survey||{}).answers)||((chatPreviousMessageData.survey||{}).answers)||null
+      survey.createdTimestamp=((messageData.survey||{}).createdTimestamp)||((chatPreviousMessageData.survey||{}).createdTimestamp)||null
+      if (!survey.createdTimestamp&&survey.question)survey.createdTimestamp=admin.firestore.FieldValue.serverTimestamp()
+
       //*******INSTANT CREDIT/DEBIT*********************
         //messaging cost
         let messagingCost={}
@@ -258,6 +265,7 @@ module.exports = {
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{interest:interest},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{wallet:wallet},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{userStatus:userStatus},{create:true})
+        batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{survey:survey},{create:true})
         //message verified
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{verified:true},{create:true})
         batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{verifiedTimestamp:admin.firestore.FieldValue.serverTimestamp()},{create:true})
