@@ -89,7 +89,7 @@ import * as firebase from 'firebase/app'
             <div style="float:left;font-size:14px;font-weight:bold;white-space:nowrap;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
           </div>
           <div *ngIf="(math.floor(UI.nowSeconds/3600/24-message.payload.doc.data()?.survey?.createdTimestamp/3600000/24)<7)&&message.payload.doc.data()?.survey?.createdTimestamp" style="clear:both">
-            <div [style.background-color]="(math.floor((UI.nowSeconds-message.payload.doc.data()?.survey.createdTimestamp/1000)/60)<60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(UI.nowSeconds-message.payload.doc.data()?.survey.createdTimestamp/1000+7*24*3600)}} left</div>
+            <div [style.background-color]="(math.floor(7*24-UI.nowSeconds/3600+message.payload.doc.data()?.survey.createdTimestamp/3600000)>8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(7*24*3600-UI.nowSeconds+message.payload.doc.data()?.survey.createdTimestamp/1000)}} left</div>
             <div style="float:left;margin:0 5px 0 5px">{{message.payload.doc.data()?.survey.question}}</div>
             <span *ngFor="let answer of message.payload.doc.data()?.survey.answers;let last=last" [style.font-weight]="answer?.votes.includes(UI.currentUser)?'bold':'normal'" style="float:left;margin:0 5px 0 5px">{{answer.answer}} ({{(answer.votes.length/message.payload.doc.data()?.survey.totalVotes)|percent:'1.0-0'}}),</span>
             <span style="float:left;margin:0 5px 0 5px">{{message.payload.doc.data()?.survey.totalVotes}} vote{{message.payload.doc.data()?.survey.totalVotes>1?'s':''}}</span>

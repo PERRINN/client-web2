@@ -30,7 +30,7 @@ import * as firebase from 'firebase/app'
         </div>
         <div *ngIf="(math.floor(UI.nowSeconds/3600/24-survey?.createdTimestamp/3600000/24)<7)&&survey?.createdTimestamp" style="clear:both">
           <img src="./../assets/App icons/poll_black_24dp.svg" style="float:left;opacity:.6;margin-right:5px;object-fit:cover;height:20px">
-          <div [style.background-color]="(math.floor((UI.nowSeconds-survey.createdTimestamp/1000)/60)<60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(UI.nowSeconds-survey.createdTimestamp/1000+7*24*3600)}} left</div>
+          <div [style.background-color]="(math.floor(7*24-UI.nowSeconds/3600+survey.createdTimestamp/3600000)>8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(7*24*3600-UI.nowSeconds+survey.createdTimestamp/1000)}} left</div>
           <div style="float:left;margin:0 5px 0 5px">{{survey.question}}</div>
           <span *ngFor="let answer of survey.answers;let last=last" [style.font-weight]="answer?.votes.includes(UI.currentUser)?'bold':'normal'" style="float:left;margin:0 5px 0 5px">{{answer.answer}} ({{(answer.votes.length/survey.totalVotes)|percent:'1.0-0'}}),</span>
           <span style="float:left;margin:0 5px 0 5px">{{survey.totalVotes}} vote{{survey.totalVotes>1?'s':''}}</span>
