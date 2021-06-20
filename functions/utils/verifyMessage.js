@@ -124,13 +124,15 @@ module.exports = {
       survey.createdTimestamp=((messageData.survey||{}).createdTimestamp)||((chatPreviousMessageData.survey||{}).createdTimestamp)||null
       survey.voteIndexPlusOne=((messageData.survey||{}).voteIndexPlusOne)||null
       survey.totalVotes=0
-      if(survey.voteIndexPlusOne)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${user}.voteIndexPlusOne`]:survey.voteIndexPlusOne},{create:true})
       if (!survey.createdTimestamp&&survey.question)survey.createdTimestamp=now
       survey.answers.forEach((answer,i)=>{
         if(!survey.answers[i].votes)survey.answers[i].votes=[]
         if(survey.voteIndexPlusOne==(i+1)&&!survey.answers[i].votes.includes(user))survey.answers[i].votes.push(user)
         if(survey.voteIndexPlusOne&&survey.voteIndexPlusOne!=(i+1)&&survey.answers[i].votes.includes(user))survey.answers[i].votes.splice(survey.answers[i].votes.indexOf(user),1)
         survey.totalVotes+=survey.answers[i].votes.length
+        answer.votes.forEach(voteUser=>{
+          batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${voteUser}.voteIndexPlusOne`]:i+1},{create:true})
+        })
       })
 
       //*******INSTANT CREDIT/DEBIT*********************

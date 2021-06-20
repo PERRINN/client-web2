@@ -34,6 +34,7 @@ import * as firebase from 'firebase/app'
           <div style="float:left;margin:0 5px 0 5px">{{survey.question}}</div>
           <span *ngFor="let answer of survey.answers;let last=last" [style.font-weight]="answer?.votes.includes(UI.currentUser)?'bold':'normal'" style="float:left;margin:0 5px 0 5px">{{answer.answer}} ({{(answer.votes.length/survey.totalVotes)|percent:'1.0-0'}}),</span>
           <span style="float:left;margin:0 5px 0 5px">{{survey.totalVotes}} vote{{survey.totalVotes>1?'s':''}}</span>
+          <div *ngIf="!chatLastMessageObj?.recipients[UI.currentUser]?.voteIndexPlusOne" style="clear:both;color:red;margin:0 5px 0 5px">vote now</div>
         </div>
       </div>
       <div *ngIf="showChatDetails" style="background:whitesmoke">
