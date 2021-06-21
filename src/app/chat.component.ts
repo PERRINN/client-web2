@@ -116,6 +116,7 @@ import * as firebase from 'firebase/app'
         </li>
       </ul>
     </div>
+    <div style="width:75px;margin:10px;height:20px;text-align:center;line-height:18px;font-size:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="survey.answers.push({answer:'new answer',votes:[]})">Add answer</div>
     <div class="seperator" style="width:100%;margin-bottom:150px"></div>
   </div>
 
