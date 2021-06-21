@@ -102,12 +102,17 @@ import * as firebase from 'firebase/app'
     </div>
     <div class="seperator" style="width:100%;margin:0px"></div>
     <div>
-      <input style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="survey.question">
+      <input style="width:80%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="survey.question">
       <div style="clear:both;width:100px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="saveSurvey()">Save survey</div>
       <ul class="listLight" style="margin:10px">
         <li *ngFor="let answer of survey.answers;let i=index">
-          <div style="float:left;width:50px;height:20px;text-align:center;line-height:18px;font-size:10px;margin:15px 5px 5px 0px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="voteSurvey(i)">Vote</div>
-          <input style="float:left;width:60%;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="200" [(ngModel)]="survey.answers[i].answer">
+          <div>
+            <div style="float:left;width:50px;margin:15px 5px 5px 0px">
+              <div *ngIf="!answer?.votes.includes(UI.currentUser)" style="width:100%;height:20px;text-align:center;line-height:18px;font-size:10px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer" (click)="voteSurvey(i)">Vote</div>
+            </div>
+            <input style="float:left;width:70%;border:0;background:none;box-shadow:none;border-radius:0px" [style.font-weight]="answer?.votes.includes(UI.currentUser)?'bold':'normal'" [(ngModel)]="survey.answers[i].answer">
+          </div>
+          <span *ngFor="let user of answer?.votes;let last=last">{{user==UI.currentUser?'You':chatLastMessageObj?.recipients[user]?.name}}{{last?"":", "}}</span>
         </li>
       </ul>
     </div>
@@ -124,17 +129,17 @@ import * as firebase from 'firebase/app'
       <ul style="list-style:none;">
         <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index"
         [ngClass]="UI.isContentAccessible(message.payload.user)?'clear':'encrypted'">
-          <div *ngIf="isMessageNewTimeGroup(message.payload?.serverTimestamp)||first" style="padding:50px 15px 15px 15px">
+          <div *ngIf="isMessageNewTimeGroup(message.payload?.serverTimestamp||{seconds:UI.nowSeconds*1000})||first" style="padding:50px 15px 15px 15px">
             <div *ngIf="first" style="color:midnightblue;width:200px;padding:15px;margin:0 auto;text-align:center;cursor:pointer" (click)="loadMore()">Load more</div>
             <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'fullDate'}}</div>
           </div>
-          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first" style="clear:both;width:100%;height:15px"></div>
-          <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first)" style="float:left;width:60px;min-height:10px">
+          <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp||{seconds:UI.nowSeconds*1000})||first" style="clear:both;width:100%;height:15px"></div>
+          <div *ngIf="message.payload?.imageUrlThumbUser&&(isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp||{seconds:UI.nowSeconds*1000})||first)" style="float:left;width:60px;min-height:10px">
             <img [src]="message.payload?.imageUrlThumbUser" style="cursor:pointer;display:inline;float:left;margin:10px;border-radius:50%; object-fit:cover; height:35px; width:35px" (click)="router.navigate(['profile',message.payload?.user])">
           </div>
           <div [style.background-color]="(message.payload?.user==UI.currentUser)?'#daebda':'white'" style="cursor:text;border-style:solid;border-width:1px;color:#ccc;margin:2px 10px 5px 60px">
             <div>
-              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp)||first">
+              <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp||{seconds:UI.nowSeconds*1000})||first">
                 <div style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
                 <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)>43200" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
                 <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)<=43200" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{secondsToDhmDetail1(math.max(0,(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)))}}</div>
@@ -254,7 +259,7 @@ export class ChatComponent {
       this.messageShowActions=[]
       this.messageShowDetails=[]
       this.chatLastMessageObj={}
-      this.previousMessageServerTimestamp={}
+      this.previousMessageServerTimestamp={seconds:this.UI.nowSeconds*1000}
       this.previousMessageUser=''
       this.messageNumberDisplay=15
       this.chatSubject=''
@@ -262,9 +267,9 @@ export class ChatComponent {
       this.surveyDefault={
         question:'Survey question',
         answers:[
-          {answer:'Answer A'},
-          {answer:'Answer B'},
-          {answer:'Answer C'}
+          {answer:'Answer A',votes:[]},
+          {answer:'Answer B',votes:[]},
+          {answer:'Answer C',votes:[]}
         ]
       }
       this.survey=this.surveyDefault
@@ -359,7 +364,7 @@ export class ChatComponent {
 
   storeMessageValues(message) {
     this.previousMessageUser=message.user
-    this.previousMessageServerTimestamp=message.serverTimestamp
+    this.previousMessageServerTimestamp=message.serverTimestamp||{seconds:this.UI.nowSeconds*1000}
   }
 
   scrollToBottom(scrollMessageTimestamp: number) {
