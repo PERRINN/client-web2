@@ -334,7 +334,7 @@ export class ChatComponent {
           this.chatSubject=c.payload.doc.data()['chatSubject']
           this.eventDescription=c.payload.doc.data()['eventDescription']
           this.eventDate=c.payload.doc.data()['eventDate']
-          this.survey=c.payload.doc.data()['survey']['createdTimestamp']?c.payload.doc.data()['survey']:this.survey
+          this.survey=((c.payload.doc.data()['survey']||{})['createdTimestamp'])?c.payload.doc.data()['survey']:this.survey
         }
       })
       batch.commit()
