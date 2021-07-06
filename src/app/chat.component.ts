@@ -19,8 +19,7 @@ import * as firebase from 'firebase/app'
           <div *ngIf="chatLastMessageObj?.isLog" style="float:left;margin-right:5px">Log</div>
           <div style="float:left;font-weight:bold">{{chatLastMessageObj?.chatSubject}} </div>
         </div>
-        <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last"
-        [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{last?"":", "}}</span>
+        <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{last?"":", "}}</span>
         <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="clear:both">
           <img src="./../assets/App icons/event-24px.svg" style="float:left;opacity:.6;margin-right:5px;object-fit:cover;height:20px">
           <div [style.background-color]="(math.floor((eventDate/1000-UI.nowSeconds)/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(eventDate/1000-UI.nowSeconds)}}</div>
@@ -51,7 +50,7 @@ import * as firebase from 'firebase/app'
     <div class="seperator" style="width:100%;margin:0px"></div>
     <ul style="color:#333;margin:10px">
       <li *ngFor="let recipient of chatLastMessageObj?.recipientList" style="float:left"
-      [ngClass]="UI.isContentAccessible(recipient)?'clear':'encrypted'">
+     >
         <div style="float:left;cursor:pointer" (click)="router.navigate(['profile',recipient])">
           <img [src]="chatLastMessageObj?.recipients[recipient]?.imageUrlThumb" style="float:left;object-fit:cover;height:25px;width:25px;border-radius:50%;margin:3px 3px 3px 10px">
           <div style="float:left;margin:10px 5px 3px 3px;font-size:12px;line-height:10px;font-family:sans-serif">{{chatLastMessageObj?.recipients[recipient]?.name}}</div>
@@ -61,8 +60,7 @@ import * as firebase from 'firebase/app'
     </ul>
     <input style="width:60%;margin:10px;border:0;background:none;box-shadow:none;border-radius:0px" maxlength="500" (keyup)="refreshSearchLists()" [(ngModel)]="searchFilter" placeholder="Add people">
     <ul class="listLight">
-      <li *ngFor="let team of teams | async"
-      [ngClass]="UI.isContentAccessible(team.key)?'clear':'encrypted'">
+      <li *ngFor="let team of teams | async">
         <div *ngIf="!(chatLastMessageObj?.recipients||{})[team.key]" style="padding:5px">
           <div style="float:left;width:175px">
             <img [src]="team?.values?.imageUrlThumbUser" style="display:inline;float:left;margin: 0 5px 0 10px;opacity: 1;object-fit:cover;height:25px;width:25px;border-radius:50%">
@@ -128,8 +126,7 @@ import * as firebase from 'firebase/app'
     </div>
     <div>
       <ul style="list-style:none;">
-        <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index"
-        [ngClass]="UI.isContentAccessible(message.payload.user)?'clear':'encrypted'">
+        <li *ngFor="let message of messages|async;let first=first;let last=last;let i=index">
           <div *ngIf="isMessageNewTimeGroup(message.payload?.serverTimestamp||{seconds:UI.nowSeconds*1000})||first" style="padding:50px 15px 15px 15px">
             <div *ngIf="first" style="color:midnightblue;width:200px;padding:15px;margin:0 auto;text-align:center;cursor:pointer" (click)="loadMore()">Load more</div>
             <div style="border-color:#bbb;border-width:1px;border-style:solid;color:#404040;background-color:#e9e8f9;width:200px;padding:5px;margin:0 auto;text-align:center;border-radius:3px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'fullDate'}}</div>

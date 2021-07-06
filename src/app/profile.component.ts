@@ -10,7 +10,7 @@ import * as firebase from 'firebase/app'
   selector: 'profile',
   template: `
   <div class='sheet'>
-    <div *ngIf="!UI.currentUserIsMember" style="background-color:#f2f5d0;padding:5px">
+    <div *ngIf="!UI.currentUserLastMessageObj?.userStatus?.isMember" style="background-color:#f2f5d0;padding:5px">
       <div style="color:#777;font-size:10px;float:left">To become a PERRINN member and gain full access, you need to top up your COINS (go to your settings). If you have any question about the membership, feel free to chat with Nicolas.</div>
       <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 5px 0 5px;padding:0 3px 0 3px;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/membership','_blank')">More info about the membership</div>
       <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 5px 0 5px;padding:0 3px 0 3px;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['profile','QYm5NATKa6MGD87UpNZCTl6IolX2'])">Chat with Nicolas</div>
@@ -18,8 +18,7 @@ import * as firebase from 'firebase/app'
     <div *ngIf="id=='all'" style="clear:both;background:whitesmoke;font-size:14px;padding:5px 15px 5px 15px">PERRINN messages</div>
     <div *ngIf="id=='all'" class="seperator" style="width:100%;margin:0px"></div>
     <div *ngIf="id!='all'">
-      <div style="clear:both;background:whitesmoke"
-      [ngClass]="UI.isContentAccessible(focusUserLastMessageObj?.user)?'clear':'encrypted'">
+      <div style="clear:both;background:whitesmoke">
         <div style="float:left">
           <img [src]="focusUserLastMessageObj?.imageUrlThumbUser" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px;border-radius:50%">
         </div>
@@ -52,8 +51,7 @@ import * as firebase from 'firebase/app'
     </div>
     <ul class="listLight">
       <li *ngFor="let message of comingEvents|async;let first=first;let last=last"
-        (click)="router.navigate(['chat',message.payload.doc.data()?.chain])"
-        [ngClass]="UI.isContentAccessible(message.payload.doc.data().user)?'clear':'encrypted'">
+        (click)="router.navigate(['chat',message.payload.doc.data()?.chain])">
         <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60">
         <div style="float:left;min-width:90px;min-height:40px">
           <img src="./../assets/App icons/event-24px.svg" style="float:left;opacity:.6;margin:7px 4px 7px 4px;object-fit:cover;height:40px">
@@ -77,8 +75,7 @@ import * as firebase from 'firebase/app'
     </ul>
     <ul class="listLight">
       <li *ngFor="let message of currentSurveys|async;let first=first;let last=last"
-        (click)="router.navigate(['chat',message.payload.doc.data()?.chain])"
-        [ngClass]="UI.isContentAccessible(message.payload.doc.data().user)?'clear':'encrypted'">
+        (click)="router.navigate(['chat',message.payload.doc.data()?.chain])">
         <div style="float:left;min-width:90px;min-height:40px">
           <img src="./../assets/App icons/poll_black_24dp.svg" style="float:left;opacity:.6;margin:7px 4px 7px 4px;object-fit:cover;height:40px">
         </div>
@@ -101,8 +98,7 @@ import * as firebase from 'firebase/app'
     </ul>
     <ul class="listLight">
       <li *ngFor="let message of messages|async;let first=first;let last=last"
-        (click)="router.navigate(['chat',message.payload.doc.data()?.chain])"
-        [ngClass]="UI.isContentAccessible(message.payload.doc.data().user)?'clear':'encrypted'">
+        (click)="router.navigate(['chat',message.payload.doc.data()?.chain])">
         <div *ngIf="id=='all'||mode=='inbox'">
           <div style="float:left;min-width:90px;min-height:40px">
             <img [src]="message.payload.doc.data()?.imageUrlThumbUser" style="float:left;margin:7px 4px 7px 4px;object-fit:cover;height:40px;width:40px;border-radius:50%">

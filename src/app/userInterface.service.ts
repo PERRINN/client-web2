@@ -6,10 +6,8 @@ import * as firebase from 'firebase/app'
 
 @Injectable()
 export class UserInterfaceService {
-  globalChatActivity:boolean
   loading:boolean
   currentUser:string
-  currentUserIsMember:boolean
   currentUserLastMessageObj:any
   nowSeconds:number
   searchNameIndex:any
@@ -28,11 +26,9 @@ export class UserInterfaceService {
         this.currentUser=auth.uid
         afs.collection<any>('PERRINNMessages',ref=>ref.where('user','==',this.currentUser).where('verified','==',true).orderBy('serverTimestamp','desc').limit(1)).valueChanges().subscribe(snapshot=>{
           this.currentUserLastMessageObj=snapshot[0]
-          this.currentUserIsMember=((snapshot[0].wallet||{}).balance>0)||false
         })
       } else {
         this.currentUser=null
-        this.currentUserIsMember=false
       }
     })
   }
@@ -68,14 +64,6 @@ export class UserInterfaceService {
     messageObj.PERRINN={}
     messageObj.reads={[this.currentUser]:true}
     return this.afs.collection('PERRINNMessages').add(messageObj)
-  }
-
-  isContentAccessible(user){
-    if(this.currentUserIsMember) return true
-    if(user==this.currentUser)return true
-    if(user=='QYm5NATKa6MGD87UpNZCTl6IolX2')return true
-    if(user=='-L7jqFf8OuGlZrfEK6dT')return true
-    return false
   }
 
 }
