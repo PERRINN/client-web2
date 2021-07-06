@@ -15,39 +15,49 @@ import * as firebase from 'firebase/app'
       <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 5px 0 5px;padding:0 3px 0 3px;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/membership','_blank')">More info about the membership</div>
       <div style="color:#777;font-size:10px;float:left;line-height:16px;margin:0 5px 0 5px;padding:0 3px 0 3px;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" (click)="router.navigate(['profile','QYm5NATKa6MGD87UpNZCTl6IolX2'])">Chat with Nicolas</div>
     </div>
-    <div *ngIf="id=='all'" style="clear:both;background:whitesmoke;font-size:14px;padding:5px 15px 5px 15px">PERRINN messages</div>
-    <div *ngIf="id=='all'" class="seperator" style="width:100%;margin:0px"></div>
-    <div *ngIf="id!='all'">
-      <div style="clear:both;background:whitesmoke">
-        <div style="float:left">
-          <img [src]="focusUserLastMessageObj?.imageUrlThumbUser" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px;border-radius:50%">
-        </div>
-        <div style="padding:10px">
-          <div style="clear:both;color:#222">
-            <div style="float:left">
-              <span >{{focusUserLastMessageObj?.name}}</span>
-              <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
-              <span *ngIf="focusUserLastMessageObj?.wallet?.balance>0" style="color:green;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:5px">Member</span>
-              <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:midnightblue;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px">{{focusUserLastMessageObj?.contract?.position}}</span>
-              <span *ngIf="focusUserLastMessageObj?.contract?.signed&&(focusUserLastMessageObj?.contract?.level>0)" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">Level {{focusUserLastMessageObj?.contract?.level}}</span>
-              <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
-              <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed&&UI.currentUser=='QYm5NATKa6MGD87UpNZCTl6IolX2'" style="margin:15px;font-size:10px;color:midnightblue;cursor:pointer" (click)=signContract()>Sign contract</span>
-            </div>
-            <div *ngIf="UI.currentUser!=focusUserLastMessageObj?.user" (click)="newMessageToUser()" style="float:right;font-size:10px;padding:2px 4px 2px 4px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">New message to {{focusUserLastMessageObj?.name}}</div>
-          </div>
-          <div style="clear:both">
-            <div style="float:left;font-size:10px;color:#666">{{focusUserLastMessageObj?.userEmail}}</div>
-            <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(focusUserLastMessageObj?.wallet?.balance||0)|number:'1.2-2'}}</div>
-            <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
-            <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='inbox'?'underline':'none'" (click)="mode='inbox';refreshMessages()">inbox</div>
-            <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='30days'?'underline':'none'" (click)="mode='30days';refreshMessages()">30 days</div>
-            <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='24months'?'underline':'none'" (click)="mode='24months';refreshMessages()">24 months</div>
-            <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='chain'?'underline':'none'" (click)="mode='chain';refreshMessages()">chain</div>
-            <div style="clear:both;float:left;font-size:10px;color:#999">Created {{focusUserLastMessageObj?.createdTimestamp|date:'MMMM yyyy'}}, {{focusUserLastMessageObj?.userChain?.index}} Messages, {{focusUserLastMessageObj?.membership?.daysTotal|number:'1.1-1'}} Membership days, Verified {{((UI.nowSeconds-focusUserLastMessageObj?.verifiedTimestamp?.seconds)/3600/24)|number:'1.2-2'}} days ago</div>
-          </div>
-        </div>
-        <div class="seperator" style="width:100%;margin:0px"></div>
+    <div *ngIf="id=='PERRINN'" style="clear:both;background:whitesmoke">
+      <div style="float:left">
+        <img src="./../assets/App icons/Perrinn_02.png" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px;border-radius:50%;filter:invert(70%)">
       </div>
+      <div style="padding:10px">
+        <div style="clear:both;color:#222">
+          <div style="float:left">
+            <div style="font-size:20px">PERRINN</div>
+            <div style="font-size:12px;line-height:14px"> We are a Team</div>
+          </div>
+        </div>
+      </div>
+      <div class="seperator" style="width:100%;margin:0px"></div>
+    </div>
+    <div *ngIf="id!='PERRINN'" style="clear:both;background:whitesmoke">
+      <div style="float:left">
+        <img [src]="focusUserLastMessageObj?.imageUrlThumbUser" style="display:inline;float:left;margin:7px;object-fit:cover;width:75px;height:75px;border-radius:50%">
+      </div>
+      <div style="padding:10px">
+        <div style="clear:both;color:#222">
+          <div style="float:left">
+            <span >{{focusUserLastMessageObj?.name}}</span>
+            <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
+            <span *ngIf="focusUserLastMessageObj?.wallet?.balance>0" style="color:green;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:5px">Member</span>
+            <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:midnightblue;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px">{{focusUserLastMessageObj?.contract?.position}}</span>
+            <span *ngIf="focusUserLastMessageObj?.contract?.signed&&(focusUserLastMessageObj?.contract?.level>0)" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">Level {{focusUserLastMessageObj?.contract?.level}}</span>
+            <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
+            <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed&&UI.currentUser=='QYm5NATKa6MGD87UpNZCTl6IolX2'" style="margin:15px;font-size:10px;color:midnightblue;cursor:pointer" (click)=signContract()>Sign contract</span>
+          </div>
+          <div *ngIf="UI.currentUser!=focusUserLastMessageObj?.user" (click)="newMessageToUser()" style="float:right;font-size:10px;padding:2px 4px 2px 4px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">New message to {{focusUserLastMessageObj?.name}}</div>
+        </div>
+        <div style="clear:both">
+          <div style="float:left;font-size:10px;color:#666">{{focusUserLastMessageObj?.userEmail}}</div>
+          <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(focusUserLastMessageObj?.wallet?.balance||0)|number:'1.2-2'}}</div>
+          <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
+          <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='inbox'?'underline':'none'" (click)="mode='inbox';refreshMessages()">inbox</div>
+          <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='30days'?'underline':'none'" (click)="mode='30days';refreshMessages()">30 days</div>
+          <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='24months'?'underline':'none'" (click)="mode='24months';refreshMessages()">24 months</div>
+          <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='chain'?'underline':'none'" (click)="mode='chain';refreshMessages()">chain</div>
+          <div style="clear:both;float:left;font-size:10px;color:#999">Created {{focusUserLastMessageObj?.createdTimestamp|date:'MMMM yyyy'}}, {{focusUserLastMessageObj?.userChain?.index}} Messages, {{focusUserLastMessageObj?.membership?.daysTotal|number:'1.1-1'}} Membership days, Verified {{((UI.nowSeconds-focusUserLastMessageObj?.verifiedTimestamp?.seconds)/3600/24)|number:'1.2-2'}} days ago</div>
+        </div>
+      </div>
+      <div class="seperator" style="width:100%;margin:0px"></div>
     </div>
     <ul class="listLight">
       <li *ngFor="let message of comingEvents|async;let first=first;let last=last"
@@ -99,7 +109,7 @@ import * as firebase from 'firebase/app'
     <ul class="listLight">
       <li *ngFor="let message of messages|async;let first=first;let last=last"
         (click)="router.navigate(['chat',message.payload.doc.data()?.chain])">
-        <div *ngIf="id=='all'||mode=='inbox'">
+        <div *ngIf="id=='PERRINN'||mode=='inbox'">
           <div style="float:left;min-width:90px;min-height:40px">
             <img [src]="message.payload.doc.data()?.imageUrlThumbUser" style="float:left;margin:7px 4px 7px 4px;object-fit:cover;height:40px;width:40px;border-radius:50%">
             <img *ngIf="message.payload.doc.data()?.recipientList[1]" [src]="message.payload.doc.data()?.recipients[message.payload.doc.data()?.recipientList[1]]?.imageUrlThumb" style="float:left;margin:7px 4px 7px 4px;object-fit:cover;height:25px;width:25px;border-radius:50%">
@@ -123,7 +133,7 @@ import * as firebase from 'firebase/app'
           </div>
           <div class="seperator"></div>
         </div>
-        <div *ngIf="id!='all'&&(mode=='30days'||mode=='24months'||mode=='chain')">
+        <div *ngIf="id!='PERRINN'&&(mode=='30days'||mode=='24months'||mode=='chain')">
           <div *ngIf="first">
             <div style="float:left;text-align:center;width:75px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd;background-color:whitesmoke">Date</div>
             <div style="float:left;text-align:center;width:65px;height:20px;border-style:solid;border-width:0 1px 1px 0;border-color:#ddd;background-color:whitesmoke;font-size:10px">Days</div>
@@ -222,7 +232,7 @@ export class ProfileComponent {
       })
       return changes.map(c=>({payload:c.payload}))
     }))
-    if(this.id=='all'){
+    if(this.id=='PERRINN'){
       this.messages=this.afs.collection<any>('PERRINNMessages',ref=>ref
         .where('lastMessage','==',true)
         .where('verified','==',true)

@@ -58,7 +58,7 @@ export class LoginComponent  {
     this.action=''
     this.afAuth.user.subscribe((auth) => {
       if (auth != null) {
-        this.router.navigate(['profile','all'])
+        this.router.navigate(['profile','PERRINN'])
       }
     })
   }
