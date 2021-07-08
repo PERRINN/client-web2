@@ -113,10 +113,6 @@ module.exports = {
         if(recipient.docs[0]!=undefined)batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{[`recipients.${recipient.docs[0].data().user}.unreadMessages`]:((chatPreviousMessageData.reads||{})[recipient.docs[0].data().user]||null)?1:(((((chatPreviousMessageData.recipients||{})[recipient.docs[0].data().user]||{}).unreadMessages||1)+1)||null)},{create:true})
       })
 
-      //email notifications
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{emailNotificationsList:messageData.recipientList},{create:true})
-      batch.update(admin.firestore().doc('PERRINNMessages/'+messageId),{emailNotificationsStatus:messageData.emailNotificationsStatus||'pending'},{create:true})
-
       //*******SURVEY**********
       let survey={}
       survey.question=((messageData.survey||{}).question)||((chatPreviousMessageData.survey||{}).question)||null
