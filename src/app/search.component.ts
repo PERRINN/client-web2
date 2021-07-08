@@ -27,7 +27,7 @@ import * as firebase from 'firebase/app';
         <br>
         <span *ngIf="message.values?.userStatus?.isMember" style="font-size:10px">Member</span>
         <span *ngIf="message.values?.userStatus?.isDeveloper" style="font-size:10px"> Developer ({{message.values?.contract?.position}} Level {{message.values?.contract?.level}})</span>
-        <span *ngIf="message.values?.userStatus?.isInvestor" style="font-size:10px"> Inverstor</span>
+        <span *ngIf="message.values?.userStatus?.isInvestor" style="font-size:10px"> Investor</span>
       </div>
     </li>
   </ul>
