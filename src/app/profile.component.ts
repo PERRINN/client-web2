@@ -38,16 +38,16 @@ import * as firebase from 'firebase/app'
           <div style="float:left">
             <span >{{focusUserLastMessageObj?.name}}</span>
             <span style="font-size:10px"> {{focusUserLastMessageObj?.familyName}}</span>
-            <span *ngIf="focusUserLastMessageObj?.wallet?.balance>0" style="color:green;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px;margin:5px">Member</span>
-            <span *ngIf="focusUserLastMessageObj?.contract?.signed" style="color:midnightblue;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px">{{focusUserLastMessageObj?.contract?.position}}</span>
-            <span *ngIf="focusUserLastMessageObj?.contract?.signed&&(focusUserLastMessageObj?.contract?.level>0)" style="color:midnightblue;padding:2px 4px 2px 4px;font-size:10px">Level {{focusUserLastMessageObj?.contract?.level}}</span>
+            <br>
+            <span *ngIf="focusUserLastMessageObj?.userStatus?.isMember" style="font-size:10px">Member</span>
+            <span *ngIf="focusUserLastMessageObj?.userStatus?.isDeveloper" style="font-size:10px"> Developer ({{focusUserLastMessageObj?.contract?.position}} Level {{focusUserLastMessageObj?.contract?.level}})</span>
+            <span *ngIf="focusUserLastMessageObj?.userStatus?.isInvestor" style="font-size:10px"> Inverstor</span>
             <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
             <span *ngIf="focusUserLastMessageObj?.contract?.createdTimestamp&&!focusUserLastMessageObj?.contract?.signed&&UI.currentUser=='QYm5NATKa6MGD87UpNZCTl6IolX2'" style="margin:15px;font-size:10px;color:midnightblue;cursor:pointer" (click)=signContract()>Sign contract</span>
           </div>
           <div *ngIf="UI.currentUser!=focusUserLastMessageObj?.user" (click)="newMessageToUser()" style="float:right;font-size:10px;padding:2px 4px 2px 4px;color:midnightblue;border-style:solid;border-width:1px;border-radius:3px;cursor:pointer">New message to {{focusUserLastMessageObj?.name}}</div>
         </div>
         <div style="clear:both">
-          <div style="float:left;font-size:10px;color:#666">{{focusUserLastMessageObj?.userEmail}}</div>
           <div style="clear:both;float:left;font-size:17px;color:green;margin-right:5px">{{(focusUserLastMessageObj?.wallet?.balance||0)|number:'1.2-2'}}</div>
           <div style="float:left;font-size:10px;color:green;line-height:25px">COINS</div>
           <div style="float:left;font-size:10px;color:midnightblue;width:55px;text-align:center;line-height:25px;cursor:pointer" [style.text-decoration]="mode=='inbox'?'underline':'none'" (click)="mode='inbox';refreshMessages()">inbox</div>

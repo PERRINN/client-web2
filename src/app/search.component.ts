@@ -18,16 +18,16 @@ import * as firebase from 'firebase/app';
   <ul class="listLight">
     <li *ngFor="let message of messages | async" style="float:left;padding:5px">
       <div style="float:left;width:250px;height:115px" (click)="router.navigate(['profile',message.values.user])">
-        <img [src]="message?.values.imageUrlThumbUser" style="float:left;margin:0 10px 0 10px;opacity:1;object-fit:cover;height:50px;width:50px;border-radius:50%">
+        <img [src]="message?.values.imageUrlThumbUser" style="float:left;margin:0 10px 65px 10px;opacity:1;object-fit:cover;height:50px;width:50px;border-radius:50%">
         <span>{{message.values?.name}}</span>
         <span style="font-size:10px"> {{message.values?.familyName}}</span>
-        <div *ngIf="message?.values?.wallet?.balance>0" style="color:green;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:9px;height:14px;line-height:10px;width:45px">Member</div>
-        <div>
-          <span style="float:left;font-size:11px;color:green;margin-right:5px">{{(message.values?.wallet?.balance||0)|number:'1.2-2'}}</span>
-          <span style="float:left;font-size:8px;color:green;line-height:22px">COINS</span>
-        </div>
-        <span *ngIf="message?.values?.contract?.signed" style="color:midnightblue;margin:10px 0 0 10px;padding:2px 4px 2px 4px;border-style:solid;border-width:1px;border-radius:3px;font-size:10px">{{message?.values?.contract?.position}}</span>
-        <div *ngIf="message?.values?.contract?.signed&&(message?.values?.contract?.level>0)" style="color:midnightblue;margin:0 0 0 10px;padding:2px 4px 2px 4px;font-size:10px;line-height:10px">Level {{message?.values?.contract?.level}}</div>
+        <br>
+        <span style="font-size:11px;color:green;margin-right:5px">{{(message.values?.wallet?.balance||0)|number:'1.2-2'}}</span>
+        <span style="font-size:8px;color:green;line-height:22px">COINS</span>
+        <br>
+        <span *ngIf="message.values?.userStatus?.isMember" style="font-size:10px">Member</span>
+        <span *ngIf="message.values?.userStatus?.isDeveloper" style="font-size:10px"> Developer ({{message.values?.contract?.position}} Level {{message.values?.contract?.level}})</span>
+        <span *ngIf="message.values?.userStatus?.isInvestor" style="font-size:10px"> Inverstor</span>
       </div>
     </li>
   </ul>
