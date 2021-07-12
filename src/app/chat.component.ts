@@ -15,20 +15,19 @@ import * as firebase from 'firebase/app'
     <div class="fixed" style="background:whitesmoke;color:#444;font-size:12px;cursor:pointer" (click)="showChatDetails=!showChatDetails">
       <div *ngIf="!showChatDetails" style="float:left;margin:0 5px 0 10px;min-height:40px">
         <div>
-          <img *ngIf="chatLastMessageObj?.isLog" style="float:left;width:15px;margin:2px 5px 0 0;opacity:.6" src="./../assets/App icons/fact_check_black_24dp.svg">
-          <div *ngIf="chatLastMessageObj?.isLog" style="float:left;margin-right:5px">Log</div>
+          <span *ngIf="chatLastMessageObj?.isLog" class="material-icons" style="float:left;font-size:15px;margin:2px 5px 0 0;color:rgba(0,0,0,0.6)">fact_check</span>
           <div style="float:left;font-weight:bold">{{chatLastMessageObj?.chatSubject}} </div>
         </div>
         <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{last?"":", "}}</span>
         <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="clear:both">
-          <img src="./../assets/App icons/event-24px.svg" style="float:left;opacity:.6;margin-right:5px;object-fit:cover;height:20px">
+          <span class="material-icons-outlined" style="float:left;font-size:20px;margin-right:5px;color:rgba(0,0,0,0.6)">event</span>
           <div [style.background-color]="(math.floor((eventDate/1000-UI.nowSeconds)/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(eventDate/1000-UI.nowSeconds)}}</div>
           <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:red;color:white;padding:0 5px 0 5px">Now</div>
           <div style="float:left;margin:0 5px 0 5px">{{eventDescription}}</div>
           <div style="float:left;margin:0 5px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
         </div>
         <div *ngIf="(math.floor(UI.nowSeconds/3600/24-survey?.createdTimestamp/3600000/24)<7)&&survey?.createdTimestamp" style="clear:both">
-          <img src="./../assets/App icons/poll_black_24dp.svg" style="float:left;opacity:.6;margin-right:5px;object-fit:cover;height:20px">
+          <span class="material-icons-outlined" style="float:left;font-size:20px;margin-right:5px;color:rgba(0,0,0,0.6)">poll</span>
           <div [style.background-color]="(math.floor(7*24-UI.nowSeconds/3600+survey.createdTimestamp/3600000)>8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(7*24*3600-UI.nowSeconds+survey.createdTimestamp/1000)}} left</div>
           <div style="float:left;margin:0 5px 0 5px">{{survey.question}}</div>
           <span *ngFor="let answer of survey.answers;let last=last" [style.font-weight]="answer?.votes.includes(UI.currentUser)?'bold':'normal'" style="float:left;margin:0 5px 0 5px">{{answer.answer}} ({{(answer.votes.length/survey.totalVotes)|percent:'1.0-0'}})</span>
@@ -175,7 +174,7 @@ import * as firebase from 'firebase/app'
             </div>
             <div class='messageFooter' style="cursor:pointer;clear:both;height:15px" (click)="messageShowActions.includes(message.key)?messageShowActions.splice(messageShowActions.indexOf(message.key),1):messageShowActions.push(message.key)">
               <div style="float:left;width:100px;text-align:right;line-height:10px">...</div>
-              <img *ngIf="message.payload?.verified" src="./../assets/App icons/tick.png" style="float:right;height:15px;margin:0 2px 2px 0">
+              <span *ngIf="message.payload?.verified" class="material-icons" style="float:right;font-size:15px;margin:0 2px 2px 0;color:green">done</span>
               <div *ngIf="message.payload?.userChain?.nextMessage=='none'&&message.payload?.wallet?.balance!=undefined" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">{{message.payload?.wallet?.balance|number:'1.2-2'}}</div>
             </div>
             <div *ngIf="messageShowActions.includes(message.key)">
@@ -200,12 +199,12 @@ import * as firebase from 'firebase/app'
         <textarea id="inputMessage" autocapitalize="none" style="float:left;width:95%;border-style:solid;border-width:0 1px 0 0;border-color:#ddd;padding:9px;resize:none;overflow-y:scroll" maxlength="500" (keyup)="messageInputKeyUp()" (keyup.enter)="addMessage()" [(ngModel)]="draftMessage" placeholder="Reply all"></textarea>
       </div>
       <div *ngIf="draftMessage" style="float:right;width:10%;cursor:pointer">
-        <img src="./../assets/App icons/send.png" style="width:25px;margin:20px 5px 5px 5px" (click)="addMessage()">
+        <span class="material-icons-outlined" style="margin:15px 5px 5px 5px;font-size:30px;color:rgba(0,0,0,0.6)" (click)="addMessage()">send</span>
       </div>
       <div *ngIf="!draftMessage" style="float:right;width:10%;cursor:pointer">
         <input type="file" name="chatImage" id="chatImage" class="inputfile" (change)="onImageChange($event)" accept="image/*">
         <label class="buttonUploadImage" for="chatImage" id="buttonFile">
-        <img src="./../assets/App icons/camera.png" style="width:25px;margin:20px 5px 5px 5px">
+        <span class="material-icons-outlined" style="margin:15px 5px 5px 5px;font-size:30px;color:rgba(0,0,0,0.6)">photo_camera</span>
         </label>
       </div>
     </div>
