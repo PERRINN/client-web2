@@ -21,7 +21,7 @@ import * as firebase from 'firebase/app';
   <span *ngIf="UI.currentUserLastMessageObj?.userStatus?.isInvestor" style="font-size:10px"> Investor</span>
   <span *ngIf="UI.currentUserLastMessageObj?.contract?.createdTimestamp&&!UI.currentUserLastMessageObj?.contract?.signed" style="margin:15px;font-size:10px;color:midnightblue">Waiting for contract signature</span>
   <br/>
-  <span style="font-size:16px;line-height:30px;margin:15px;font-family:sans-serif">Balance: {{(UI.currentUserLastMessageObj?.wallet?.balance||0)|number:'1.2-2'}}</span>
+  <span style="font-size:16px;line-height:30px;margin:15px;font-family:sans-serif">Balance: {{UI.formatCOINS(UI.currentUserLastMessageObj?.wallet?.balance||0)}}</span>
   <div style="font-size:12px;text-align:center;line-height:20px;width:150px;padding:2px;margin:10px;color:white;background-color:green;border-radius:3px;cursor:pointer" (click)="router.navigate(['buyCoins'])">Buy new COINS</div>
   <br/>
   <div class="seperator" style="width:100%;margin:0px"></div>

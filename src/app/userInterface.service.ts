@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'
 import { map } from 'rxjs/operators'
 import * as firebase from 'firebase/app'
+import { formatNumber } from '@angular/common'
 
 @Injectable()
 export class UserInterfaceService {
@@ -64,6 +65,11 @@ export class UserInterfaceService {
     messageObj.PERRINN={}
     messageObj.reads={[this.currentUser]:true}
     return this.afs.collection('PERRINNMessages').add(messageObj)
+  }
+
+  formatCOINS(amount){
+    if(amount<1000)return formatNumber(amount,"en-US","1.2-2")
+    else return formatNumber(amount,"en-US","1.0-0")
   }
 
 }

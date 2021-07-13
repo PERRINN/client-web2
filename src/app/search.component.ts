@@ -22,7 +22,7 @@ import * as firebase from 'firebase/app';
         <span>{{message.values?.name}}</span>
         <span style="font-size:10px"> {{message.values?.familyName}}</span>
         <br>
-        <span style="font-size:11px;color:green;margin-right:5px">{{(message.values?.wallet?.balance||0)|number:'1.2-2'}}</span>
+        <span style="font-size:11px;color:green;margin-right:5px">{{UI.formatCOINS(message.values?.wallet?.balance||0)}}</span>
         <span style="font-size:8px;color:green;line-height:22px">COINS</span>
         <br>
         <span *ngIf="message.values?.userStatus?.isMember" style="font-size:10px">Member</span>
