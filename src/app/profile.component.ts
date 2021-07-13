@@ -85,6 +85,7 @@ import * as firebase from 'firebase/app'
     <ul class="listLight">
       <li *ngFor="let message of currentSurveys|async;let first=first;let last=last"
         (click)="router.navigate(['chat',message.payload.doc.data()?.chain])">
+        <div *ngIf="(math.floor(UI.nowSeconds/3600/24-message.payload.doc.data()?.survey?.createdTimestamp/3600000/24)<7)&&message.payload.doc.data()?.survey?.createdTimestamp">
         <div style="float:left;min-width:90px;min-height:40px">
           <span class="material-icons-outlined" style="float:left;margin:7px 4px 7px 4px;font-size:40px;cursor:pointer;color:rgba(0,0,0,0.6)" (click)="router.navigate(['search'])">poll</span>
         </div>
@@ -100,6 +101,7 @@ import * as firebase from 'firebase/app'
             <span style="float:left;margin:0 5px 0 5px">{{message.payload.doc.data()?.survey.totalVotes}} vote{{message.payload.doc.data()?.survey.totalVotes>1?'s':''}}</span>
             <div *ngIf="!message.payload.doc.data()?.recipients[UI.currentUser]?.voteIndexPlusOne" style="clear:both;color:red;margin:0 5px 0 5px">Vote now</div>
           </div>
+        </div>
         </div>
         <div class="seperator"></div>
       </li>
