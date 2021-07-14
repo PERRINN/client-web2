@@ -199,7 +199,7 @@ module.exports = {
             contract.signedLevel=((contractSignatureMessageData.contractSignature||{}).contract||{}).level||null
             contract.rateDay=appSettingsContract.data().rateDayLevel1*contract.level
             contract.previousContractMessageServerTimestamp=((userPreviousMessageData.contract||{}).previousContractMessageServerTimestamp)||userPreviousMessageData.serverTimestamp||messageData.serverTimestamp
-            if(messageData.chain==(user+'Log')){
+            if(messageData.chain==(user+'Log')&&(messageData.text||"").startsWith(">")){
               contract.days=Math.min(appSettingsContract.data().messageCoverDays,(messageData.serverTimestamp.seconds-contract.previousContractMessageServerTimestamp.seconds)/3600/24)
               contract.amount=contract.days*contract.rateDay
               contract.previousContractMessageServerTimestamp=messageData.serverTimestamp

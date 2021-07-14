@@ -16,7 +16,7 @@ import * as firebase from 'firebase/app';
     <span style="font-size:14px"> COINS</span>
     <div class="seperator" style="width:100%;margin:10px 0px 10px 0px"></div>
     <span style="font-size:12px">Gives you membership, read and write access to the team.</span>
-    <div style="margin:5px auto;font-size:10px;color:white;line-height:14px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://sites.google.com/view/perrinn/perrinn-com/membership','_blank')">More info</div>
+    <div style="margin:5px auto;font-size:10px;color:white;line-height:14px;width:75px;text-align:center;border-radius:3px;border-style:solid;border-width:1px;cursor:pointer" onclick="window.open('https://discover.perrinn.com/perrinn-com/perrinn-member','_blank')">More info</div>
   </div>
   <div [hidden]='!selectingCurrency'>
     <div class="sheet" style="max-width:320px">
