@@ -41,7 +41,7 @@ export class UserInterfaceService {
       this.userObjectIndexPopulateObject(this.searchNameIndex.indexOf(message.searchName),message.user,message.name,message.familyName)
     }
     message.recipientList.forEach(recipient=>{
-      if(message.recipients[recipient].searchName&&!this.searchNameIndex.includes(message.recipients[recipient].searchName)){
+      if((message.recipients[recipient]||{}).searchName&&!this.searchNameIndex.includes((message.recipients[recipient]||{}).searchName)){
         this.searchNameIndex.push(message.recipients[recipient].searchName)
         this.userObjectIndexPopulateObject(this.searchNameIndex.indexOf(message.recipients[recipient].searchName),recipient,message.recipients[recipient].name,message.recipients[recipient].familyName)
       }
