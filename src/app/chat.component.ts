@@ -21,14 +21,14 @@ import * as firebase from 'firebase/app'
         <span *ngFor="let recipient of chatLastMessageObj?.recipientList;let last=last">{{recipient==UI.currentUser?'You':chatLastMessageObj?.recipients[recipient]?.name}}{{last?"":", "}}</span>
         <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="clear:both">
           <span class="material-icons-outlined" style="float:left;font-size:20px;margin-right:5px;color:rgba(0,0,0,0.6)">event</span>
-          <div [style.background-color]="(math.floor((eventDate/1000-UI.nowSeconds)/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(eventDate/1000-UI.nowSeconds)}}</div>
+          <div [style.background-color]="(math.floor((eventDate/1000-UI.nowSeconds)/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{UI.formatSecondsToDhm2(eventDate/1000-UI.nowSeconds)}}</div>
           <div *ngIf="math.floor(eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:red;color:white;padding:0 5px 0 5px">Now</div>
           <div style="float:left;margin:0 5px 0 5px">{{eventDescription}}</div>
           <div style="float:left;margin:0 5px 0 0">{{eventDate|date:'EEEE d MMM HH:mm'}}</div>
         </div>
         <div *ngIf="(math.floor(UI.nowSeconds/3600/24-survey?.createdTimestamp/3600000/24)<7)&&survey?.createdTimestamp" style="clear:both">
           <span class="material-icons-outlined" style="float:left;font-size:20px;margin-right:5px;color:rgba(0,0,0,0.6)">poll</span>
-          <div [style.background-color]="(math.floor(7*24-UI.nowSeconds/3600+survey.createdTimestamp/3600000)>8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(7*24*3600-UI.nowSeconds+survey.createdTimestamp/1000)}} left</div>
+          <div [style.background-color]="(math.floor(7*24-UI.nowSeconds/3600+survey.createdTimestamp/3600000)>8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{UI.formatSecondsToDhm2(7*24*3600-UI.nowSeconds+survey.createdTimestamp/1000)}} left</div>
           <div style="float:left;margin:0 5px 0 5px">{{survey.question}}</div>
           <span *ngFor="let answer of survey.answers;let last=last" [style.font-weight]="answer?.votes.includes(UI.currentUser)?'bold':'normal'" style="float:left;margin:0 5px 0 5px">{{answer.answer}} ({{(answer.votes.length/survey.totalVotes)|percent:'1.0-0'}})</span>
           <span style="float:left;margin:0 5px 0 5px">{{survey.totalVotes}} vote{{survey.totalVotes>1?'s':''}}</span>
@@ -139,7 +139,7 @@ import * as firebase from 'firebase/app'
               <div *ngIf="isMessageNewUserGroup(message.payload?.user,message.payload?.serverTimestamp||{seconds:UI.nowSeconds*1000})||first">
                 <div style="color:#777;font-size:12px;font-weight:bold;display:inline;float:left;margin:0px 10px 0px 5px">{{message.payload?.name}}</div>
                 <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)>43200" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{(message.payload?.serverTimestamp?.seconds*1000)|date:'HH:mm'}}</div>
-                <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)<=43200" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{secondsToDhmDetail1(math.max(0,(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)))}}</div>
+                <div *ngIf="(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)<=43200" style="color:#777;font-size:11px;margin:0px 10px 0px 10px">{{UI.formatSecondsToDhm1(math.max(0,(UI.nowSeconds-message.payload?.serverTimestamp?.seconds)))}}</div>
               </div>
               <div style="float:left;color:#404040;margin:5px 5px 0 5px" [innerHTML]="message.payload?.text | linky"></div>
               <div style="clear:both;text-align:center">
@@ -175,7 +175,7 @@ import * as firebase from 'firebase/app'
             <div class='messageFooter' style="cursor:pointer;clear:both;height:15px" (click)="messageShowActions.includes(message.key)?messageShowActions.splice(messageShowActions.indexOf(message.key),1):messageShowActions.push(message.key)">
               <div style="float:left;width:100px;text-align:right;line-height:10px">...</div>
               <span *ngIf="message.payload?.verified" class="material-icons" style="float:right;font-size:15px;margin:0 2px 2px 0;color:green">done</span>
-              <span *ngIf="message.payload?.contract?.amount>0" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:green">+{{UI.formatCOINS(message.payload?.contract?.amount)}} ({{secondsToDhmDetail1(message.payload?.contract?.days*3600*24)}})</span>
+              <span *ngIf="message.payload?.contract?.amount>0" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:green">+{{UI.formatCOINS(message.payload?.contract?.amount)}} ({{UI.formatSecondsToDhm1(message.payload?.contract?.days*3600*24)}})</span>
               <span *ngIf="message.payload?.userChain?.nextMessage=='none'&&message.payload?.wallet?.balance!=undefined" style="float:right;font-size:10px;margin:0 5px 2px 0;line-height:15px;color:#999">{{UI.formatCOINS(message.payload?.wallet?.balance)}}</span>
             </div>
             <div *ngIf="messageShowActions.includes(message.key)">
@@ -508,28 +508,6 @@ export class ChatComponent {
     } else {
       this.teams=null
     }
-  }
-
-  secondsToDhmDetail2(seconds){
-    seconds= Number(seconds)
-    var d=Math.floor(seconds/(3600*24))
-    var h=Math.floor(seconds%(3600*24)/3600)
-    var m=Math.floor(seconds%3600/60)
-    var dDisplay=d>0?d+'d ':''
-    var hDisplay=h>0?h+'h ':''
-    var mDisplay=(m>=0&&d==0)?m+'m ':''
-    return dDisplay+hDisplay+mDisplay
-  }
-
-  secondsToDhmDetail1(seconds){
-    seconds= Number(seconds)
-    var d=Math.floor(seconds/(3600*24))
-    var h=Math.floor(seconds%(3600*24)/3600)
-    var m=Math.floor(seconds%3600/60)
-    var dDisplay=d>0?d+'d ':''
-    var hDisplay=(h>0&&d==0)?h+'h ':''
-    var mDisplay=(m>=0&&d==0&&h==0)?m+'m ':''
-    return dDisplay+hDisplay+mDisplay
   }
 
   resetChat(){

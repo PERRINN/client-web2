@@ -72,7 +72,7 @@ import * as firebase from 'firebase/app'
             <div style="float:left;font-size:14px;font-weight:bold;white-space:nowrap;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
           </div>
           <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="width:80%">
-            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>0" [style.background-color]="(math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{secondsToDhmDetail2(message.payload.doc.data()?.eventDate/1000-UI.nowSeconds)}}</div>
+            <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>0" [style.background-color]="(math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>60*8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">in {{UI.formatSecondsToDhm2(message.payload.doc.data()?.eventDate/1000-UI.nowSeconds)}}</div>
             <div *ngIf="math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)<=0&&math.floor(message.payload.doc.data()?.eventDate/60000-UI.nowSeconds/60)>-60" style="float:left;background-color:red;color:white;padding:0 5px 0 5px">Now</div>
             <div style="float:left;margin:0 5px 0 5px">{{message.payload.doc.data()?.eventDescription}}</div>
             <div style="float:left;margin:0 5px 0 0">{{message.payload.doc.data()?.eventDate|date:'EEEE d MMM HH:mm'}}</div>
@@ -95,7 +95,7 @@ import * as firebase from 'firebase/app'
             <div style="float:left;font-size:14px;font-weight:bold;white-space:nowrap;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
           </div>
           <div *ngIf="(math.floor(UI.nowSeconds/3600/24-message.payload.doc.data()?.survey?.createdTimestamp/3600000/24)<7)&&message.payload.doc.data()?.survey?.createdTimestamp" style="clear:both">
-            <div [style.background-color]="(math.floor(7*24-UI.nowSeconds/3600+message.payload.doc.data()?.survey.createdTimestamp/3600000)>8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{secondsToDhmDetail2(7*24*3600-UI.nowSeconds+message.payload.doc.data()?.survey.createdTimestamp/1000)}} left</div>
+            <div [style.background-color]="(math.floor(7*24-UI.nowSeconds/3600+message.payload.doc.data()?.survey.createdTimestamp/3600000)>8)?'midnightblue':'red'" style="float:left;color:white;padding:0 5px 0 5px">{{UI.formatSecondsToDhm2(7*24*3600-UI.nowSeconds+message.payload.doc.data()?.survey.createdTimestamp/1000)}} left</div>
             <div style="float:left;margin:0 5px 0 5px">{{message.payload.doc.data()?.survey.question}}</div>
             <span *ngFor="let answer of message.payload.doc.data()?.survey.answers;let last=last" [style.font-weight]="answer?.votes.includes(UI.currentUser)?'bold':'normal'" style="float:left;margin:0 5px 0 5px">{{answer.answer}} ({{(answer.votes.length/message.payload.doc.data()?.survey.totalVotes)|percent:'1.0-0'}})</span>
             <span style="float:left;margin:0 5px 0 5px">{{message.payload.doc.data()?.survey.totalVotes}} vote{{message.payload.doc.data()?.survey.totalVotes>1?'s':''}}</span>
@@ -123,7 +123,7 @@ import * as firebase from 'firebase/app'
             [style.color]="(message.payload.doc.data()?.reads||{})[UI.currentUser]?'whitesmoke':'white'">
               {{message.payload.doc.data()?.recipients[UI.currentUser]?.unreadMessages}}
             </div>
-            <div style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:40px">{{secondsToDhmDetail1(math.max(0,(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)))}}</div>
+            <div style="float:right;margin-top:5px;color:#999;font-size:11px;margin-right:10px;width:40px">{{UI.formatSecondsToDhm1(math.max(0,(UI.nowSeconds-message.payload.doc.data()?.serverTimestamp?.seconds)))}}</div>
             <div style="clear:right;margin-top:5px;width:60%">
               <span *ngIf="message.payload.doc.data()?.isLog" class="material-icons" style="float:left;font-size:15px;margin:2px 5px 0 0;cursor:pointer;color:rgba(0,0,0,0.6)">fact_check</span>
               <div style="float:left;font-size:14px;font-weight:bold;white-space:nowrap;text-overflow:ellipsis">{{message.payload.doc.data()?.chatSubject}} </div>
@@ -356,28 +356,6 @@ export class ProfileComponent {
       }
     })
     this.router.navigate(['chat',this.focusUserLastMessageObj.user])
-  }
-
-  secondsToDhmDetail2(seconds){
-    seconds= Number(seconds)
-    var d=Math.floor(seconds/(3600*24))
-    var h=Math.floor(seconds%(3600*24)/3600)
-    var m=Math.floor(seconds%3600/60)
-    var dDisplay=d>0?d+'d ':''
-    var hDisplay=h>0?h+'h ':''
-    var mDisplay=(m>=0&&d==0)?m+'m ':''
-    return dDisplay+hDisplay+mDisplay
-  }
-
-  secondsToDhmDetail1(seconds){
-    seconds= Number(seconds)
-    var d=Math.floor(seconds/(3600*24))
-    var h=Math.floor(seconds%(3600*24)/3600)
-    var m=Math.floor(seconds%3600/60)
-    var dDisplay=d>0?d+'d ':''
-    var hDisplay=(h>0&&d==0)?h+'h ':''
-    var mDisplay=(m>=0&&d==0&&h==0)?m+'m ':''
-    return dDisplay+hDisplay+mDisplay
   }
 
   loadMore() {
